@@ -61,5 +61,5 @@ Muistio ja Listoja
 # QA
 - ryhmä rakenne, listat elokuvat etc
 - sivu nopeus
-
+-Tuleeko kuukausimaksu käyttäjille vai oliko kuukausimaksu tarkoitettu myöhemmälle vaiheelle (yrityksille ketkä hyödyntävät palvelua omassa liiketoiminnassaan)? Jos kuukausimaksu tulee käyttäjille, minkä suuruinen se on?  
 # Database
