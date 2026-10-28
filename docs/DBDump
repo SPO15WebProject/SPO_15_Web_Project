@@ -1,0 +1,56 @@
+create table Users (
+        userId int(11) PRIMARY KEY,
+        nickname varchar(60) NOT NULL,
+        email varchar(60) UNIQUE,
+        passwordHash varchar(255)
+        
+)
+create table Groups (
+        groupId int(11) PRIMARY KEY,
+        groupName varchar(255) NOT NULL,
+        description TEXT,
+        inviteOnly BOOLEAN DEFAULT FALSE,
+)
+create table Group_members (
+        groupId int(11) REFERENCES Groups(groupId) ON DELETE CASCADE,
+        userId int(11) REFERENCES Users(userId) ON DELETE CASCADE,
+        isAdmin BOOLEAN DEFAULT FALSE,
+
+        PRIMARY KEY(groupId, userId)
+)
+create table GroupMessages (
+        userId int(11) REFERENCES Users(userId) ON DELETE CASCADE,
+        groupId int(11) REFERENCES Groups(groupId) ON DELETE CASCADE,
+        content TEXT NOT NULL,
+        createdAt TIMESTAMP,
+
+        PRIMARY KEY(userId,groupId)
+)
+create table Movies (
+        movieId int(11) PRIMARY KEY,
+        -- pitää kattoa TMDB:stä
+)
+create table Reviews (
+        id int(11) PRIMARY KEY,
+        userId int(11) REFERENCES Users(userId) ON DELETE CASCADE,
+        movieId int(11) REFERENCES Movies(movieId) ON DELETE CASCADE,
+        stars int NOT NULL CHECK(BETWEEN 1 AND 5),
+        text TEXT,
+        createdAt TIMESTAMP,
+)
+create type list_type as enum (
+        'watched',
+        'wishlist',
+        'recommendations'
+)
+create table Lists (
+        listId int(11) PRIMARY KEY,
+        userId int(11) REFERENCES Users(userId) ON DELETE CASCADE,
+)
+create table ListEntries (
+        listId int(11) REFERENCES Lists(listId) ON DELETE CASCADE,
+        movieId int(11) REFERENCES Movies(movieId) ON DELETE CASCADE,
+        listType list_type NOT NULL,
+
+        PRIMARY KEY(listId,movieId)
+)
