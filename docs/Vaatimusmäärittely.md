@@ -92,7 +92,82 @@ Muistio ja Listoja
 - theMovieDB API
 
 # Database
+```mermaid
+erDiagram
+    Users {
+        int userId PK
+        varchar nickname
+        varchar email
+        varchar passwordHash
+    }
 
+    Groups {
+        int groupId PK
+        varchar groupName
+        text groupDescription
+        boolean inviteOnly
+    }
+
+    Group_members {
+        int groupId PK, FK
+        int userId PK, FK
+        boolean isAdmin
+    }
+
+    GroupMessages {
+        int userId PK, FK
+        int groupId PK, FK
+        text content
+        timestamp createdAt
+    }
+
+    Movies {
+        int movieId PK
+    }
+
+    Reviews {
+        int id PK
+        int userId FK
+        int movieId FK
+        int stars
+        text text
+        timestamp createdAt
+    }
+
+    Lists {
+        int listId PK
+        int userId FK
+        varchar listName
+        text listDescription
+    }
+
+    GroupList {
+        int listId PK, FK
+        int groupId PK, FK
+    }
+
+    ListEntries {
+        int listId PK, FK
+        int movieId PK, FK
+    }
+
+    Users ||--o{ Group_members : joins
+    Groups ||--o{ Group_members : contains
+
+    Users ||--o{ GroupMessages : sends
+    Groups ||--o{ GroupMessages : receives
+
+    Users ||--o{ Reviews : writes
+    Movies ||--o{ Reviews : reviewed_in
+
+    Users ||--o{ Lists : owns
+
+    Lists ||--o{ ListEntries : contains
+    Movies ||--o{ ListEntries : appears_in
+
+    Groups ||--o{ GroupList : shares
+    Lists ||--o{ GroupList : available_to
+```
 # Muutokset
 **28.10.26** Vaatimusmäärittely tehty  
 **29.10.26** Määrittely päivitetty asiakas QA:n perusteella  

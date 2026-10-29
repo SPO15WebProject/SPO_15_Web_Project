@@ -8,7 +8,7 @@ create table Users (
 create table Groups (
         groupId int(11) PRIMARY KEY,
         groupName varchar(255) NOT NULL,
-        description TEXT,
+        groupDescription TEXT,
         inviteOnly BOOLEAN DEFAULT FALSE,
 )
 create table Group_members (
@@ -38,19 +38,20 @@ create table Reviews (
         text TEXT,
         createdAt TIMESTAMP,
 )
-create type list_type as enum (
-        'watched',
-        'wishlist',
-        'recommendations'
+create table GroupList (
+        listId int(11) REFERENCES Lists(listId) ON DELETE CASCADE,
+        groupId int(11) REFERENCES Groups(groupId) ON DELETE CASCADE,
+        PRIMARY KEY(listId, groupId)
 )
 create table Lists (
         listId int(11) PRIMARY KEY,
         userId int(11) REFERENCES Users(userId) ON DELETE CASCADE,
+        listName varchar(50) NOT NULL,
+        listDescription TEXT,
 )
 create table ListEntries (
         listId int(11) REFERENCES Lists(listId) ON DELETE CASCADE,
         movieId int(11) REFERENCES Movies(movieId) ON DELETE CASCADE,
-        listType list_type NOT NULL,
 
         PRIMARY KEY(listId,movieId)
 )
