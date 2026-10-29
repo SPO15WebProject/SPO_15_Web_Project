@@ -8,8 +8,8 @@ Palvelu tukee ihmisten yhteistä elokuvaharrastusta ja toimii tietokoneen sekä 
 ## Scrum-tiimi ja työskentelytavat
 - Product Owner: [nimi]
 - Scrum Master: [nimi]
-- Kehittäjät: [nimet]
-- Sprintin pituus: [sprintin pituus]
+- Kehittäjät: [Neea, Elias, Alex, Joonas]
+- Sprintin pituus: [1 viikko]
 
 ## Dokumentit
 - [Vaatimusmäärittely](docs/Vaatimusmäärittely.md)
