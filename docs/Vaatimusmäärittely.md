@@ -1,21 +1,23 @@
 # Vaatimusmäärittely - Elokuvaharrastajien yhteisöllinen nettisivu
 
-**Versio:** 0.3
-**Päivämäärä:** 29.10.2026
-**Tila:** Luonnos asiakkaalle hyväksyttäväksi
+**Versio:** 0.31
+**Päivämäärä:** 29.10.2026  
+**Tila:** Luonnos asiakkaalle hyväksyttäväksi  
 
 ## 1. Tausta ja tavoite
 
-Asiakas on keskustellut elokuvaharrastajien kanssa elokuvista WhatsApp-ryhmässä. Ryhmässä on jaettu suosituksia ja arvosteluja elokuvista. Ryhmässä on myös lisäksi käyty yleistä keskustelua elokuviin liittyen. Keskustelusta on ollut vaikea löytää vanhoja suosituksia ja arvosteluja, sillä ne hukkuvat helposti, kun keskustelua jatketkaan. Lisäksi tällaisessa keskustelussa ryhmän yhteisten elokuvalistojen sekä kiinnostavien elokuvasuositusten seuraaminen on hankalaa.
+Asiakas on keskustellut elokuvaharrastajien kanssa elokuvista WhatsApp-ryhmässä. Ryhmässä on jaettu suosituksia ja arvosteluja elokuvista. Ryhmässä on myös lisäksi käyty yleistä keskustelua elokuviin liittyen.  
+Keskustelusta on ollut vaikea löytää vanhoja suosituksia ja arvosteluja, sillä ne hukkuvat helposti, kun keskustelua jatketkaan.  
+Lisäksi tällaisessa keskustelussa ryhmän yhteisten elokuvalistojen sekä kiinnostavien elokuvasuositusten seuraaminen on hankalaa.
 
-**Tavoite:** 
+### Tavoite:
 
 - Käyttäjä voi hakea elokuvia ja löytää niiden tiedot ilman, että tarvitsee kirjautua sisään.
 - Kirjautunut käyttäjä voi luoda ryhmiä, jossa voi tehdä muiden ryhmäläisten nähtäville käyttöoikeuksien mukaisesti elokuva-arvosteluja, listoja ja käydä keskustelua.
 - Kirjautunut käyttäjä voi luoda omia listoja. 
 - Palvelua voidaan käyttää tietokoneen sekä puhelimen selaimella.
 
-**2. Käyttäjäroolit**
+## 2. Käyttäjäroolit
 
 **Vierailija:**
 - Voi hakea ja selata elokuvia ilman käyttäjätiliä.
@@ -45,7 +47,7 @@ Asiakas on keskustellut elokuvaharrastajien kanssa elokuvista WhatsApp-ryhmäss�
         - **Avoin:** Käyttäjä voi liittyä ilman kutsua.
         - **Suljettu:** Ryhmään liittyminen edellyttää liittymispyyntöä tai kutsua.
 
-**Käyttäjä voi:**  
+#### Käyttäjä voi:  
 
     - Lähteä ryhmästä.
     - Etsiä ryhmiä.
@@ -64,28 +66,28 @@ Asiakas on keskustellut elokuvaharrastajien kanssa elokuvista WhatsApp-ryhmäss�
 
 #### Elokuva-arvostelut
 
-- Kirjautunut käyttäjä voi antaa elokuvalle arvosanan: asteikolla 1-5 tähteä.
-- Arvostelussa näkyvät nimimerkki sekä aikaleima.
-- Arvostelun lisääminen ei edellytä tekstimuotoista kommentin lisäystä. 
-- Käyttäjän tulee olla kirjautunut sisään antaakseen elokuvalle arvostelun. 
-- Pitkät tekstimuotoiset arvostelut voidaan näyttää lyhennettyinä esikatseluina. 
+    - Kirjautunut käyttäjä voi antaa elokuvalle arvosanan: asteikolla 1-5 tähteä.
+    - Arvostelussa näkyvät nimimerkki sekä aikaleima.
+    - Arvostelun lisääminen ei edellytä tekstimuotoista kommentin lisäystä. 
+    - Käyttäjän tulee olla kirjautunut sisään antaakseen elokuvalle arvostelun. 
+    - Pitkät tekstimuotoiset arvostelut voidaan näyttää lyhennettyinä esikatseluina. 
 
-**Elokuvalistat:**
+#### Elokuvalistat:
  
- - Käyttäjä voi luoda elokuvalistan, antaa sille nimen ja kuvauksen sekä myös lisätä elokuvia.
- - Käyttäjä voi jakaa listan linkillä.
- - Julkiset tai linkillä jaettavia listoja voi tarkastella ilman kirjautumista. 
- - Ryhmillä voi olla omia yhteisiä elokuvalistoja.
- - Ryhmän ylläpitäjä voi muokata ryhmän yhteisiä listoja.
+    - Käyttäjä voi luoda elokuvalistan, antaa sille nimen ja kuvauksen sekä myös lisätä elokuvia.
+    - Käyttäjä voi jakaa listan linkillä.
+    - Julkiset tai linkillä jaettavia listoja voi tarkastella ilman kirjautumista. 
+    - Ryhmillä voi olla omia yhteisiä elokuvalistoja.
+    - Ryhmän ylläpitäjä voi muokata ryhmän yhteisiä listoja.
 
- **Elokuvien selaaminen ja hakeminen:**
+ #### Elokuvien selaaminen ja hakeminen:
 
- - Käyttäjä voi selata elokuvia ilman kirjautumista.
- - Käyttäjä voi hakea elokuvia.
- - Käyttäjä voi tarkastella tuttujen käyttäjien arvosteluja sovittujen näkyvyysasetusten mukaisesti. 
+    - Käyttäjä voi selata elokuvia ilman kirjautumista.
+    - Käyttäjä voi hakea elokuvia.
+    - Käyttäjä voi tarkastella tuttujen käyttäjien arvosteluja sovittujen näkyvyysasetusten mukaisesti. 
 
 ### Should - Tärkeät lisäominaisuudet
-
+----
 - Ajankohtaisten ja suosittujen elokuvien näyttäminen.
 - Arvostelujen näkyvyyden määrittäminen julkiseksi tai vain tietyn ryhmän nähtäväksi.
 - Oman arvostelun muokkaaminen tai uuden arvostelun antaminen aiemman tilalle.
@@ -105,7 +107,7 @@ Asiakas on keskustellut elokuvaharrastajien kanssa elokuvista WhatsApp-ryhmäss�
     - julistekuva
 
 ### Could - Mahdolliset lisäominaisuudet
-
+----
 - Käyttäjäprofiili, jossa näytetään katseluhistoria.
 - Elokuvateattereiden, kuten Finnkinon ja Starin tiedot.
 - Paikallisten elokuvateattereiden ja tapahtumien hakeminen ja suodattaminen.
@@ -120,13 +122,13 @@ Asiakas on keskustellut elokuvaharrastajien kanssa elokuvista WhatsApp-ryhmäss�
 
 
 ### Non-functional - Ei-toiminnalliset vaatimukset
-
-**Käytettävyys:** Käyttöliittymän tulee olla selkeä ja helppokäyttöinen.
-**Responsiivisuus:** Palvelun tulee toimia sekä tietokoneen että puhelimen selaimessa.
-**Tietoturva:** Salasanat tulee tallentaa turvallisesti tiivistettyinä sekä käyttäjien oikeudet tulee tarkistaa palvelimella. 
-**Suorituskyky:** Tavoitteena on alle sekunnin latausaika keskeisille toiminnoille määritellyissä testiolosuhteissa.
-**Kieli:** Ensimmäinen versio toteutetaan suomeksi.
-**Tietosuoja:** Henkilötietojen käsittely, tietojen säilytys ja käyttäjätilin poistaminen toteutuu sovellettavien tietosuojavaatimusten mukaisesti. 
+----
+- **Käytettävyys:** Käyttöliittymän tulee olla selkeä ja helppokäyttöinen.
+- **Responsiivisuus:** Palvelun tulee toimia sekä tietokoneen että puhelimen selaimessa.
+- **Tietoturva:** Salasanat tulee tallentaa turvallisesti tiivistettyinä sekä käyttäjien oikeudet tulee tarkistaa palvelimella. 
+- **Suorituskyky:** Tavoitteena on alle sekunnin latausaika keskeisille toiminnoille määritellyissä testiolosuhteissa.
+- **Kieli:** Ensimmäinen versio toteutetaan suomeksi.
+- **Tietosuoja:** Henkilötietojen käsittely, tietojen säilytys ja käyttäjätilin poistaminen toteutuu sovellettavien tietosuojavaatimusten mukaisesti. 
 
 ## Tech
 
@@ -213,13 +215,14 @@ erDiagram
 
 Vaatimusmäärittely käydään läpi yhdessä asiakkaan kanssa. Hyväksynnällä varmistetaan, että projektin tavoitteet ja toiminnallisuudet vastaavat asiakkaan tarpeita. 
 
-**Hyväksyjä (asiakas)**:
-**Päivämäärä:**
-**Päätös:**
-**Huomautukset ja sovitut muutokset:**
+**Hyväksyjä (asiakas)**:  
+**Päivämäärä:**  
+**Päätös:**  
+**Huomautukset ja sovitut muutokset:**  
 
 # Muutokset
 
 **28.10.2026** Vaatimusmäärittely tehty  
-**29.10.2026** Määrittely päivitetty asiakas QA:n perusteella
-**29.10.2026** Taustaa ja tavoitteita täsmennetty. Käyttäjäroolit lisätty ja toiminnallisten vaatimusten rakennetta selkeytetty. Vaatimusten kuvauksia ja priorisointia yhdenmukaistettu sekä ei-toiminnallisia vaatimuksia täsmennetty. 'Asiakkaan hyväksyntä ja muutosten hallinta' -kohta lisätty. 
+**29.10.2026** Määrittely päivitetty asiakas QA:n perusteella  
+**29.10.2026** Taustaa ja tavoitteita täsmennetty. Käyttäjäroolit lisätty ja toiminnallisten vaatimusten rakennetta selkeytetty. Vaatimusten kuvauksia ja priorisointia yhdenmukaistettu sekä ei-toiminnallisia vaatimuksia täsmennetty. 'Asiakkaan hyväksyntä ja muutosten hallinta' -kohta lisätty.  
+**30.10.2026** Päivitetty Markdown luettavuutta
