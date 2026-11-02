@@ -3,7 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import errorHandler from './middleware/errorHandler.js'
 import testRouter from './routes/testRouter.js'
-
+import movieRoutes from './routes/movieRoutes.js'
 const port = process.env.PORT || 3000
 
 const app = express()
@@ -13,6 +13,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 app.use('/', testRouter)
+app.use('/movies', movieRoutes)
 
 // Health check endpoint for database connectivity
 app.get('/api/health', async (req, res) => {
@@ -33,6 +34,8 @@ app.get('/api/health', async (req, res) => {
     })
   }
 })
+
+
 
 app.use((req, res, next) => {
   const error = new Error('Not found')
