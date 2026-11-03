@@ -1,0 +1,33 @@
+name: Backend tests
+
+on:
+    pull_request:
+        branches: [main]
+    push:
+        branches: [main]
+
+permissions:
+    contents: read
+
+jobs:
+    backend-tests:
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: api
+
+        steps:
+            - name: Hae projektin tiedostot
+              uses: actions/checkout@v7
+
+            - name: Asenna Node.js
+              uses: actions/setup-node@v7
+              with:
+                node-version: "24"
+
+            - name: Asenna backendin riippuvuudet
+              run: npm ci
+
+            - name: Suorita backend-testit
+              run: npm run test:run
