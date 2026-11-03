@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 // Komponentti, joka näyttää yhden elokuvan tiedot korttina.
 // movie sisältää backendin kautta TMDB:stä haetut elokuvatiedot.
 function MovieCard({ movie }) {
@@ -12,8 +14,12 @@ function MovieCard({ movie }) {
 
   // Yhden elokuvakortin sisältävä elementti.
   // movie-card-luokkaa käytetään myöhemmin CSS-tyylittelyssä.
+  // välitetään kortin tiedot suoraan myös tarkastelusivulle näytettäväksi
   return (
-    <div className="movie-card">
+    <Link 
+    to={`/movies/${movie.id}`}
+    state={{ movie }} 
+    className="movie-card">
 
       {/* Näytetään elokuvan juliste, jos se löytyy.
           Muussa tapauksessa näytetään ilmoitus puuttuvasta julisteesta. */}
@@ -36,7 +42,7 @@ function MovieCard({ movie }) {
         Arvosana: {movie.vote_average?.toFixed(1) ?? 'Ei tiedossa'}
       </p>
 
-    </div>
+    </Link>
   )
 }
 

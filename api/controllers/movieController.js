@@ -8,7 +8,11 @@ const tmdb = () =>
 
 export const getMovie = async (req, res) => {
   try {
-    const { data } = await tmdb().get(`/movie/${req.params.id}`)
+    const { data } = await tmdb().get(`/movie/${req.params.id}`, {
+      params: {
+        language: 'fi-FI'
+      }
+    })
     res.json(data)
   } catch (err) {
     res.status(err.response?.status || 500).json({ message: err.message })
