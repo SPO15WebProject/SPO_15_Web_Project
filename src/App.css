@@ -141,3 +141,15 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Navigaatio */
+.navbar {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.navbar a.active {
+  text-decoration: underline;
+}
