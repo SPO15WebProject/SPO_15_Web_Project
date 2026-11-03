@@ -1,4 +1,4 @@
-import useMovies from '../../hooks/UseMovies'
+import useMovies from '../../hooks/Usemovies'
 import MovieSection from '../../components/MovieSection/MovieSection'
 
 function PopularPage() {

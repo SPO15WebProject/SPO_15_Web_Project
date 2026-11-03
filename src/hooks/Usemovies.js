@@ -3,7 +3,11 @@ import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-
+/**
+ * Hook joka etsii valitusta TMDB endpointista elokuva datan
+ * @param {*} endpoint tmdb endpoint, e.g ./movies/popular
+ * @returns {*} movies: data obj / loading: onko tiedot ladattu / error: error message 
+ */
 export default function useMovies(endpoint) {
   const [movies, setMovies] = useState([])
   const [loading, setLoading] = useState(true)
@@ -22,7 +26,8 @@ export default function useMovies(endpoint) {
         })
         setMovies(response.data)
       } catch (err) {
-        if (axios.isCancel(err)) return
+        if (axios.isCancel(err)) return /*axios cancel ei oikea error*/
+
         console.error('Elokuvien hakeminen epäonnistui:', err)
         setError('Elokuvien hakeminen epäonnistui.')
       } finally {
