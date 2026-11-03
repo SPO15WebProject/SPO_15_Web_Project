@@ -1,89 +1,125 @@
+
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './App.css'
 
+// Tuodaan komponentti, joka näyttää yhden elokuvan tiedot.
+import MovieCard from './components/MovieCard'
+
 const API_URL = import.meta.env.VITE_API_URL
 
 function App() {
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [movie, setMovie] = useState(null)
-  const [image, setImage] = useState(null)
-  const movieid = 12
+  // Tallennetaan backendistä haetut suositut elokuvat.
+  const [popularMovies, setPopularMovies] = useState([])
 
-  const fetchData = async () => {
-    setLoading(true)
-    setError(null)
+  // Tallennetaan backendistä haetut viikon trendaavat elokuvat.
+  const [trendingMovies, setTrendingMovies] = useState([])
+
+  // Seurataan suosittujen elokuvien lataamista ja mahdollisia virheitä.
+  const [moviesLoading, setMoviesLoading] = useState(true)
+  const [moviesError, setMoviesError] = useState(null)
+
+  // Seurataan trendaavien elokuvien lataamista ja mahdollisia virheitä.
+  const [trendingLoading, setTrendingLoading] = useState(true)
+  const [trendingError, setTrendingError] = useState(null)
+
+  // Haetaan suositut elokuvat backendin kautta TMDB:stä.
+  const fetchPopularMovies = async () => {
+    setMoviesLoading(true)
+    setMoviesError(null)
+
     try {
-      const response = await axios.get(`${API_URL}/`)
-      setData(response.data)
+      // Lähetetään GET-pyyntö backendin elokuvareittiin.
+      const response = await axios.get(`${API_URL}/movies/popular`)
+
+      // Tallennetaan haetut elokuvat Reactin tilaan.
+      setPopularMovies(response.data)
     } catch (err) {
-      setError(err.message)
+      // Näytetään virheilmoitus, jos haku epäonnistuu.
+      console.error('Elokuvien hakeminen epäonnistui:', err)
+      setMoviesError('Elokuvien hakeminen epäonnistui.')
     } finally {
-      setLoading(false)
+      // Lopetetaan lataustila haun valmistuttua.
+      setMoviesLoading(false)
     }
   }
 
-  const fetchMovie = async () => {
+  // Haetaan viikon trendaavat elokuvat backendin kautta TMDB:stä.
+  const fetchTrendingMovies = async () => {
+    setTrendingLoading(true)
+    setTrendingError(null)
+
     try {
-      const res = await axios.get(`${API_URL}/movies/${movieid}`)
-      setMovie(res.data)
+      // Lähetetään GET-pyyntö backendin trending-reittiin.
+      const response = await axios.get(`${API_URL}/movies/trending`)
+
+      // Tallennetaan haetut trendaavat elokuvat Reactin tilaan.
+      setTrendingMovies(response.data)
     } catch (err) {
-      console.log(err.message)
+      // Näytetään virheilmoitus, jos haku epäonnistuu.
+      console.error('Trendaavien elokuvien hakeminen epäonnistui:', err)
+      setTrendingError('Trendaavien elokuvien hakeminen epäonnistui.')
+    } finally {
+      // Lopetetaan lataustila haun valmistuttua.
+      setTrendingLoading(false)
     }
   }
 
-  const fetchImage = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/movies/${movieid}/logo`)
-      setImage(res.data.url)
-    } catch (err) {
-      console.log(err.message)
-    }
-  }
-
+  // Haetaan molemmat elokuvalistat, kun sivu avataan.
   useEffect(() => {
-    fetchData()
-    fetchMovie()
-    fetchImage()
+    fetchPopularMovies()
+    fetchTrendingMovies()
   }, [])
 
   return (
     <>
-      <h1>Docker Sample</h1>
-      <div className="card">
-        {loading && <p>Loading...</p>}
+      <h1>SPO_15</h1>
 
-        {data && (
-          <div style={{ marginTop: '20px', padding: '10px', background: '#f0f0f0' }}>
-            <h3>Data from Backend:</h3>
-            <ul style={{ textAlign: 'left', margin: '10px 0' }}>
-              {data.map((item) => (
-                <li key={item.id} style={{ marginBottom: '10px' }}>
-                  {`ID: ${item.id} - ${item.description}`}
-                </li>
-              ))}
-            </ul>
-          </div>
+      {/* Viikon trendaavien elokuvien osio */}
+      <section>
+        <h2>Trendaavat elokuvat</h2>
+
+        {/* Näytetään ilmoitus lataamisen aikana. */}
+        {trendingLoading && <p>Ladataan trendaavia elokuvia...</p>}
+
+        {/* Näytetään mahdollinen virheilmoitus. */}
+        {trendingError && <p role="alert">{trendingError}</p>}
+
+        {/* Ilmoitetaan, jos trendaavia elokuvia ei löytynyt. */}
+        {!trendingLoading && !trendingError && trendingMovies.length === 0 && (
+          <p>Trendaavia elokuvia ei löytynyt.</p>
         )}
 
-        {error && (
-          <div style={{ marginTop: '20px', padding: '10px', background: '#ffebee', color: 'red' }}>
-            <h3>Error:</h3>
-            <p>{error}</p>
-          </div>
+        {/* Näytetään trendaavat elokuvat yhdellä vaakasuunnassa selattavalla rivillä. */}
+        <div className="trending-slider">
+          {trendingMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </section>
+
+      {/* Suosittujen elokuvien osio */}
+      <section>
+        <h2>Suositut elokuvat</h2>
+
+        {/* Näytetään ilmoitus lataamisen aikana. */}
+        {moviesLoading && <p>Ladataan elokuvia...</p>}
+
+        {/* Näytetään mahdollinen virheilmoitus. */}
+        {moviesError && <p role="alert">{moviesError}</p>}
+
+        {/* Ilmoitetaan, jos elokuvia ei löytynyt. */}
+        {!moviesLoading && !moviesError && popularMovies.length === 0 && (
+          <p>Elokuvia ei löytynyt.</p>
         )}
 
-        {movie && (
-          <div style={{ marginTop: '20px', padding: '10px', background: '#ffabab' }}>
-            <h3>movie:</h3>
-            <h1>{movie.original_title}</h1>
-          </div>
-        )}
-
-        {image && <img src={image} alt={movie?.original_title} />}
-      </div>
+        {/* Näytetään haetut elokuvat responsiivisessa ruudukossa. */}
+        <div className="movie-grid">
+          {popularMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </section>
     </>
   )
 }

@@ -25,3 +25,40 @@ export const getMovieLogo = async (req, res) => {
     res.status(err.response?.status || 500).json({ message: err.message })
   }
 }
+
+
+export const getPopularMovies = async (req, res) => {
+  try {
+    const { data } = await tmdb().get('/movie/popular', {
+      params: {
+        language: 'fi-FI',
+        page: 1
+      }
+    })
+
+    res.json(data.results)
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      message: 'Elokuvien hakeminen epäonnistui'
+    })
+  }
+}
+
+
+/* Haetaan viikon trendaavat elokuvat TMDB:stä. */
+export const getTrendingMovies = async (req, res) => {
+  try {
+    // Haetaan viikon trendaavat elokuvat suomenkielisillä tiedoilla.
+    const { data } = await tmdb().get('/trending/movie/week', {
+      params: { language: 'fi-FI' }
+    })
+
+    // Palautetaan haetut elokuvat frontendille.
+    res.json(data.results)
+  } catch (err) {
+    // Palautetaan virheilmoitus, jos haku epäonnistuu.
+    res.status(err.response?.status || 500).json({
+      message: 'Trendaavien elokuvien hakeminen epäonnistui'
+    })
+  }
+}
