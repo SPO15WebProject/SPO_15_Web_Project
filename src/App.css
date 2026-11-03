@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -38,5 +40,104 @@
 }
 
 .read-the-docs {
-  color: #888;
+  color: rgb(238, 255, 0);
+}
+
+/* Elokuvakorttien ruudukko */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Yksittäisen elokuvakortin ulkoasu */
+.movie-card {
+  background-color:black;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  text-align: left;
+  min-width: 0;
+}
+
+/* Elokuvan juliste */
+.movie-card img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+/* Elokuvan nimi */
+.movie-card h3 {
+  font-size: 1rem;
+  margin: 0.75em;
+  overflow-wrap: anywhere;
+}
+
+/* Julkaisuvuosi ja arvosana */
+.movie-card p {
+  font-size: 0.9rem;
+  margin: 0.5rem 0.75em;
+}
+
+/* Trendaavien elokuvien vaakasuunnassa selattava rivi */
+.trending-slider {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 1rem;
+  max-width: 100%;
+}
+
+/* Trendaavien elokuvien korttien leveys */
+.trending-slider .movie-card {
+  flex: 0 0 13rem;
+  scroll-snap-align: start;
+}
+
+/* Tabletin näyttökoko */
+@media (max-width: 56.25rem) {
+  .movie-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Puhelimen näyttökoko */
+@media (max-width: 37.5rem) {
+  .movie-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  #root {
+    padding: 1rem;
+  }
+
+  .movie-card h3 {
+    font-size: 0.9rem;
+  }
+
+  .movie-card p {
+    font-size: 0.8rem;
+  }
+
+  /* Pienennetään trendaavien elokuvien kortteja puhelimella */
+  .trending-slider {
+    gap: 0.75rem;
+  }
+
+  .trending-slider .movie-card {
+    flex-basis: 10rem;
+  }
+}
+
+/* Erittäin kapeat näytöt */
+@media (max-width: 22.5rem) {
+  .movie-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
