@@ -1,5 +1,5 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
-import useMovie from '../../hooks/UseMovie'
+import useMovies from '../../hooks/Usemovies'
 
 function MovieDetails() {
     // Luetaan elokuvan ID sivun osoitteesta
@@ -7,7 +7,7 @@ function MovieDetails() {
     const location = useLocation()
 
     // Hook hakee elokuvan ja katsoo lataus- ja virhetilan
-    const { movie, loading, error } = useMovie(id)
+    const { movie, loading, error } = useMovies(`/movies/${id}`)
 
     // Kortilta saadut tiedot ovat heti käytettävissä
     const passedMovie = location.state?.movie
