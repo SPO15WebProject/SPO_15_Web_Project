@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - 'main'
-      - 'korjaus/azure-db-ssl'
   workflow_dispatch:
 
 jobs:
