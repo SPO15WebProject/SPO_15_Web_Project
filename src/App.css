@@ -181,3 +181,38 @@
   height: 100%;
   object-fit: contain;
 }
+
+/* Navigoinnin asettelu puhelimella */
+@media (max-width: 37.5rem) {
+
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 1rem;
+    row-gap: 0.75rem;
+  }
+
+  /* Hakukenttä omalle rivilleen */
+  .navbar-search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex-basis: 100%;
+    min-width: 0;
+  }
+
+  /* Hakukenttä mukautuu näytön leveyteen */
+  .navbar-search input {
+    width: 100%;
+    min-width: 0;
+    max-width: 240px;
+    box-sizing: border-box;
+  }
+
+  /* Hakupainike pysyy hakukentän vieressä */
+  .navbar-search button {
+    flex-shrink: 0;
+  }
+}
