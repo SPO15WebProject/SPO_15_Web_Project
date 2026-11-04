@@ -10,7 +10,9 @@ export const getMovie = async (req, res) => {
   try {
     const { data } = await tmdb().get(`/movie/${req.params.id}`, {
       params: {
-        language: 'fi-FI'
+        language: 'fi-FI',
+        // Haetaan näyttelijätiedot
+        append_to_response: 'credits'
       }
     })
     res.json(data)
