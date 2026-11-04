@@ -7,7 +7,7 @@ function MovieDetails() {
     const location = useLocation()
 
     // Hook hakee elokuvan ja katsoo lataus- ja virhetilan
-    const { movie, loading, error } = useMovies(`/movies/${id}`)
+    const { movies: movie, loading, error } = useMovies(`/movies/${id}`)
 
     // Kortilta saadut tiedot ovat heti käytettävissä
     const passedMovie = location.state?.movie
