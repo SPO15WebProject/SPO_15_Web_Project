@@ -12,7 +12,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use('/', testRouter)
+app.use('/api/tests', testRouter)
 app.use('/movies', movieRoutes)
 
 // Health check endpoint for database connectivity
