@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL
-
 /**
  * Hook joka etsii valitusta TMDB endpointista elokuva datan
  * @param {*} endpoint tmdb endpoint, e.g ./movies/popular
@@ -21,9 +19,10 @@ export default function useMovies(endpoint) {
       setError(null)
 
       try {
-        const response = await axios.get(`${API_URL}${endpoint}`, {
+        const response = await axios.get(endpoint, {
           signal: controller.signal,
         })
+        console.log(response.data)
         setMovies(response.data)
       } catch (err) {
         if (axios.isCancel(err)) return /*axios cancel ei oikea error*/
