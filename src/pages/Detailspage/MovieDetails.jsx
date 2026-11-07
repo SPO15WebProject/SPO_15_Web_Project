@@ -65,7 +65,7 @@ function MovieDetails() {
           <h2>Kuvaus</h2>
 
           <p>
-             {fetchedMovie?.overview || "Kuvausta ei saatavilla"}
+             {displayedMovie?.overview || "Kuvausta ei saatavilla"}
           </p>
 
           {fetchedMovie && (
