@@ -62,6 +62,12 @@ function MovieDetails() {
             Arvosana: {displayedMovie.vote_average?.toFixed(1) ?? "Ei tiedossa"}
           </p>
 
+          <h2>Kuvaus</h2>
+
+          <p>
+             {fetchedMovie?.overview || "Kuvausta ei saatavilla"}
+          </p>
+
           {fetchedMovie && (
             <>
               {/* Genret erotettu pilkuilla. */}
