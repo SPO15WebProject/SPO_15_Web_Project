@@ -1,5 +1,6 @@
 import { Link, useLocation, useParams } from "react-router-dom";
 import useMovies from "../../hooks/Usemovies";
+import "./MovieDetails.css";
 
 function MovieDetails() {
   // Luetaan elokuvan ID sivun osoitteesta
@@ -37,22 +38,26 @@ function MovieDetails() {
 
       {/* näytetään tiedot onnistuneen haun jälkeen */}
       {displayedMovie && (
-        <>
-          <h1>{displayedMovie.title}</h1>
+          <div className="movie-header">
 
-          {/* Julisteen tila varattu ennen latautumista */}
-          <div className="movie-details-poster">
-            {posterUrl ? (
-              <img
-                src={posterUrl}
-                alt={displayedMovie.title}
-                width="500"
-                height="750"
-              />
-            ) : (
+      {/* Juliste vasemmalla */}
+        <div className="movie-details-poster">
+      {posterUrl ? (
+        <img
+          src={posterUrl}
+          alt={displayedMovie.title}
+          width="500"
+          height="750"
+        />
+
+        ) : (
               <p>Juliste puuttuu</p>
             )}
           </div>
+
+          {/* Tiedot oikealla */}
+         <div className="movie-meta">
+         <h1>{displayedMovie.title}</h1>
 
           <p>
             Vuosi: {displayedMovie.release_date?.slice(0, 4) || "Ei tiedossa"}
@@ -96,7 +101,8 @@ function MovieDetails() {
               </p>
             </>
           )}
-        </>
+        </div>
+      </div>
       )}
     </section>
   );
