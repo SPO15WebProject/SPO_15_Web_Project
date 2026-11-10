@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url'
 import errorHandler from './middleware/errorHandler.js'
 import testRouter from './routes/testRouter.js'
 import movieRoutes from './routes/movieRoutes.js'
+import dbRoutes from './routes/dbRoutes.js'
+
 const port = process.env.PORT || 3000
 
 const __filename = fileURLToPath(import.meta.url)
@@ -19,6 +21,7 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use('/api/tests', testRouter)
 app.use('/movies', movieRoutes)
+app.use('/api/db', dbRoutes)
 
 // Health check endpoint for database connectivity
 app.get('/api/health', async (req, res) => {
