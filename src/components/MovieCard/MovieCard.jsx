@@ -5,28 +5,26 @@ import { Link } from 'react-router-dom'
 function MovieCard({ movie }) {
 
   // Muodostetaan elokuvan julisteen URL-osoite.
-  // TMDB palauttaa poster_path-arvon, joka on vain kuvan polku.
-  // Lisäämme sen eteen TMDB:n kuvapalvelimen osoitteen.
-  // Jos julistetta ei ole, posterUrl saa arvon null.
+  // Jos elokuvalla ei ole julistetta, posterUrl on null.
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : null
 
-  // Yhden elokuvakortin sisältävä elementti.
-  // movie-card-luokkaa käytetään myöhemmin CSS-tyylittelyssä.
-  // välitetään kortin tiedot suoraan myös tarkastelusivulle näytettäväksi
   return (
-    <Link 
-    to={`/movies/${movie.id}`}
-    state={{ movie }} 
-    className="movie-card">
+    <Link
+      to={`/movies/${movie.id}`}
+      state={{ movie }}
+      className="movie-card"
+    >
 
-      {/* Näytetään elokuvan juliste, jos se löytyy.
-          Muussa tapauksessa näytetään ilmoitus puuttuvasta julisteesta. */}
+      {/* Jos juliste löytyy, näytetään se normaalisti.
+          Muuten näytetään samankokoinen placeholder. */}
       {posterUrl ? (
         <img src={posterUrl} alt={movie.title} />
       ) : (
-        <p>Juliste puuttuu</p>
+        <div className="movie-placeholder">
+          <span>Ei julistekuvaa</span>
+        </div>
       )}
 
       {/* Elokuvan nimi */}
