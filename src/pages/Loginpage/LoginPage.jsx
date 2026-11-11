@@ -18,6 +18,13 @@ function LoginPage() {
                 }
             )
 
+            localStorage.setItem(
+                'user',
+                JSON.stringify(response.data)
+            )
+
+            window.location.reload()
+
             setMessage('Kirjautuminen onnistui!')
             console.log(response.data)
         } catch (error) {

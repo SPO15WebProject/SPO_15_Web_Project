@@ -14,72 +14,67 @@ function Navbar() {
 
   const navigate = useNavigate()
 
-  // Viittaus hakulomakkeeseen ulkopuolisten klikkausten tunnistamista varten.
-  const searchRef = useRef(null)
+const user = JSON.parse(localStorage.getItem('user'))
 
-  // Suljetaan ehdotukset, kun käyttäjä klikkaa hakulomakkeen ulkopuolelle.
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Tarkistetaan, tapahtuiko klikkaus lomakkeen ulkopuolella.
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowSuggestions(false)
+const logout = () => {
+  localStorage.removeItem('user')
+  window.location.reload()
+}
+
+// Viittaus hakulomakkeeseen ulkopuolisten klikkausten tunnistamista varten.
+const searchRef = useRef(null)
+
+// Suljetaan ehdotukset, kun käyttäjä klikkaa hakulomakkeen ulkopuolelle.
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (searchRef.current && !searchRef.current.contains(event.target)) {
+      setShowSuggestions(false)
+    }
+  }
+
+  document.addEventListener('mousedown', handleClickOutside)
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside)
+  }
+}, [])
+
+// Haetaan elokuvaehdotuksia käyttäjän kirjoittaessa hakukenttään.
+useEffect(() => {
+  const query = searchText.trim()
+
+  if (query.length < 2) {
+    setSuggestions([])
+    return
+  }
+
+  const controller = new AbortController()
+
+  const timer = setTimeout(async () => {
+    try {
+      const response = await axios.get(
+        `/movies/search?query=${encodeURIComponent(query)}`,
+        { signal: controller.signal }
+      )
+
+      if (Array.isArray(response.data)) {
+        setSuggestions(response.data.slice(0, 5))
+      } else {
+        setSuggestions([])
+      }
+    } catch (error) {
+      if (!axios.isCancel(error) && !controller.signal.aborted) {
+        console.error('Hakuehdotusten lataus epäonnistui:', error)
+        setSuggestions([])
       }
     }
+  }, 10)
 
-    // Kuunnellaan hiiren klikkauksia koko sivulla.
-    document.addEventListener('mousedown', handleClickOutside)
-
-    // Poistetaan tapahtumankuuntelija, kun komponentti poistuu käytöstä.
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
-
-  // Haetaan elokuvaehdotuksia käyttäjän kirjoittaessa hakukenttään.
-  useEffect(() => {
-    const query = searchText.trim()
-
-    // Alle kahden merkin hakusanalla ei haeta ehdotuksia.
-    if (query.length < 2) {
-      setSuggestions([])
-      return
-    }
-
-    // Mahdollistaa vanhan API-pyynnön peruuttamisen.
-    const controller = new AbortController()
-
-    // Odotetaan 10 ms, ettei jokainen näppäinpainallus
-    // aiheuta uutta API-pyyntöä.
-    const timer = setTimeout(async () => {
-      try {
-        const response = await axios.get(
-          `/movies/search?query=${encodeURIComponent(query)}`,
-          { signal: controller.signal }
-        )
-
-        // Varmistetaan, että vastaus on elokuvataulukko.
-        if (Array.isArray(response.data)) {
-          // Näytetään korkeintaan viisi elokuvaehdotusta.
-          setSuggestions(response.data.slice(0, 5))
-        } else {
-          setSuggestions([])
-        }
-      } catch (error) {
-        // Peruutettua pyyntöä ei käsitellä virheenä.
-        if (!axios.isCancel(error) && !controller.signal.aborted) {
-          console.error('Hakuehdotusten lataus epäonnistui:', error)
-          setSuggestions([])
-        }
-      }
-    }, 10)
-
-    // Peruutetaan ajastin ja vanha pyyntö,
-    // jos käyttäjä jatkaa kirjoittamista.
-    return () => {
-      clearTimeout(timer)
-      controller.abort()
-    }
-  }, [searchText])
+  return () => {
+    clearTimeout(timer)
+    controller.abort()
+  }
+}, [searchText])
 
   // Siirrytään hakutulossivulle käyttäjän antamalla hakusanalla.
   const handleSearch = (event) => {
@@ -173,7 +168,27 @@ function Navbar() {
           </div>
         )}
       </form>
-    </nav>
+
+      {user ? (
+        <>
+        <span>Tervetuloa, {user.nickname}</span>
+
+        <button onClick={logout}>
+          Kirjaudu ulos
+        </button>
+        </>
+      ) : (
+        <>
+        <NavLink to="/login">
+        Kirjaudu sisään
+        </NavLink>
+
+        <NavLink to="/register">
+        Rekisteröidy
+        </NavLink>
+        </>
+    )}
+  </nav>
   )
 }
 
