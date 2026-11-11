@@ -28,6 +28,12 @@ export const CreateUser = async (req, res) => {
         return res.status(400).json({ error: 'Nickname, email, and password are required' });
     }
 
+    if (password.length <8) {
+        return res.status(400).json({
+            error: 'Salasanan tulee olla vähintään 8 merkkiä pitkä'
+        });
+    }
+
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -202,6 +208,12 @@ export const UpdatePassword = async (req, res) => {
 
     if (!newPassword) {
         return res.status(400).json({ error: 'New password is required' });
+    }
+
+    if (newPassword.length <8) {
+        return res.status(400).json({
+            error: 'Salasanan tulee olla vähintään 8 merkkiä pitkä.'
+        });
     }
 
     try {
