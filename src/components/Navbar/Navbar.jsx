@@ -42,7 +42,7 @@ function Navbar() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }
+  }, [])
 
   // Haetaan automaattisia ehdotuksia vain elokuvahaussa.
   useEffect(() => {
@@ -54,7 +54,7 @@ function Navbar() {
       return
     }
 
-    // Mahdollistaa vanhan API-pyynnön peruuttamisen.
+    // Mahdollistaa API-pyynnön peruuttamisen.
     const controller = new AbortController()
 
     // Odotetaan hetki ennen API-kutsua.
@@ -84,30 +84,9 @@ function Navbar() {
       }
     }, 150)
 
-  if (query.length < 2) {
-    setSuggestions([])
-    return
-  }
-
-  const controller = new AbortController()
-
-  const timer = setTimeout(async () => {
-    try {
-      const response = await axios.get(
-        `/movies/search?query=${encodeURIComponent(query)}`,
-        { signal: controller.signal }
-      )
-
-      if (Array.isArray(response.data)) {
-        setSuggestions(response.data.slice(0, 5))
-      } else {
-        setSuggestions([])
-      }
-    } catch (error) {
-      if (!axios.isCancel(error) && !controller.signal.aborted) {
-        console.error('Hakuehdotusten lataus epäonnistui:', error)
-        setSuggestions([])
-      }
+    return () => {
+      clearTimeout(timer)
+      controller.abort()
     }
   }, [searchText, searchType])
 
