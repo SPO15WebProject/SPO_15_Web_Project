@@ -41,7 +41,11 @@ describe('Elokuvien hakutoiminto', () => {
     ]
 
     mockGet.mockResolvedValue({
-      data: { results: movies }
+      data: {
+        results: movies,
+        page: 1,
+        total_pages: 5
+      }
     })
 
     await searchMovies(req, res)
@@ -54,7 +58,11 @@ describe('Elokuvien hakutoiminto', () => {
       }
     })
 
-    expect(res.json).toHaveBeenCalledWith(movies)
+    expect(res.json).toHaveBeenCalledWith({
+      results: movies,
+      page: 1,
+      total_pages: 5
+    })
   })
 
   it('palauttaa virheen, jos hakusana on tyhjä', async () => {
@@ -75,12 +83,20 @@ describe('Elokuvien hakutoiminto', () => {
     req.query.query = 'xyzabc123456789'
 
     mockGet.mockResolvedValue({
-      data: { results: [] }
+      data: {
+        results: [],
+        page: 1,
+        total_pages: 0
+      }
     })
 
     await searchMovies(req, res)
 
-    expect(res.json).toHaveBeenCalledWith([])
+    expect(res.json).toHaveBeenCalledWith({
+      results: [],
+      page: 1,
+      total_pages: 0
+    })
   })
 
   it('palauttaa virheilmoituksen, jos TMDB-haku epäonnistuu', async () => {
