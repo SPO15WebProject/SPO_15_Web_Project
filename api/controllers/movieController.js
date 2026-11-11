@@ -10,7 +10,9 @@ export const getMovie = async (req, res) => {
   try {
     const { data } = await tmdb().get(`/movie/${req.params.id}`, {
       params: {
-        language: 'fi-FI'
+        language: 'fi-FI',
+        // Haetaan näyttelijätiedot
+        append_to_response: 'credits'
       }
     })
     res.json(data)
@@ -63,6 +65,39 @@ export const getTrendingMovies = async (req, res) => {
     // Palautetaan virheilmoitus, jos haku epäonnistuu.
     res.status(err.response?.status || 500).json({
       message: 'Trendaavien elokuvien hakeminen epäonnistui'
+    })
+  }
+}
+
+
+/* Haetaan elokuvia TMDB:stä käyttäjän antamalla hakusanalla. */
+export const searchMovies = async (req, res) => {
+  try {
+    // Luetaan hakusana URL-osoitteen query-parametrista.
+    const query = req.query.query?.trim()
+
+    // Jos hakusana puuttuu, palautetaan virheilmoitus.
+    if (!query) {
+      return res.status(400).json({
+        message: 'Hakusana puuttuu'
+      })
+    }
+
+    // Haetaan hakusanaa vastaavat elokuvat TMDB:stä.
+    const { data } = await tmdb().get('/search/movie', {
+      params: {
+        query,
+        language: 'fi-FI',
+        page: 1
+      }
+    })
+
+    // Palautetaan hakutulokset frontendille.
+    res.json(data.results)
+  } catch (err) {
+    // Palautetaan virheilmoitus, jos haku epäonnistuu.
+    res.status(err.response?.status || 500).json({
+      message: 'Elokuvien hakeminen epäonnistui'
     })
   }
 }

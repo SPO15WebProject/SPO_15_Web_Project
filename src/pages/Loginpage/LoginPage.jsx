@@ -1,0 +1,66 @@
+import { useState } from 'react'
+import axios from 'axios'
+
+function LoginPage() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [message, setMessage] = useState('')
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        try {
+            const response = await axios.post(
+                'http://localhost:3000/api/db/Login',
+                {
+                    email,
+                    password
+                }
+            )
+
+            setMessage('Kirjautuminen onnistui!')
+            console.log(response.data)
+        } catch (error) {
+            console.log(error)
+
+            setMessage(
+                error.response?.data?.error ||
+                'Kirjautuminen epäonnistui.'
+            )
+        }
+    }
+     
+    return (
+        <div>
+            <h2>Kirjaudu sisään</h2>
+
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>Sähköposti</label>
+                    <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <label>Salasana</label>
+                    <input 
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    />
+                </div>
+
+                <button type="submit">
+                    Kirjaudu sisään
+                </button>
+            </form>
+
+            {message && <p>{message}</p>}
+        </div>
+    )
+}
+
+    export default LoginPage

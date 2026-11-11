@@ -1,10 +1,17 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import path from 'path' 
+import { fileURLToPath } from 'url'
 import errorHandler from './middleware/errorHandler.js'
 import testRouter from './routes/testRouter.js'
 import movieRoutes from './routes/movieRoutes.js'
+import dbRoutes from './routes/dbRoutes.js'
+
 const port = process.env.PORT || 3000
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 
@@ -12,8 +19,9 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use('/', testRouter)
+app.use('/api/tests', testRouter)
 app.use('/movies', movieRoutes)
+app.use('/api/db', dbRoutes)
 
 // Health check endpoint for database connectivity
 app.get('/api/health', async (req, res) => {
@@ -35,7 +43,15 @@ app.get('/api/health', async (req, res) => {
   }
 })
 
+app.use(express.static(path.join(__dirname, '../dist')))
 
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next()
+  }
+
+  res.sendFile(path.join(__dirname, '../dist/index.html'))
+})
 
 app.use((req, res, next) => {
   const error = new Error('Not found')
