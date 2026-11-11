@@ -5,6 +5,13 @@ function Navbar() {
   const [searchText, setSearchText] = useState('')
   const navigate = useNavigate()
 
+  const user = JSON.parse(localStorage.getItem('user'))
+
+  const logout = () => {
+    localStorage.removeItem('user')
+    window.location.reload()
+  }
+
   // Siirrytään hakutulossivulle käyttäjän antamalla hakusanalla.
   const handleSearch = (event) => {
     event.preventDefault()
@@ -39,7 +46,27 @@ function Navbar() {
         />
         <button type="submit">Hae</button>
       </form>
-    </nav>
+
+      {user ? (
+        <>
+        <span>Tervetuloa, {user.nickname}</span>
+
+        <button onClick={logout}>
+          Kirjaudu ulos
+        </button>
+        </>
+      ) : (
+        <>
+        <NavLink to="/login">
+        Kirjaudu sisään
+        </NavLink>
+
+        <NavLink to="/register">
+        Rekisteröidy
+        </NavLink>
+        </>
+      )}
+  </nav>
   )
 }
 
