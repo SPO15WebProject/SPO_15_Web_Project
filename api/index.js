@@ -18,7 +18,10 @@ const app = express()
 
 //Sallitaan frontendin lähettää ja vastaanottaa cookieita. 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'https://spo15web-app-bvc0g0e3faemgxav.swedencentral-01.azurewebsites.net'
+  ],
   credentials: true
 }))
 
