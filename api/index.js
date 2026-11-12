@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import path from 'path' 
 import { fileURLToPath } from 'url'
 import errorHandler from './middleware/errorHandler.js'
@@ -15,9 +16,15 @@ const __dirname = path.dirname(__filename)
 
 const app = express()
 
-app.use(cors())
+//Sallitaan frontendin lähettää ja vastaanottaa cookieita. 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}))
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
 
 app.use('/api/tests', testRouter)
 app.use('/movies', movieRoutes)

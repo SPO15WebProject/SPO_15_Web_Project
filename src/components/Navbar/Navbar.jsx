@@ -18,13 +18,27 @@ function Navbar() {
   // Viittaus hakulomakkeeseen ulkopuolisten klikkausten tunnistamista varten.
   const searchRef = useRef(null)
 
-  // Säilytetään nykyiset kirjautumistoiminnot.
-  const user = JSON.parse(localStorage.getItem('user'))
+// Säilytetään nykyiset kirjautumistoiminnot.
+const user = JSON.parse(localStorage.getItem('user'))
 
-  const logout = () => {
+// Poistetaan JWT-cookie backendistä ja paikallinen käyttäjätieto selaimesta.
+const logout = async () => {
+  try {
+    await axios.post(
+      'http://localhost:3000/api/db/Logout',
+      {},
+      {
+        withCredentials: true
+      }
+    )
+
     localStorage.removeItem('user')
     window.location.reload()
+  } catch (error) {
+    console.error(error)
   }
+}
+
 
   // Suljetaan ehdotukset, kun klikataan hakulomakkeen ulkopuolelle.
   useEffect(() => {
