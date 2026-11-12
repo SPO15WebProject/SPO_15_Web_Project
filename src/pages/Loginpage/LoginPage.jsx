@@ -15,8 +15,12 @@ function LoginPage() {
                 {
                     email,
                     password
+                },
+                {
+                    withCredentials:true //Sallitaan backendin asettaa JWT-cookie kirjautumisen yhetydessä.
                 }
             )
+
 
             localStorage.setItem(
                 'user',

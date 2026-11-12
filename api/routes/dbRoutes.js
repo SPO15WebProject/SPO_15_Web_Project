@@ -4,6 +4,7 @@ import {
     CreateUser,
     GetUserByEmail,
     LoginUser,
+    LogoutUser,
     DeleteUser,
     UpdateEmail,
     UpdateNickname,
@@ -18,12 +19,15 @@ import {
     GetAllGroups
 } from "../controllers/groupController.js";
 
+import authMiddleware from "../middleware/authMiddleware.js";
+
 const router = Router()
 
 router.get('/GetAllUsers', GetAllUsers)
 router.post('/CreateUser', CreateUser)
 router.post('/GetUserByEmail', GetUserByEmail)
 router.post('/Login', LoginUser)
+router.post('/Logout', LogoutUser)
 router.delete('/DeleteUser/:userId', DeleteUser)
 router.put('/UpdateEmail/:userId', UpdateEmail)
 router.put('/UpdateNickname/:userId', UpdateNickname)
@@ -35,5 +39,13 @@ router.delete('/RemoveGroupMember', RemoveGroupMember)
 router.delete('/DeleteGroup/:groupId', DeleteGroup)
 router.get('/GetGroupById/:groupId', GetGroupById)
 router.get('/GetAllGroups', GetAllGroups)
+
+//Testireitti JWT-autentikoinnin toiminnan tarkistamiseen.
+router.get('/Me', authMiddleware, (req, res) => {
+    res.status(200).json({
+        success: true,
+        user: req.user
+    })
+})
 
 export default router;

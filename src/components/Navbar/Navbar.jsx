@@ -16,9 +16,22 @@ function Navbar() {
 
 const user = JSON.parse(localStorage.getItem('user'))
 
-const logout = () => {
-  localStorage.removeItem('user')
-  window.location.reload()
+//Poistetaan JWT-cookie backendistä ja paikallinen käyttäjätieto selaimesta.
+const logout = async () => {
+  try {
+    await axios.post(
+      'http://localhost:3000/api/db/Logout',
+      {},
+      {
+        withCredentials: true
+      }
+    )
+
+    localStorage.removeItem('user')
+    window.location.reload()
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 // Viittaus hakulomakkeeseen ulkopuolisten klikkausten tunnistamista varten.

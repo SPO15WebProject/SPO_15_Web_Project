@@ -9,6 +9,7 @@ import {
     updateUserPassword
 } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
+import jwt from 'jsonwebtoken'
 
 // GET /GetAllUsers 
 export const GetAllUsers = async (req, res) => {
@@ -102,6 +103,26 @@ export const LoginUser = async (req, res) => {
             });
         }
 
+        //Luodaan kirjautuneelle käyttäjälle JWT-token.
+        const token = jwt.sign(
+            {
+                userid: user.userid,
+                email: user.email
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: '7d'
+            }
+        );
+
+        //Tallennetaan JWT-token httpOnly-cookieen.
+        //Selain lähettää cookien automaattisesti tulevissa pyynnöissä.
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: false
+        });
+
         res.status(200).json({
             success: true,
             userid: user.userid,
@@ -117,6 +138,16 @@ export const LoginUser = async (req, res) => {
         });
     }
 };
+
+//Poistetaan JWT-cookie uloskirjautumisen yhteydessä.
+export const LogoutUser = async (req, res) => {
+    res.clearCookie('token');
+
+    res.status(200).json({
+        success: true,
+        message: 'Uloskirjautuminen onnistui.'
+    });
+}
 
 const authenticateUser = async (userId, password, res) => {
     if (!password) {
