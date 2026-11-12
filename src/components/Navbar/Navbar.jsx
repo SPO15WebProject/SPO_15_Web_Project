@@ -3,19 +3,22 @@ import axios from 'axios'
 import { NavLink, useNavigate } from 'react-router-dom'
 
 function Navbar() {
-  // Tallennetaan käyttäjän hakukenttään kirjoittama teksti.
+  // Käyttäjän kirjoittama hakuteksti.
   const [searchText, setSearchText] = useState('')
 
-  // Tallennetaan backendiltä saadut elokuvaehdotukset.
-  const [suggestions, setSuggestions] = useState([])
+  // Hakutapa: movie = elokuva, actor = näyttelijä.
+  const [searchType, setSearchType] = useState('movie')
 
-  // Määrittää, näytetäänkö hakuehdotukset käyttäjälle.
+  // Elokuvahaun automaattiset ehdotukset.
+  const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
 
   const navigate = useNavigate()
 
-const user = JSON.parse(localStorage.getItem('user'))
+  // Viittaus hakulomakkeeseen ulkopuolisten klikkausten tunnistamista varten.
+  const searchRef = useRef(null)
 
+<<<<<<< HEAD
 //Poistetaan JWT-cookie backendistä ja paikallinen käyttäjätieto selaimesta.
 const logout = async () => {
   try {
@@ -33,61 +36,87 @@ const logout = async () => {
     console.error(error)
   }
 }
+=======
+  // Säilytetään nykyiset kirjautumistoiminnot.
+  const user = JSON.parse(localStorage.getItem('user'))
+>>>>>>> main
 
-// Viittaus hakulomakkeeseen ulkopuolisten klikkausten tunnistamista varten.
-const searchRef = useRef(null)
+  const logout = () => {
+    localStorage.removeItem('user')
+    window.location.reload()
+  }
 
-// Suljetaan ehdotukset, kun käyttäjä klikkaa hakulomakkeen ulkopuolelle.
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (searchRef.current && !searchRef.current.contains(event.target)) {
-      setShowSuggestions(false)
+  // Suljetaan ehdotukset, kun klikataan hakulomakkeen ulkopuolelle.
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false)
+      }
     }
-  }
 
-  document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside)
 
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside)
-  }
-}, [])
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
-// Haetaan elokuvaehdotuksia käyttäjän kirjoittaessa hakukenttään.
-useEffect(() => {
-  const query = searchText.trim()
+  // Haetaan automaattisia ehdotuksia vain elokuvahaussa.
+  useEffect(() => {
+    const query = searchText.trim()
 
-  if (query.length < 2) {
+    // Näyttelijätilassa ei käytetä elokuvien nimiehdotuksia.
+    if (searchType !== 'movie' || query.length < 2) {
+      setSuggestions([])
+      return
+    }
+
+    // Mahdollistaa API-pyynnön peruuttamisen.
+    const controller = new AbortController()
+
+    // Odotetaan hetki ennen API-kutsua.
+    const timer = setTimeout(async () => {
+      try {
+        const response = await axios.get(
+          `/movies/search?query=${encodeURIComponent(query)}`,
+          { signal: controller.signal }
+        )
+
+        if (!controller.signal.aborted) {
+          // Hakutulokset löytyvät results-kentästä.
+          setSuggestions(
+            Array.isArray(response.data.results)
+              ? response.data.results.slice(0, 5)
+              : []
+          )
+        }
+      } catch (error) {
+        if (!axios.isCancel(error) && !controller.signal.aborted) {
+          console.error(
+            'Hakuehdotusten lataus epäonnistui:',
+            error
+          )
+          setSuggestions([])
+        }
+      }
+    }, 150)
+
+    return () => {
+      clearTimeout(timer)
+      controller.abort()
+    }
+  }, [searchText, searchType])
+
+  // Vaihdetaan elokuvahaun ja näyttelijähaun välillä.
+  const handleSearchTypeChange = (event) => {
+    setSearchType(event.target.value)
+    setSearchText('')
     setSuggestions([])
-    return
+    setShowSuggestions(false)
   }
-
-  const controller = new AbortController()
-
-  const timer = setTimeout(async () => {
-    try {
-      const response = await axios.get(
-        `/movies/search?query=${encodeURIComponent(query)}`,
-        { signal: controller.signal }
-      )
-
-      if (Array.isArray(response.data)) {
-        setSuggestions(response.data.slice(0, 5))
-      } else {
-        setSuggestions([])
-      }
-    } catch (error) {
-      if (!axios.isCancel(error) && !controller.signal.aborted) {
-        console.error('Hakuehdotusten lataus epäonnistui:', error)
-        setSuggestions([])
-      }
-    }
-  }, 10)
-
-  return () => {
-    clearTimeout(timer)
-    controller.abort()
-  }
-}, [searchText])
 
   // Siirrytään hakutulossivulle käyttäjän antamalla hakusanalla.
   const handleSearch = (event) => {
@@ -95,16 +124,21 @@ useEffect(() => {
 
     const query = searchText.trim()
 
-    // Tyhjällä hakusanalla ei käynnistetä hakua.
     if (!query) return
 
-    // Piilotetaan ehdotukset ennen sivulle siirtymistä.
     setShowSuggestions(false)
 
-    navigate(`/search?query=${encodeURIComponent(query)}`)
+    const params = new URLSearchParams()
+    params.set('query', query)
+
+    if (searchType === 'actor') {
+      params.set('type', 'actor')
+    }
+
+    navigate(`/search?${params.toString()}`)
   }
 
-  // Avataan käyttäjän valitseman elokuvan tietosivu.
+  // Avataan elokuva hakuehdotuksesta.
   const handleSuggestionClick = (movie) => {
     setShowSuggestions(false)
     setSearchText(movie.title)
@@ -120,8 +154,7 @@ useEffect(() => {
       <NavLink to="/trending">Trendaavat</NavLink>
       <NavLink to="/popular">Suositut</NavLink>
 
-      {/* Hakukenttä näkyy kaikilla sivuilla. */}
-      {/* transform säätää hakukentän pystysuuntaista sijaintia. */}
+      {/* Hakulomake */}
       <form
         ref={searchRef}
         onSubmit={handleSearch}
@@ -131,6 +164,18 @@ useEffect(() => {
           position: 'relative'
         }}
       >
+        {/* Valitaan, haetaanko elokuvaa vai näyttelijää. */}
+        <select
+          value={searchType}
+          onChange={handleSearchTypeChange}
+          aria-label="Valitse hakutapa"
+          className="search-type-select"
+        >
+          <option value="movie">Elokuva</option>
+          <option value="actor">Näyttelijä</option>
+        </select>
+
+        {/* Hakuteksti */}
         <input
           type="search"
           value={searchText}
@@ -139,69 +184,78 @@ useEffect(() => {
             setShowSuggestions(true)
           }}
           onFocus={() => setShowSuggestions(true)}
-          placeholder="Hae elokuvia..."
-          aria-label="Hae elokuvia"
+          placeholder={
+            searchType === 'actor'
+              ? 'Hae näyttelijää...'
+              : 'Hae elokuvia...'
+          }
+          aria-label={
+            searchType === 'actor'
+              ? 'Hae näyttelijän nimellä'
+              : 'Hae elokuvan nimellä'
+          }
           autoComplete="off"
         />
 
         <button type="submit">Hae</button>
 
-        {/* Näytetään ehdotukset vain, jos niitä on saatavilla. */}
-        {showSuggestions && suggestions.length > 0 && (
-          <div className="search-suggestions">
-
-            {/* Luodaan jokaiselle ehdotetulle elokuvalle oma painike. */}
-            {suggestions.map((movie) => (
-              <button
-                key={movie.id}
-                type="button"
-                className="search-suggestion"
-                onClick={() => handleSuggestionClick(movie)}
-              >
-                {/* Näytetään elokuvan juliste, jos sellainen löytyy. */}
-                {movie.poster_path && (
-                  <img
-                    src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
-                    alt=""
-                  />
-                )}
-
-                {/* Näytetään elokuvan nimi ja julkaisuvuosi. */}
-                <span>
-                  {movie.title}
-
-                  {movie.release_date && (
-                    <small>
-                      {' '}({movie.release_date.slice(0, 4)})
-                    </small>
+        {/* Elokuvahaun automaattiset ehdotukset */}
+        {searchType === 'movie' &&
+          showSuggestions &&
+          suggestions.length > 0 && (
+            <div className="search-suggestions">
+              {suggestions.map((movie) => (
+                <button
+                  key={movie.id}
+                  type="button"
+                  className="search-suggestion"
+                  onClick={() => handleSuggestionClick(movie)}
+                >
+                  {/* Elokuvan pieni juliste */}
+                  {movie.poster_path && (
+                    <img
+                      src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                      alt=""
+                    />
                   )}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
+
+                  {/* Elokuvan nimi ja julkaisuvuosi */}
+                  <span>
+                    {movie.title}
+
+                    {movie.release_date && (
+                      <small>
+                        {' '}({movie.release_date.slice(0, 4)})
+                      </small>
+                    )}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
       </form>
 
+      {/* Kirjautumistoiminnot */}
       {user ? (
         <>
-        <span>Tervetuloa, {user.nickname}</span>
+          <span>Tervetuloa, {user.nickname}</span>
 
-        <button onClick={logout}>
-          Kirjaudu ulos
-        </button>
+          <button onClick={logout}>
+            Kirjaudu ulos
+          </button>
         </>
       ) : (
         <>
-        <NavLink to="/login">
-        Kirjaudu sisään
-        </NavLink>
+          <NavLink to="/login">
+            Kirjaudu sisään
+          </NavLink>
 
-        <NavLink to="/register">
-        Rekisteröidy
-        </NavLink>
+          <NavLink to="/register">
+            Rekisteröidy
+          </NavLink>
         </>
-    )}
-  </nav>
+      )}
+    </nav>
   )
 }
 
