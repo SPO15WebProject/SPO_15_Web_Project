@@ -11,7 +11,7 @@ function LoginPage() {
 
         try {
             const response = await axios.post(
-                'http://localhost:3000/api/db/Login',
+                '/api/db/Login',
                 {
                     email,
                     password

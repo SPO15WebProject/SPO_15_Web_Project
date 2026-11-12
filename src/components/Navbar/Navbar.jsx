@@ -25,7 +25,7 @@ const user = JSON.parse(localStorage.getItem('user'))
 const logout = async () => {
   try {
     await axios.post(
-      'http://localhost:3000/api/db/Logout',
+      '/api/db/Logout',
       {},
       {
         withCredentials: true
