@@ -4,7 +4,7 @@ import axios from 'axios'
 import MovieSection from '../../components/MovieSection/MovieSection'
 
 // Komponentti, joka hakee tuloksia sivu kerrallaan.
-function SearchResults({ query, type }) {
+function SearchResults({ query, type, genre }) {
 
   // Hakutulokset ja sivutustiedot.
   const [movies, setMovies] = useState([])
@@ -16,11 +16,14 @@ function SearchResults({ query, type }) {
   const [error, setError] = useState(null)
 
   const isActorSearch = type === 'actor'
+  const isGenreSearch = type === 'genre'
 
   // Valitaan oikea backend-reitti.
-  const searchPath = isActorSearch
-    ? '/movies/search/actor'
-    : '/movies/search'
+  const searchPath = isGenreSearch
+    ? '/movies/search/genre'
+    : isActorSearch
+      ? '/movies/search/actor'
+      : '/movies/search'
 
   useEffect(() => {
     const controller = new AbortController()
@@ -30,12 +33,15 @@ function SearchResults({ query, type }) {
       setError(null)
 
       try {
+        // Genrehaussa käytetään genren tunnistetta,
+        // muissa hakutavoissa hakusanaa.
+        const params = isGenreSearch
+          ? { genre, page }
+          : { query, page }
+
         // Haetaan vain haluttu tulossivu.
         const response = await axios.get(searchPath, {
-          params: {
-            query,
-            page
-          },
+          params,
           signal: controller.signal
         })
 
@@ -85,14 +91,17 @@ function SearchResults({ query, type }) {
     // Perutaan vanha pyyntö tarvittaessa.
     return () => controller.abort()
 
-  }, [query, page, searchPath])
+  }, [query, page, searchPath, genre, isGenreSearch])
 
   // Tarkistetaan, onko seuraavia sivuja.
   const hasMore = page < totalPages
 
-  const title = isActorSearch
-    ? `Näyttelijän ${query} elokuvat`
-    : `Hakutulokset: ${query}`
+  // Valitaan hakutulosten otsikko hakutavan perusteella.
+  const title = isGenreSearch
+    ? `Genre: ${query || genre}`
+    : isActorSearch
+      ? `Näyttelijän ${query} elokuvat`
+      : `Hakutulokset: ${query}`
 
   return (
     <div>
@@ -104,7 +113,7 @@ function SearchResults({ query, type }) {
         emptyText="Ei tuloksia"
       />
 
-      {/* Näytä lisää -painike molemmille hakutavoille */}
+      {/* Näytä lisää -painike kaikille hakutavoille */}
       {hasMore && (
         <button
           type="button"
@@ -138,15 +147,25 @@ function SearchResults({ query, type }) {
 }
 
 function SearchPage() {
-  // Luetaan hakusana ja hakutapa osoitteesta.
+  // Luetaan hakusana, hakutapa ja genren tunniste osoitteesta.
   const [searchParams] = useSearchParams()
 
   const query = searchParams.get('query') || ''
-  const type = searchParams.get('type') === 'actor'
-    ? 'actor'
-    : 'movie'
+  const genre = searchParams.get('genre') || ''
 
-  if (!query.trim()) {
+  const type = searchParams.get('type') === 'genre'
+    ? 'genre'
+    : searchParams.get('type') === 'actor'
+      ? 'actor'
+      : 'movie'
+
+  // Tarkistetaan, että genrehaussa on valittu genre.
+  if (type === 'genre' && !genre) {
+    return <p>Valitse genre hakukentästä.</p>
+  }
+
+  // Muissa hakutavoissa tarvitaan hakusana.
+  if (type !== 'genre' && !query.trim()) {
     return (
       <p>
         Kirjoita elokuvan tai näyttelijän nimi hakukenttään.
@@ -154,13 +173,14 @@ function SearchPage() {
     )
   }
 
-  // key varmistaa, että uusi hakusana tai hakutapa
+  // key varmistaa, että uusi hakusana, hakutapa tai genre
   // aloittaa sivutuksen aina ensimmäiseltä sivulta.
   return (
     <SearchResults
-      key={`${type}:${query}`}
+      key={`${type}:${query}:${genre}`}
       query={query}
       type={type}
+      genre={genre}
     />
   )
 }
