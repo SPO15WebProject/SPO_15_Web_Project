@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -245,8 +246,9 @@
     min-width: 0;
   }
 
-  /* Hakukenttä mukautuu näytön leveyteen */
-  .navbar-search input {
+  /* Hakukenttä ja genrevalikko mukautuvat näytön leveyteen */
+  .navbar-search input,
+  .navbar-search .genre-select {
     width: 100%;
     min-width: 0;
     max-width: 240px;
@@ -275,8 +277,9 @@
   padding: 1rem;
 }
 
-/* Hakutavan valintavalikko */
-.search-type-select {
+/* Hakutavan valintavalikot */
+.search-type-select,
+.genre-select {
   padding: 0.5rem;
   border: 1px solid #555;
   border-radius: 6px;

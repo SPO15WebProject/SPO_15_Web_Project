@@ -8,7 +8,7 @@ vi.mock('axios', () => ({
   }
 }))
 
-import { searchMovies } from '../controllers/movieController.js'
+import { searchMovies } from '../controllers/searchController.js'
 
 describe('Elokuvien hakutoiminto', () => {
   let req
