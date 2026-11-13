@@ -12,7 +12,7 @@ const handleSubmit = async (e) => {
 
     try {
         const response = await axios.post(
-            'http://localhost:3000/api/db/CreateUser',
+            '/api/db/CreateUser',
             {
                 nickname,
                 email,
