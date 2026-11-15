@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import './SearchBar.css'
 
 function SearchBar() {
+  // Onko hakupopup auki.
+  const [isOpen, setIsOpen] = useState(false)
+
   // Käyttäjän kirjoittama hakuteksti.
   const [searchText, setSearchText] = useState('')
 
@@ -15,12 +19,22 @@ function SearchBar() {
 
   // Elokuvahaun automaattiset ehdotukset.
   const [suggestions, setSuggestions] = useState([])
-  const [showSuggestions, setShowSuggestions] = useState(false)
 
   const navigate = useNavigate()
 
-  // Viittaus hakulomakkeeseen ulkopuolisten klikkausten tunnistamista varten.
+  // Viittaukset: koko hakukomponentti (ulkopuolisten klikkausten tunnistus)
+  // ja tekstikenttä (fokus popupin avautuessa).
   const searchRef = useRef(null)
+  const inputRef = useRef(null)
+
+  // Siirretään fokus kenttään, kun popup aukeaa.
+  useEffect(() => {
+    if (!isOpen) return
+
+    if (searchType === 'genre') return
+
+    inputRef.current?.focus()
+  }, [isOpen, searchType])
 
   // Haetaan genrelista, kun käyttäjä valitsee genrehaun.
   useEffect(() => {
@@ -35,14 +49,10 @@ function SearchBar() {
         })
 
         if (!controller.signal.aborted) {
-          setGenres(
-            Array.isArray(response.data)
-              ? response.data
-              : []
-          )
+          setGenres(Array.isArray(response.data) ? response.data : [])
         }
       } catch (error) {
-        if (!controller.signal.aborted) {
+        if (!axios.isCancel(error) && !controller.signal.aborted) {
           console.error('Genrejen lataus epäonnistui:', error)
         }
       }
@@ -53,35 +63,43 @@ function SearchBar() {
     return () => controller.abort()
   }, [searchType])
 
-  // Suljetaan ehdotukset, kun klikataan hakulomakkeen ulkopuolelle.
+  // Suljetaan popup, kun klikataan sen ulkopuolelle tai painetaan Escape.
   useEffect(() => {
+    if (!isOpen) return
+
     const handleClickOutside = (event) => {
       if (
         searchRef.current &&
         !searchRef.current.contains(event.target)
       ) {
-        setShowSuggestions(false)
+        setIsOpen(false)
+      }
+    }
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
       }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
     }
-  }, [])
+  }, [isOpen])
 
   // Haetaan automaattisia ehdotuksia vain elokuvahaussa.
   useEffect(() => {
     const query = searchText.trim()
 
-    // Näyttelijä- ja genrehaussa ei käytetä elokuvien nimiehdotuksia.
     if (searchType !== 'movie' || query.length < 2) {
       setSuggestions([])
       return
     }
 
-    // Mahdollistaa API-pyynnön peruuttamisen.
     const controller = new AbortController()
 
     // Odotetaan hetki ennen API-kutsua.
@@ -93,7 +111,6 @@ function SearchBar() {
         )
 
         if (!controller.signal.aborted) {
-          // Hakutulokset löytyvät results-kentästä.
           setSuggestions(
             Array.isArray(response.data.results)
               ? response.data.results.slice(0, 5)
@@ -102,10 +119,7 @@ function SearchBar() {
         }
       } catch (error) {
         if (!axios.isCancel(error) && !controller.signal.aborted) {
-          console.error(
-            'Hakuehdotusten lataus epäonnistui:',
-            error
-          )
+          console.error('Hakuehdotusten lataus epäonnistui:', error)
           setSuggestions([])
         }
       }
@@ -123,7 +137,6 @@ function SearchBar() {
     setSearchText('')
     setSelectedGenre('')
     setSuggestions([])
-    setShowSuggestions(false)
   }
 
   // Siirrytään hakutulossivulle valitulla hakutavalla.
@@ -132,14 +145,13 @@ function SearchBar() {
 
     const params = new URLSearchParams()
 
-    // Genrehaussa käytetään valitun genren tunnistetta.
     if (searchType === 'genre') {
       if (!selectedGenre) return
 
       params.set('type', 'genre')
       params.set('genre', selectedGenre)
 
-      // Lisätään genren nimi hakutulossivun otsikkoa varten.
+      // Genren nimi hakutulossivun otsikkoa varten.
       const genre = genres.find(
         genre => String(genre.id) === selectedGenre
       )
@@ -147,7 +159,6 @@ function SearchBar() {
       if (genre) {
         params.set('query', genre.name)
       }
-
     } else {
       const query = searchText.trim()
 
@@ -160,121 +171,162 @@ function SearchBar() {
       }
     }
 
-    setShowSuggestions(false)
-
+    setIsOpen(false)
     navigate(`/search?${params.toString()}`)
   }
 
   // Avataan elokuva hakuehdotuksesta.
   const handleSuggestionClick = (movie) => {
-    setShowSuggestions(false)
-    setSearchText(movie.title)
+    setIsOpen(false)
+    setSearchText('')
+    setSuggestions([])
 
     navigate(`/movies/${movie.id}`, {
       state: { movie }
     })
   }
 
+  // Tiivistetyn kentän teksti: näyttää viimeisimmän hakusanan, jos sellainen on.
+  const triggerLabel = searchText.trim() || 'Hae...'
+
   return (
-    /* Hakulomake */
-    <form
-      ref={searchRef}
-      onSubmit={handleSearch}
-      className="navbar-search"
-      style={{
-        transform: 'translateY(-10px)',
-        position: 'relative'
-      }}
-    >
-      {/* Valitaan elokuva-, näyttelijä- tai genrehaku. */}
-      <select
-        value={searchType}
-        onChange={handleSearchTypeChange}
-        aria-label="Valitse hakutapa"
-        className="search-type-select"
+    <div ref={searchRef} className="search-bar">
+
+      {/* Suljettu tila: pieni hakukenttä, joka avaa popupin. */}
+      <button
+        type="button"
+        className="search-trigger"
+        onClick={() => setIsOpen(true)}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        aria-label="Avaa haku"
       >
-        <option value="movie">Elokuva</option>
-        <option value="actor">Näyttelijä</option>
-        <option value="genre">Genre</option>
-      </select>
-
-      {/* Genrehaussa näytetään genrevalikko, muuten hakutekstikenttä. */}
-      {searchType === 'genre' ? (
-        <select
-          value={selectedGenre}
-          onChange={(event) => setSelectedGenre(event.target.value)}
-          aria-label="Valitse genre"
-          className="genre-select"
-          required
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
         >
-          <option value="">Valitse genre</option>
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-3.5-3.5" />
+        </svg>
+        <span>{triggerLabel}</span>
+      </button>
 
-          {genres.map((genre) => (
-            <option key={genre.id} value={genre.id}>
-              {genre.name}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          type="search"
-          value={searchText}
-          onChange={(event) => {
-            setSearchText(event.target.value)
-            setShowSuggestions(true)
-          }}
-          onFocus={() => setShowSuggestions(true)}
-          placeholder={
-            searchType === 'actor'
-              ? 'Hae näyttelijää...'
-              : 'Hae elokuvia...'
-          }
-          aria-label={
-            searchType === 'actor'
-              ? 'Hae näyttelijän nimellä'
-              : 'Hae elokuvan nimellä'
-          }
-          autoComplete="off"
-        />
-      )}
+      {/* Avoin tila: hakutavan valinta, kenttä, painike ja ehdotukset. */}
+      {isOpen && (
+        <div
+          className="search-popup"
+          role="dialog"
+          aria-label="Haku"
+        >
+          <form onSubmit={handleSearch} className="search-form">
 
-      <button type="submit">Hae</button>
+            <select
+              value={searchType}
+              onChange={handleSearchTypeChange}
+              aria-label="Valitse hakutapa"
+              className="search-type-select"
+            >
+              <option value="movie">Elokuva</option>
+              <option value="actor">Näyttelijä</option>
+              <option value="genre">Genre</option>
+            </select>
 
-      {/* Elokuvahaun automaattiset ehdotukset */}
-      {searchType === 'movie' &&
-        showSuggestions &&
-        suggestions.length > 0 && (
-          <div className="search-suggestions">
-            {suggestions.map((movie) => (
-              <button
-                key={movie.id}
-                type="button"
-                className="search-suggestion"
-                onClick={() => handleSuggestionClick(movie)}
+            {/* Genrehaussa genrevalikko, muuten hakutekstikenttä. */}
+            {searchType === 'genre' ? (
+              <select
+                value={selectedGenre}
+                onChange={(event) => setSelectedGenre(event.target.value)}
+                aria-label="Valitse genre"
+                className="genre-select"
+                required
               >
-                {/* Elokuvan pieni juliste */}
-                {movie.poster_path && (
-                  <img
-                    src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
-                    alt=""
-                  />
-                )}
+                <option value="">Valitse genre</option>
 
-                {/* Elokuvan nimi ja julkaisuvuosi */}
-                <span>
-                  {movie.title}
+                {genres.map((genre) => (
+                  <option key={genre.id} value={genre.id}>
+                    {genre.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                ref={inputRef}
+                type="search"
+                value={searchText}
+                onChange={(event) => setSearchText(event.target.value)}
+                placeholder={
+                  searchType === 'actor'
+                    ? 'Hae näyttelijää...'
+                    : 'Hae elokuvia...'
+                }
+                aria-label={
+                  searchType === 'actor'
+                    ? 'Hae näyttelijän nimellä'
+                    : 'Hae elokuvan nimellä'
+                }
+                autoComplete="off"
+              />
+            )}
 
-                  {movie.release_date && (
-                    <small>
-                      {' '}({movie.release_date.slice(0, 4)})
-                    </small>
-                  )}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-    </form>
+            <button type="submit" className="search-submit">
+              Hae
+            </button>
+          </form>
+
+          {/* Elokuvahaun automaattiset ehdotukset julisteineen. */}
+          {searchType === 'movie' && suggestions.length > 0 && (
+            <ul className="search-suggestions">
+              {suggestions.map((movie) => (
+                <li key={movie.id}>
+                  <button
+                    type="button"
+                    className="search-suggestion"
+                    onClick={() => handleSuggestionClick(movie)}
+                  >
+                    {/* Juliste tai samankokoinen placeholder. */}
+                    {movie.poster_path ? (
+                      <img
+                        src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                        srcSet={`https://image.tmdb.org/t/p/w92${movie.poster_path} 1x, https://image.tmdb.org/t/p/w185${movie.poster_path} 2x`}
+                        alt=""
+                        width="46"
+                        height="69"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span
+                        className="search-suggestion-placeholder"
+                        aria-hidden="true"
+                      >
+                        ?
+                      </span>
+                    )}
+
+                    {/* Nimi, vuosi ja arvosana. */}
+                    <span className="search-suggestion-text">
+                      <strong>{movie.title}</strong>
+
+                      <small>
+                        {movie.release_date?.slice(0, 4) || 'Ei tiedossa'}
+                        {typeof movie.vote_average === 'number' &&
+                          movie.vote_average > 0 &&
+                          ` • ★ ${movie.vote_average.toFixed(1)}`}
+                      </small>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 

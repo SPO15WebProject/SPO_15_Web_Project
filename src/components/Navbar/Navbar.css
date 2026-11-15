@@ -1,0 +1,23 @@
+
+.navbar {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.navbar a.active {
+  text-decoration: underline;
+}
+
+/* Navigoinnin asettelu puhelimella */
+@media (max-width: 37.5rem) {
+  .navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 1rem;
+    row-gap: 0.75rem;
+  }
+
+}
