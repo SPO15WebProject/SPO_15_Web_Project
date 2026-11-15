@@ -1,4 +1,5 @@
 import { tmdb } from '../services/tmdbConnection.js'
+import { getMovieFilters } from '../services/movieFilters.js'
 
 /* Haetaan elokuvia nimen perusteella, sivu kerrallaan. */
 export const searchMovies = async (req, res) => {
@@ -64,6 +65,17 @@ export const searchMoviesByActor = async (req, res) => {
       })
     }
 
+    // Tarkistetaan ja muodostetaan suodatusparametrit.
+    let filters
+
+    try {
+      filters = getMovieFilters(req.query)
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message
+      })
+    }
+
     // Etsitään näyttelijä TMDB:stä nimen perusteella.
     const { data: peopleData } = await tmdb().get('/search/person', {
       params: {
@@ -94,7 +106,8 @@ export const searchMoviesByActor = async (req, res) => {
         with_cast: actor.id,
         language: 'fi-FI',
         sort_by: 'popularity.desc',
-        page
+        page,
+        ...filters
       }
     })
 
@@ -135,13 +148,25 @@ export const searchMoviesByGenre = async (req, res) => {
       })
     }
 
+    // Tarkistetaan ja muodostetaan suodatusparametrit.
+    let filters
+
+    try {
+      filters = getMovieFilters(req.query)
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message
+      })
+    }
+
     // Haetaan valitun genren elokuvat TMDB:stä.
     const { data } = await tmdb().get('/discover/movie', {
       params: {
         with_genres: genre,
         language: 'fi-FI',
         sort_by: 'popularity.desc',
-        page
+        page,
+        ...filters
       }
     })
 

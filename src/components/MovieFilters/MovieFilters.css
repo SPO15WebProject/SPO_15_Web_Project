@@ -1,0 +1,156 @@
+/* Suodatusvalikon ulompi säiliö */
+.movie-filters-container {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+/* Hakutulosten otsikko ja suodatuspainike samalla rivillä */
+.movie-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Hakutulosten otsikko */
+.movie-filters-header .search-results-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Suodatusvalikon avaamis- ja sulkemispainike */
+.movie-filters-header .filter-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.5rem 0.85rem;
+  background-color: transparent;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.movie-filters-header .filter-toggle-button:hover {
+  background-color: #333;
+  border-color: #888;
+}
+
+/* Suodatuspainikkeen kuvakkeet */
+.filter-toggle-button svg {
+  flex-shrink: 0;
+}
+
+/* Nuolen kääntyminen valikon avautuessa */
+.filter-arrow {
+  transition: transform 0.2s;
+}
+
+.filter-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Avattu suodatusvalikko */
+.movie-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 1.25rem;
+  margin-top: 1rem;
+  background-color: #242424;
+  border: 1px solid #555;
+  border-radius: 8px;
+  text-align: left;
+}
+
+/* Suodatusvalikon otsikko */
+.movie-filters h2 {
+  width: 100%;
+  margin: 0;
+  font-size: 1.1rem;
+  color: white;
+  text-align: left;
+}
+
+/* Yksittäinen suodatin */
+.movie-filters .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Suodattimien otsikot */
+.movie-filters label {
+  font-size: 0.9rem;
+  color: white;
+}
+
+/* Syöttökentät ja valintavalikot */
+.movie-filters input,
+.movie-filters select {
+  padding: 0.6rem;
+  min-width: 150px;
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.movie-filters select {
+  cursor: pointer;
+}
+
+/* Suodattimien tyhjennyspainike */
+.movie-filters button {
+  padding: 0.6rem 1rem;
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.movie-filters button:hover {
+  background-color: #444;
+}
+
+/* Mobiilinäkymä */
+@media (max-width: 600px) {
+  .movie-filters-header {
+    flex-wrap: wrap;
+  }
+
+  .movie-filters-header .search-results-title {
+    font-size: 1.2rem;
+  }
+
+  .movie-filters-header .filter-toggle-button {
+    margin-left: auto;
+  }
+
+  .movie-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .movie-filters input,
+  .movie-filters select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .movie-filters button {
+    width: 100%;
+  }
+}

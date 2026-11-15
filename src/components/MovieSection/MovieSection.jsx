@@ -2,10 +2,20 @@ import MovieCard from '../MovieCard/MovieCard'
 
 // Näyttää otsikon, tilaviestit ja elokuvalistan.
 // layout: 'grid' (ruudukko) tai 'slider' (vaakasuunnassa selattava rivi).
-function MovieSection({ title, movies, loading, error, layout = 'grid', emptyText }) {
+function MovieSection({
+  title,
+  movies,
+  loading,
+  error,
+  layout = 'grid',
+  emptyText,
+  showTitle = true
+}) {
   return (
     <section>
-      <h2>{title}</h2>
+
+      {/* Näytetään otsikko tarvittaessa. */}
+      {showTitle && <h2>{title}</h2>}
 
       {loading && <p>Ladataan...</p>}
       {error && <p role="alert">{error}</p>}
