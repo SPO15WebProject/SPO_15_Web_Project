@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import './RegisterPage.css'
 
 function RegisterPage() {
 const [nickname, setNickname] = useState('')
@@ -34,44 +35,49 @@ const handleSubmit = async (e) => {
 }
 
 return (
-    <div>
-        <h2>Rekisteröidy</h2>
+  <div className="auth-page">
+    <div className="auth-card">
 
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Käyttäjänimi</label>
-                <input
-                type="text"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                />
-            </div>
+      <h1>Rekisteröidy</h1>
 
-            <div>
-                <label>Sähköposti</label>
-                <input type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                />
-            </div>
+      <form onSubmit={handleSubmit}>
 
-            <div>
-                <label>Salasana</label>
-                <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                />
-            </div>
+        <label>Käyttäjänimi</label>
+        <input
+          type="text"
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+        />
 
-            <button type="submit">
-            Rekisteröidy
-            </button>
-        </form>
+        <label>Sähköposti</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        {message && <p>{message}</p>}
+        <label>Salasana</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button type="submit">
+          Rekisteröidy
+        </button>
+
+      </form>
+
+      {message && (
+        <p className="message">
+          {message}
+        </p>
+      )}
+
     </div>
-    )
+  </div>
+ )
 }
 
 export default RegisterPage
