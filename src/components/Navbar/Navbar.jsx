@@ -2,6 +2,7 @@
 import axios from 'axios'
 import { NavLink } from 'react-router-dom'
 import SearchBar from '../SearchBar/SearchBar.jsx'
+import './Navbar.css'
 
 function Navbar() {
 

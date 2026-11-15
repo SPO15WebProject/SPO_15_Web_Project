@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import './MovieCard.css'
 
 // Komponentti, joka näyttää yhden elokuvan tiedot korttina.
 // movie sisältää backendin kautta TMDB:stä haetut elokuvatiedot.
