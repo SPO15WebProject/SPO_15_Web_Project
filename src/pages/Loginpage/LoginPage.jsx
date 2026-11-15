@@ -1,10 +1,16 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import './LoginPage.css'
+
 
 function LoginPage() {
+    
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('')
+
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -27,7 +33,8 @@ function LoginPage() {
                 JSON.stringify(response.data)
             )
 
-            window.location.reload()
+            window.location.href = '/'
+            navigate('/')
 
             setMessage('Kirjautuminen onnistui!')
             console.log(response.data)
@@ -41,37 +48,43 @@ function LoginPage() {
         }
     }
      
-    return (
-        <div>
-            <h2>Kirjaudu sisään</h2>
+   return (
+  <div className="auth-page">
+    <div className="auth-card">
 
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Sähköposti</label>
-                    <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
+      <h1>Kirjaudu sisään</h1>
 
-                <div>
-                    <label>Salasana</label>
-                    <input 
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
+      <form onSubmit={handleSubmit}>
 
-                <button type="submit">
-                    Kirjaudu sisään
-                </button>
-            </form>
+        <label>Sähköposti</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-            {message && <p>{message}</p>}
-        </div>
-    )
+        <label>Salasana</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button type="submit">
+          Kirjaudu sisään
+        </button>
+
+      </form>
+
+      {message && (
+        <p className="message">
+          {message}
+        </p>
+      )}
+
+    </div>
+  </div>
+)
 }
 
-    export default LoginPage
+export default LoginPage

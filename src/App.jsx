@@ -9,6 +9,7 @@ import MovieDetails from './pages/Detailspage/MovieDetails'
 import SearchPage from './pages/Searchpage/Searchpage'
 import LoginPage from './pages/Loginpage/LoginPage'
 import RegisterPage from './pages/RegisterPage/RegisterPage'
+import AccountPage from './pages/Accountpage/AccountPage'
 
 // App vastaa vain sovelluksen rungosta ja reiteistä.
 function App() {
@@ -26,6 +27,7 @@ function App() {
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/account" element={<AccountPage />} />
 
           {/* Näytetään ilmoitus, jos osoitetta ei löydy. */}
           <Route path="*" element={<p>Sivua ei löytynyt.</p>} />

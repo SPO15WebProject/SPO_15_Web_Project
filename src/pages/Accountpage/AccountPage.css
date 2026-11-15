@@ -1,0 +1,162 @@
+.account-page {
+  min-height: calc(100vh - 70px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 40px 20px;
+
+  background: #111;
+}
+
+.account-card {
+  width: 100%;
+  max-width: 600px;
+
+  padding: 40px;
+
+  background: #1b1b1b;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.35);
+
+  color: white;
+}
+
+.account-card h1 {
+  text-align: center;
+
+  margin-bottom: 30px;
+
+  font-size: 2rem;
+
+  font-weight: 700;
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+
+  margin: 0 auto 20px;
+
+  border-radius: 50%;
+
+  background: #e50914;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 2.5rem;
+  font-weight: bold;
+
+  color: white;
+}
+
+.user-info {
+  text-align: center;
+
+  margin-bottom: 35px;
+
+  padding-bottom: 25px;
+
+  border-bottom: 1px solid #333;
+}
+
+.user-info p {
+  margin: 10px 0;
+  color: #d4d4d4;
+}
+
+.account-section {
+  margin-top: 20px;
+}
+
+.account-btn {
+  width: 100%;
+
+  padding: 14px 20px;
+
+  margin-bottom: 12px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #272727;
+
+  color: white;
+
+  font-size: 1rem;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.account-btn:hover {
+  background: #353535;
+
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  width: 100%;
+
+  padding: 12px;
+
+  margin-top: 20px;
+
+  border: 1px solid #666;
+
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #c0c0c0;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.delete-btn:hover {
+  border-color: #d32f2f;
+  color: #ff6b6b;
+  background: rgba(211, 47, 47, 0.12);
+}
+
+.account-input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 12px;
+
+  margin-bottom: 12px;
+
+  border: 1px solid #333;
+
+  border-radius: 10px;
+
+  background: #252525;
+
+  color: white;
+
+  font-size: 1rem;
+}
+
+.account-input:focus {
+  outline: none;
+
+  border-color: white;
+}
+
+.message {
+  margin-top: 20px;
+  text-align: center;
+  color: #d1d5db;
+}

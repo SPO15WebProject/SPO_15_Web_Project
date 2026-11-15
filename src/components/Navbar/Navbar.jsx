@@ -21,7 +21,9 @@ function Navbar() {
       )
 
       localStorage.removeItem('user')
-      window.location.reload()
+      window.location.href = '/'
+      return null;
+      
     } catch (error) {
       console.error(error)
     }
@@ -40,6 +42,10 @@ function Navbar() {
       {user ? (
         <>
           <span>Tervetuloa, {user.nickname}</span>
+
+          <NavLink to="/account">
+            Oma tili
+           </NavLink>
 
           <button onClick={logout}>
             Kirjaudu ulos
