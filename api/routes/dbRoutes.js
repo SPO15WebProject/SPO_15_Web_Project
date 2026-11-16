@@ -33,7 +33,7 @@ router.put('/UpdateEmail/:userId', UpdateEmail)
 router.put('/UpdateNickname/:userId', UpdateNickname)
 router.put('/UpdatePassword/:userId', UpdatePassword)
 
-router.post('/CreateGroup', CreateGroup)
+router.post('/CreateGroup', authMiddleware, CreateGroup)
 router.post('/AddGroupMember', AddGroupMember)
 router.delete('/RemoveGroupMember', RemoveGroupMember)
 router.delete('/DeleteGroup/:groupId', DeleteGroup)

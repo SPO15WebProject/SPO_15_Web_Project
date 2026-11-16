@@ -11,19 +11,37 @@ import {
     findGroupMembers
 } from "../models/groupModel.js";
 
-// POST /CreateGroup body: { groupName, groupDescription?, inviteOnly?, creatorId }
+// POST /CreateGroup — lomakkeelta saadaan nimi, kuvaus ja ryhmän tyyppi.
 export const CreateGroup = async (req, res) => {
-    const { groupName, groupDescription, inviteOnly, creatorId } = req.body;
+    const creatorId = req.user.userid;
+    const {
+        groupName: rawName,
+        groupDescription: rawDescription,
+        inviteOnly = false
+    } = req.body ?? {};
 
-    if (!groupName || !creatorId) {
-        return res.status(400).json({ error: 'groupName and creatorId are required' });
+    // Poistetaan ylimääräiset välilyönnit ja tarkistetaan että tiedot ovat oikein.
+    const groupName = typeof rawName === 'string' ? rawName.trim() : '';
+
+    if (!groupName || groupName.length > 255) {
+        return res.status(400).json({ error: 'Give the group a name (1-255 characters).' });
     }
+
+    if (rawDescription != null && typeof rawDescription !== 'string') {
+        return res.status(400).json({ error: 'Description must be text.' });
+    }
+
+    if (typeof inviteOnly !== 'boolean') {
+        return res.status(400).json({ error: 'Select an open or invite-only group.' });
+    }
+
+    const groupDescription = rawDescription?.trim() || null;
 
     try {
         const group = await insertGroup(groupName, groupDescription, inviteOnly, creatorId);
         res.status(201).json(group);
     } catch (error) {
-        // 23503 = foreign_key_violation (creator does not exist)
+        // 23503 = viiteavainvirhe, esim jos ryhmän perustajaa ei löydy
         if (error.code === '23503') {
             return res.status(404).json({ error: 'User not found' });
         }

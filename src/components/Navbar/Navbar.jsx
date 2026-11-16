@@ -47,6 +47,8 @@ function Navbar() {
             Oma tili
            </NavLink>
 
+          <NavLink to="/groups/new">Luo ryhmä</NavLink>
+
           <button onClick={logout}>
             Kirjaudu ulos
           </button>

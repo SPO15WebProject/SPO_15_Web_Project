@@ -10,6 +10,7 @@ import SearchPage from './pages/Searchpage/Searchpage'
 import LoginPage from './pages/Loginpage/LoginPage'
 import RegisterPage from './pages/RegisterPage/RegisterPage'
 import AccountPage from './pages/Accountpage/AccountPage'
+import CreateGroupPage from './pages/GroupPage/CreateGroupPage'
 
 // App vastaa vain sovelluksen rungosta ja reiteistä.
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/groups/new" element={<CreateGroupPage />} />
 
           {/* Näytetään ilmoitus, jos osoitetta ei löydy. */}
           <Route path="*" element={<p>Sivua ei löytynyt.</p>} />
