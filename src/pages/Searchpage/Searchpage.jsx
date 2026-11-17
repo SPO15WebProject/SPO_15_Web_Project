@@ -12,15 +12,15 @@ function SearchResults({ query, type, genre, filters }) {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
 
+  // Tieto hakutulosten rajoittamisesta.
+  const [truncated, setTruncated] = useState(false)
+
   // Latauksen ja virheiden hallinta.
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   const isActorSearch = type === 'actor'
   const isGenreSearch = type === 'genre'
-
-  // Tarkistetaan, käytetäänkö backendin suodatusta.
-  const useBackendFilters = isActorSearch || isGenreSearch
 
   // Valitaan oikea backend-reitti.
   const searchPath = isGenreSearch
@@ -45,14 +45,13 @@ function SearchResults({ query, type, genre, filters }) {
           ? { genre, page }
           : { query, page }
 
-        // Lisätään suodattimet näyttelijä- ja genrehakuihin.
-        if (useBackendFilters) {
-          if (year) params.year = year
-          if (rating) params.rating = rating
-          if (sortBy) params.sortBy = sortBy
-        }
+        // Lisätään kaikki suodattimet ja järjestystapa
+        // backendille kaikissa hakutavoissa.
+        if (year) params.year = year
+        if (rating) params.rating = rating
+        if (sortBy) params.sortBy = sortBy
 
-        // Haetaan vain haluttu tulossivu.
+        // Haetaan valmiiksi suodatettu ja järjestetty tulossivu.
         const response = await axios.get(searchPath, {
           params,
           signal: controller.signal
@@ -83,6 +82,9 @@ function SearchResults({ query, type, genre, filters }) {
         // Tallennetaan sivujen kokonaismäärä.
         setTotalPages(response.data.total_pages || 0)
 
+        // Tallennetaan tieto hakutulosten rajoittamisesta.
+        setTruncated(response.data.truncated === true)
+
       } catch (err) {
         if (axios.isCancel(err) || controller.signal.aborted) return
 
@@ -107,54 +109,10 @@ function SearchResults({ query, type, genre, filters }) {
     searchPath,
     genre,
     isGenreSearch,
-    useBackendFilters,
     year,
     rating,
     sortBy
   ])
-
-  // Nimihaussa suodatetaan ladatut elokuvat frontendissä.
-  const filteredMovies = useBackendFilters
-    ? movies
-    : movies.filter(movie => {
-
-      const matchesYear =
-        !year || movie.release_date?.slice(0, 4) === year
-
-      const matchesRating =
-        !rating || movie.vote_average >= Number(rating)
-
-      return matchesYear && matchesRating
-    })
-
-  // Nimihaussa järjestetään suodatetut elokuvat frontendissä.
-  // Näyttelijä- ja genrehaussa backend hoitaa järjestämisen.
-  const sortedMovies = useBackendFilters
-    ? filteredMovies
-    : [...filteredMovies].sort((a, b) => {
-
-      switch (sortBy) {
-
-        case 'popularity.desc':
-          return (b.popularity || 0) - (a.popularity || 0)
-
-        case 'vote_average.desc':
-          return (b.vote_average || 0) - (a.vote_average || 0)
-
-        case 'primary_release_date.desc':
-          return (b.release_date || '').localeCompare(
-            a.release_date || ''
-          )
-
-        case 'primary_release_date.asc':
-          return (a.release_date || '').localeCompare(
-            b.release_date || ''
-          )
-
-        default:
-          return 0
-      }
-    })
 
   // Tarkistetaan, onko seuraavia sivuja.
   const hasMore = page < totalPages && page < 500
@@ -162,10 +120,20 @@ function SearchResults({ query, type, genre, filters }) {
   return (
     <div>
 
-      {/* Hakutulosten otsikko näytetään suodatuspainikkeen vieressä. */}
+      {/* Ilmoitetaan, jos kaikkia hakutuloksia ei käsitelty. */}
+      {truncated && !error && (
+        <p className="search-limit-notice" role="status">
+          Hakutuloksia on paljon. Suodatus ja järjestäminen
+          koskevat vain osaa hakutuloksista.
+          Tarkenna hakusanaa tai julkaisuvuotta.
+        </p>
+      )}
+
+      {/* Backend palauttaa valmiiksi suodatetut
+          ja järjestetyt elokuvat. */}
       <MovieSection
         showTitle={false}
-        movies={sortedMovies}
+        movies={movies}
         loading={loading && movies.length === 0}
         error={error}
         emptyText="Ei tuloksia"
@@ -242,7 +210,8 @@ function FilteredSearchResults({ query, type, genre }) {
         setFilters={setFilters}
       />
 
-      {/* Suodattimen vaihtaminen aloittaa sivutuksen alusta. */}
+      {/* Suodattimen tai järjestystavan vaihtaminen
+          aloittaa sivutuksen alusta. */}
       <SearchResults
         key={JSON.stringify(activeFilters)}
         query={query}

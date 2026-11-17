@@ -1,5 +1,15 @@
 import { tmdb } from '../services/tmdbConnection.js'
-import { getMovieFilters } from '../services/movieFilters.js'
+import {
+  getMovieFilters,
+  filterMoviesByRating,
+  sortMovies
+} from '../services/movieFilters.js'
+
+// Nimihaun suodatuksen enimmäissivumäärä TMDB:ssä.
+const MAX_SEARCH_PAGES = 10
+
+// Frontendille palautettavien elokuvien määrä sivulla.
+const PAGE_SIZE = 20
 
 /* Haetaan elokuvia nimen perusteella, sivu kerrallaan. */
 export const searchMovies = async (req, res) => {
@@ -21,20 +31,116 @@ export const searchMovies = async (req, res) => {
       })
     }
 
-    // Haetaan pyydetty sivu TMDB:stä.
-    const { data } = await tmdb().get('/search/movie', {
+    // Tarkistetaan ja muodostetaan suodatusparametrit.
+    let filters
+
+    try {
+      filters = getMovieFilters(req.query)
+    } catch (err) {
+      return res.status(400).json({
+        message: err.message
+      })
+    }
+
+    // Muodostetaan nimihaun parametrit.
+    const params = {
+      query,
+      language: 'fi-FI',
+      page
+    }
+
+    // Lisätään julkaisuvuosi, jos käyttäjä on valinnut sen.
+    if (filters.primary_release_year) {
+      params.primary_release_year = filters.primary_release_year
+    }
+
+    // Tarkistetaan, onko arvosanan suodatus käytössä.
+    const hasRatingFilter =
+      filters['vote_average.gte'] !== undefined
+
+    // Tarkistetaan, onko järjestystapa valittu.
+    const hasSorting = Boolean(filters.sort_by)
+
+    // Jos arvosanaa tai järjestystapaa ei ole valittu,
+    // käytetään normaalia TMDB:n sivutusta.
+    if (!hasRatingFilter && !hasSorting) {
+
+      const { data } = await tmdb().get('/search/movie', {
+        params
+      })
+
+      return res.json({
+        results: data.results,
+        page: data.page,
+        total_pages: data.total_pages
+      })
+    }
+
+    // Haetaan ensimmäinen sivu käsiteltävistä elokuvista.
+    const { data: firstPage } = await tmdb().get('/search/movie', {
       params: {
-        query,
-        language: 'fi-FI',
-        page
+        ...params,
+        page: 1
       }
     })
 
-    // Palautetaan elokuvat ja sivutustiedot.
+    // Rajoitetaan TMDB:stä haettavien sivujen määrää.
+    const pagesToFetch = Math.min(
+      firstPage.total_pages,
+      MAX_SEARCH_PAGES
+    )
+
+    // Kerätään ensimmäisen sivun elokuvat.
+    const movies = [...firstPage.results]
+
+    // Haetaan loput sivut sallittuun rajaan asti.
+    for (let currentPage = 2; currentPage <= pagesToFetch; currentPage++) {
+
+      const { data } = await tmdb().get('/search/movie', {
+        params: {
+          ...params,
+          page: currentPage
+        }
+      })
+
+      movies.push(...data.results)
+    }
+
+    // Poistetaan mahdolliset päällekkäiset elokuvat.
+    const uniqueMovies = [
+      ...new Map(
+        movies.map(movie => [movie.id, movie])
+      ).values()
+    ]
+
+    // Suodatetaan elokuvat arvosanan perusteella.
+    const filteredMovies = filterMoviesByRating(
+      uniqueMovies,
+      filters
+    )
+
+    // Järjestetään suodatetut elokuvat ennen sivutusta.
+    const sortedMovies = sortMovies(
+      filteredMovies,
+      filters
+    )
+
+    // Lasketaan tulosten sivumäärä.
+    const totalPages = Math.ceil(
+      sortedMovies.length / PAGE_SIZE
+    )
+
+    // Lasketaan pyydetyn sivun alku- ja loppukohta.
+    const startIndex = (page - 1) * PAGE_SIZE
+    const endIndex = startIndex + PAGE_SIZE
+
+    // Palautetaan vain pyydetyn sivun elokuvat.
     res.json({
-      results: data.results,
-      page: data.page,
-      total_pages: data.total_pages
+      results: sortedMovies.slice(startIndex, endIndex),
+      page,
+      total_pages: totalPages,
+      total_results: sortedMovies.length,
+      truncated: firstPage.total_pages > MAX_SEARCH_PAGES
     })
 
   } catch (err) {
@@ -43,6 +149,7 @@ export const searchMovies = async (req, res) => {
     })
   }
 }
+
 
 /* Haetaan elokuvia näyttelijän nimen perusteella, sivu kerrallaan. */
 export const searchMoviesByActor = async (req, res) => {
@@ -170,7 +277,7 @@ export const searchMoviesByGenre = async (req, res) => {
       }
     })
 
-    // Palautetaan elokuvat ja sivutustiedot.
+    // Palautetaan elokuvat ja sivutustiedot frontendille.
     res.json({
       results: data.results,
       page: data.page,
