@@ -18,6 +18,13 @@ import {
     GetGroupById,
     GetAllGroups
 } from "../controllers/groupController.js";
+import {
+    CreateReview,
+    GetAllReviews,
+    GetReviewById,
+    DeleteReview,
+    UpdateReview
+} from "../controllers/reviewController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -39,6 +46,12 @@ router.delete('/RemoveGroupMember', RemoveGroupMember)
 router.delete('/DeleteGroup/:groupId', DeleteGroup)
 router.get('/GetGroupById/:groupId', GetGroupById)
 router.get('/GetAllGroups', GetAllGroups)
+
+router.post('/CreateReview', authMiddleware, CreateReview)
+router.get('/GetAllReviews', GetAllReviews)
+router.get('/GetReviewById/:reviewId', GetReviewById)
+router.delete('/DeleteReview/:reviewId', authMiddleware, DeleteReview)
+router.put('/UpdateReview/:reviewId', authMiddleware, UpdateReview)
 
 //Testireitti JWT-autentikoinnin toiminnan tarkistamiseen.
 router.get('/Me', authMiddleware, (req, res) => {
