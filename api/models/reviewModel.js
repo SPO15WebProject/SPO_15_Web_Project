@@ -1,27 +1,13 @@
 import { pool } from "./db.js";
 
 export const insertReview = async (userId, movieId, stars, text) => {
-    const client = await pool.connect();
-    try {
-        await client.query('BEGIN');
-        await client.query(
-            'INSERT INTO Movies (movieId) VALUES ($1) ON CONFLICT DO NOTHING',
-            [movieId]
-        );
-        const result = await client.query(
-            `INSERT INTO Reviews (userId, movieId, stars, text)
-             VALUES ($1, $2, $3, $4)
-             RETURNING id, userId, movieId, stars, text, createdAt`,
-            [userId, movieId, stars, text ?? null]
-        );
-        await client.query('COMMIT');
-        return result.rows[0];
-    } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-    } finally {
-        client.release();
-    }
+    const result = await pool.query(
+        `INSERT INTO Reviews (userId, movieId, stars, text)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id, userId, movieId, stars, text, createdAt`,
+        [userId, movieId, stars, text ?? null]
+    );
+    return result.rows[0];
 };
 
 const reviewSelect = `
