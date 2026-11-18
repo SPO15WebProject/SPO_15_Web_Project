@@ -25,6 +25,19 @@ import {
     DeleteReview,
     UpdateReview
 } from "../controllers/reviewController.js";
+import {
+    CreateList,
+    GetAllLists,
+    GetListById,
+    GetListsByUser,
+    GetListsByGroup,
+    UpdateList,
+    DeleteList,
+    AddMovieToList,
+    RemoveMovieFromList,
+    AddListToGroup,
+    RemoveListFromGroup
+} from "../controllers/listController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -52,6 +65,18 @@ router.get('/GetAllReviews', GetAllReviews)
 router.get('/GetReviewById/:reviewId', GetReviewById)
 router.delete('/DeleteReview/:reviewId', authMiddleware, DeleteReview)
 router.put('/UpdateReview/:reviewId', authMiddleware, UpdateReview)
+
+router.post('/CreateList', authMiddleware, CreateList)
+router.get('/GetAllLists', GetAllLists)
+router.get('/GetListById/:listId', GetListById)
+router.get('/GetListsByUser/:userId', GetListsByUser)
+router.get('/GetListsByGroup/:groupId', GetListsByGroup)
+router.put('/UpdateList/:listId', authMiddleware, UpdateList)
+router.delete('/DeleteList/:listId', authMiddleware, DeleteList)
+router.post('/AddMovieToList', authMiddleware, AddMovieToList)
+router.delete('/RemoveMovieFromList/:listId/:movieId', authMiddleware, RemoveMovieFromList)
+router.post('/AddListToGroup', authMiddleware, AddListToGroup)
+router.delete('/RemoveListFromGroup/:listId/:groupId', authMiddleware, RemoveListFromGroup)
 
 //Testireitti JWT-autentikoinnin toiminnan tarkistamiseen.
 router.get('/Me', authMiddleware, (req, res) => {
