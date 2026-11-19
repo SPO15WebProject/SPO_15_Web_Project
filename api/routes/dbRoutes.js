@@ -22,6 +22,8 @@ import {
     CreateReview,
     GetAllReviews,
     GetReviewById,
+    GetReviewsByMovie,
+    GetReviewsByUser,
     DeleteReview,
     UpdateReview
 } from "../controllers/reviewController.js";
@@ -63,6 +65,8 @@ router.get('/GetAllGroups', GetAllGroups)
 router.post('/CreateReview', authMiddleware, CreateReview)
 router.get('/GetAllReviews', GetAllReviews)
 router.get('/GetReviewById/:reviewId', GetReviewById)
+router.get('/GetReviewsByMovie/:movieId', GetReviewsByMovie)
+router.get('/GetReviewsByUser/:userId', GetReviewsByUser)
 router.delete('/DeleteReview/:reviewId', authMiddleware, DeleteReview)
 router.put('/UpdateReview/:reviewId', authMiddleware, UpdateReview)
 

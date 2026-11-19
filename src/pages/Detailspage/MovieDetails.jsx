@@ -1,11 +1,18 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import useMovies from "../../hooks/Usemovies";
 import "./MovieDetails.css";
+
 
 function MovieDetails() {
   // Luetaan elokuvan ID sivun osoitteesta
   const { id } = useParams();
   const location = useLocation();
+
+  const [stars, setStars] = useState("");
+  const [reviewText, setReviewText] = useState("");
+  const [message, setMessage] = useState("");
+  const [reviews, setReviews] = useState([]);
 
   // Hook hakee elokuvan ja katsoo lataus- ja virhetilan
   const { movies: movie, loading, error } = useMovies(`/movies/${id}`);
@@ -26,6 +33,69 @@ function MovieDetails() {
     ? `https://image.tmdb.org/t/p/w500${displayedMovie.poster_path}`
     : null;
 
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        `/api/db/CreateReview`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            movieId: displayedMovie.id,
+            stars: Number(stars),
+            text: reviewText,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.error || "Arvostelun lähetys epäonnistui.");
+        return;
+      }
+
+      setMessage("Arvostelu lisätty onnistuneesti!");
+      setStars("");
+      setReviewText("");
+
+      fetchReviews();
+    } catch (error) {
+      console.error("Review error", error);
+      
+       setMessage(
+        `${error.code || ""} ${error.detail || error.message || "Virhe"}`
+       );
+    }
+  };
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(
+        `/api/db/GetReviewsByMovie/${displayedMovie.id}`
+      );
+
+      const data = await response.json();
+
+      console.log(JSON.stringify(data, null, 2));
+
+      setReviews(data.reviews || []);
+    } catch (error) {
+      console.error("Virhe arvostelujen haussa:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (displayedMovie?.id) {
+      fetchReviews();
+    }
+  }, [displayedMovie]);
+
   return (
     <section className="movie-details">
       <Link to="/">Takaisin etusivulle</Link>
@@ -38,71 +108,125 @@ function MovieDetails() {
 
       {/* näytetään tiedot onnistuneen haun jälkeen */}
       {displayedMovie && (
-          <div className="movie-header">
+        <div className="movie-header">
 
-      {/* Juliste vasemmalla */}
-        <div className="movie-details-poster">
-      {posterUrl ? (
-        <img
-          src={posterUrl}
-          alt={displayedMovie.title}
-          width="500"
-          height="750"
-        />
+          {/* Juliste vasemmalla */}
+          <div className="movie-details-poster">
+            {posterUrl ? (
+              <img
+                src={posterUrl}
+                alt={displayedMovie.title}
+                width="500"
+                height="750"
+              />
 
-        ) : (
+            ) : (
               <p>Juliste puuttuu</p>
             )}
           </div>
 
           {/* Tiedot oikealla */}
-         <div className="movie-meta">
-         <h1>{displayedMovie.title}</h1>
+          <div className="movie-meta">
+            <h1>{displayedMovie.title}</h1>
 
-          <p>
-            Vuosi: {displayedMovie.release_date?.slice(0, 4) || "Ei tiedossa"}
-          </p>
+            <p>
+              Vuosi: {displayedMovie.release_date?.slice(0, 4) || "Ei tiedossa"}
+            </p>
 
-          <p>
-            Arvosana: {displayedMovie.vote_average?.toFixed(1) ?? "Ei tiedossa"}
-          </p>
+            <p>
+              Arvosana: {displayedMovie.vote_average?.toFixed(1) ?? "Ei tiedossa"}
+            </p>
 
-          <h2>Kuvaus</h2>
+            <h2>Kuvaus</h2>
 
-          <p>
-             {displayedMovie?.overview || "Kuvausta ei saatavilla"}
-          </p>
+            <p>
+              {displayedMovie?.overview || "Kuvausta ei saatavilla"}
+            </p>
 
-          {fetchedMovie && (
-            <>
-              {/* Genret erotettu pilkuilla. */}
-              <p>
-                Genret:{" "}
-                {fetchedMovie.genres?.length > 0
-                  ? fetchedMovie.genres.map((genre) => genre.name).join(", ")
-                  : "Ei tiedossa"}
-              </p>
-              {/* Elokuvan kesto minuutteina. */}
-              <p>
-                Kesto:{" "}
-                {fetchedMovie.runtime > 0
-                  ? `${fetchedMovie.runtime} min`
-                  : "Ei tiedossa"}
-              </p>
-              {/* Näyttelijälistan ensimmäiset 5 nimeä. */}
-              <h2>Näyttelijät</h2>
-              <p>
-                {fetchedMovie.credits?.cast?.length > 0
-                  ? fetchedMovie.credits.cast
+            {fetchedMovie && (
+              <>
+                {/* Genret erotettu pilkuilla. */}
+                <p>
+                  Genret:{" "}
+                  {fetchedMovie.genres?.length > 0
+                    ? fetchedMovie.genres.map((genre) => genre.name).join(", ")
+                    : "Ei tiedossa"}
+                </p>
+                {/* Elokuvan kesto minuutteina. */}
+                <p>
+                  Kesto:{" "}
+                  {fetchedMovie.runtime > 0
+                    ? `${fetchedMovie.runtime} min`
+                    : "Ei tiedossa"}
+                </p>
+                {/* Näyttelijälistan ensimmäiset 5 nimeä. */}
+                <h2>Näyttelijät</h2>
+                <p>
+                  {fetchedMovie.credits?.cast?.length > 0
+                    ? fetchedMovie.credits.cast
                       .slice(0, 5)
                       .map((actor) => actor.name)
                       .join(", ")
-                  : "Tietoja ei saatavilla"}
-              </p>
-            </>
-          )}
+                    : "Tietoja ei saatavilla"}
+                </p>
+              </>
+            )}
+          </div>
+
         </div>
-      </div>
+      )}
+
+      {displayedMovie && (
+      <div className="reviews-container">
+
+        <div className="review-section">
+          <h2>Kirjoita arvostelu</h2>
+
+          <form onSubmit={handleReviewSubmit}>
+            <label>Arvosana (0-10)</label>
+
+            <input
+              type="number"
+              min="0"
+              max="10"
+              value={stars}
+              onChange={(e) => setStars(e.target.value)}
+            />
+
+            <label>Arvostelu</label>
+
+            <textarea
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+            />
+            <button type="submit">
+              Lähetä arvostelu
+            </button>
+
+            {message && <p>{message}</p>}
+          </form>
+        </div>
+      
+
+      <div className="reviews-list">
+        <h2>Käyttäjien arvostelut</h2>
+
+        {reviews.length === 0 ? (
+          <p>Ei arvosteluja vielä.</p>
+        ) : (
+          reviews.map((review) => (
+            <div key={review.id} className="review-card">
+              <h3>{review.stars}/10</h3>
+
+              <p>{review.text}</p>
+
+              <small>{review.nickname}</small>
+            </div>
+          ))
+        )}
+    </div>
+
+    </div>
       )}
     </section>
   );
