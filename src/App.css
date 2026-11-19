@@ -1,8 +1,24 @@
+/* Sovelluksen runko ja sticky footer */
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+
+  /* Sovelluksen vähimmäiskorkeus */
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+
+  /* Asetetaan sisältö pystysuuntaan */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pääsisältö täyttää vapaan tilan */
+.main-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .logo {

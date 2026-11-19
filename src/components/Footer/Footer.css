@@ -1,0 +1,139 @@
+/* Sivuston yhteinen alatunniste */
+.site-footer {
+  flex-shrink: 0;
+  margin-top: 2rem;
+  padding: 2rem 1.5rem 1rem;
+  background-color: #1a1a1a;
+  border-top: 1px solid #444;
+  color: #ccc;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* Alatunnisteen kolmen sarakkeen asettelu */
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+/* Alatunnisteen yksittäinen osio */
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+/* Osioiden otsikot */
+.footer-section h3 {
+  margin: 0 0 0.5rem;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Alatunnisteen tekstit */
+.site-footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+/* Alatunnisteen linkit */
+.footer-section a {
+  color: #ccc;
+  font-size: 0.9rem;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  transition: color 0.2s ease;
+}
+
+/* Linkkien hover-efekti */
+.footer-section a:hover {
+  color: #9298ff;
+  text-decoration: underline;
+}
+
+/* TMDB-lähdemerkintä */
+.footer-section .footer-attribution {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+/* Alatunnisteen alarivi */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #444;
+}
+
+/* Takaisin ylös -painike */
+.footer-top-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #555;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #ccc;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Painikkeen hover-efekti */
+.footer-top-button:hover {
+  background-color: #333;
+  border-color: #9298ff;
+  color: #fff;
+}
+
+/* Näppäimistöllä navigointi */
+.footer-section a:focus-visible,
+.footer-top-button:focus-visible {
+  outline: 2px solid #9298ff;
+  outline-offset: 4px;
+}
+
+/* Footerin asettelu pienemmissä ikkunoissa */
+@media (max-width: 48rem) {
+  .footer-content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* Footerin asettelu mobiililaitteilla */
+@media (max-width: 37.5rem) {
+  .site-footer {
+    padding: 1.5rem 1rem 1rem;
+    text-align: center;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .footer-section {
+    align-items: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    justify-content: center;
+  }
+}

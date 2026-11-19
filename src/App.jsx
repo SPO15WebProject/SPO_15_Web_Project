@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import './App.css'
 
 import Navbar from './components/Navbar/Navbar'
+import Footer from './components/Footer/Footer'
 import HomePage from './pages/Homepage/Homepage'
 import PopularPage from './pages/Popularpage/Popularpage'
 import TrendingPage from './pages/Trendingpage/Trendingpage'
@@ -18,7 +19,7 @@ function App() {
     <>
       <Navbar />
 
-      <main>
+      <main className="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/popular" element={<PopularPage />} />
@@ -35,6 +36,9 @@ function App() {
           <Route path="*" element={<p>Sivua ei löytynyt.</p>} />
         </Routes>
       </main>
+
+      {/* Sivuston yhteinen alatunniste */}
+      <Footer />
     </>
   )
 }
