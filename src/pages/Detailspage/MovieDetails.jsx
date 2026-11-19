@@ -39,7 +39,7 @@ function MovieDetails() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/db/CreateReview`,
+        `/api/db/CreateReview`,
         {
           method: "POST",
           credentials: "include",
@@ -77,7 +77,7 @@ function MovieDetails() {
   const fetchReviews = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/db/GetReviewsByMovie/${displayedMovie.id}`
+        `/api/db/GetReviewsByMovie/${displayedMovie.id}`
       );
 
       const data = await response.json();
