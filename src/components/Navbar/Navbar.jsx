@@ -1,70 +1,65 @@
-
 import axios from 'axios'
 import { NavLink } from 'react-router-dom'
-import SearchBar from '../SearchBar/SearchBar.jsx'
+import SearchBar from '../SearchBar/SearchBar'
+import Icon from '../Icon/Icon'
 import './Navbar.css'
 
 function Navbar() {
-
-  // Säilytetään nykyiset kirjautumistoiminnot.
   const user = JSON.parse(localStorage.getItem('user'))
 
-  // Poistetaan JWT-cookie backendistä ja paikallinen käyttäjätieto selaimesta.
   const logout = async () => {
     try {
-      await axios.post(
-        '/api/db/Logout',
-        {},
-        {
-          withCredentials: true
-        }
-      )
+      await axios.post('/api/db/Logout', {}, {
+        withCredentials: true
+      })
 
       localStorage.removeItem('user')
       window.location.href = '/'
-      return null;
-      
     } catch (error) {
       console.error(error)
     }
   }
 
   return (
-    <nav className="navbar">
-      <NavLink to="/" end>Etusivu</NavLink>
-      <NavLink to="/trending">Trendaavat</NavLink>
-      <NavLink to="/popular">Suositut</NavLink>
+    <header className="navbar">
+      <NavLink to="/" className="navbar-brand">
+        SPO_15
+      </NavLink>
 
-      {/* Hakulomake */}
-      <SearchBar />
+      <div className="navbar-search">
+        <SearchBar />
+      </div>
 
-      {/* Kirjautumistoiminnot */}
-      {user ? (
-        <>
-          <span>Tervetuloa, {user.nickname}</span>
+      <div className="navbar-actions">
+        {user ? (
+          <>
+            <NavLink to="/account" className="navbar-user" aria-label="Oma tili">
+              <Icon name="user" />
+              <span>{user.nickname}</span>
+            </NavLink>
 
-          <NavLink to="/account">
-            Oma tili
-           </NavLink>
+            <button
+              className="navbar-logout"
+              onClick={logout}
+              title="Kirjaudu ulos"
+              aria-label="Kirjaudu ulos"
+            >
+              <Icon name="logout" size={20} />
+            </button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login" className="navbar-login">
+              Kirjaudu
+            </NavLink>
 
-          <NavLink to="/groups/new">Luo ryhmä</NavLink>
-
-          <button onClick={logout}>
-            Kirjaudu ulos
-          </button>
-        </>
-      ) : (
-        <>
-          <NavLink to="/login">
-            Kirjaudu sisään
-          </NavLink>
-
-          <NavLink to="/register">
-            Rekisteröidy
-          </NavLink>
-        </>
-      )}
-    </nav>
+            <NavLink to="/register" className="navbar-register">
+              Rekisteröidy
+            </NavLink>
+          </>
+        )}
+      </div>
+    </header>
   )
 }
 

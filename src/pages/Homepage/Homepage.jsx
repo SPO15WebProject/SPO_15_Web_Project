@@ -2,14 +2,12 @@ import { Link } from 'react-router-dom'
 import useMovies from '../../hooks/Usemovies'
 import MovieSection from '../../components/MovieSection/MovieSection'
 
-    function HomePage() {
+function HomePage() {
   const trending = useMovies('/movies/trending')
   const popular = useMovies('/movies/popular')
 
   return (
     <>
-      <h1>SPO_15</h1>
-
       <MovieSection
         title="Trendaavat elokuvat"
         movies={trending.movies}

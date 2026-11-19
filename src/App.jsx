@@ -2,7 +2,9 @@ import { Routes, Route } from 'react-router-dom'
 import './App.css'
 
 import Navbar from './components/Navbar/Navbar'
+import Sidebar from './components/Sidebar/Sidebar'
 import Footer from './components/Footer/Footer'
+
 import HomePage from './pages/Homepage/Homepage'
 import PopularPage from './pages/Popularpage/Popularpage'
 import TrendingPage from './pages/Trendingpage/Trendingpage'
@@ -13,32 +15,33 @@ import RegisterPage from './pages/RegisterPage/RegisterPage'
 import AccountPage from './pages/Accountpage/AccountPage'
 import CreateGroupPage from './pages/GroupPage/CreateGroupPage'
 
-// App vastaa vain sovelluksen rungosta ja reiteistä.
 function App() {
   return (
     <>
       <Navbar />
 
-      <main className="main-content">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/popular" element={<PopularPage />} />
-          <Route path="/trending" element={<TrendingPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/movies/:id" element={<MovieDetails />} />
+      <div className="app-layout">
+        <Sidebar />
 
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/account" element={<AccountPage />} />
-          <Route path="/groups/new" element={<CreateGroupPage />} />
+        <div className="app-content">
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/popular" element={<PopularPage />} />
+              <Route path="/trending" element={<TrendingPage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/movies/:id" element={<MovieDetails />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/account" element={<AccountPage />} />
+              <Route path="/groups/new" element={<CreateGroupPage />} />
+              <Route path="*" element={<p>Sivua ei löytynyt.</p>} />
+            </Routes>
+          </main>
 
-          {/* Näytetään ilmoitus, jos osoitetta ei löydy. */}
-          <Route path="*" element={<p>Sivua ei löytynyt.</p>} />
-        </Routes>
-      </main>
-
-      {/* Sivuston yhteinen alatunniste */}
-      <Footer />
+          <Footer />
+        </div>
+      </div>
     </>
   )
 }
