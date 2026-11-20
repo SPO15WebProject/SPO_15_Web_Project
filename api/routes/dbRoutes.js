@@ -56,9 +56,9 @@ router.put('/UpdateNickname/:userId', UpdateNickname)
 router.put('/UpdatePassword/:userId', UpdatePassword)
 
 router.post('/CreateGroup', authMiddleware, CreateGroup)
-router.post('/AddGroupMember', AddGroupMember)
-router.delete('/RemoveGroupMember', RemoveGroupMember)
-router.delete('/DeleteGroup/:groupId', DeleteGroup)
+router.post('/AddGroupMember', authMiddleware, AddGroupMember)
+router.delete('/RemoveGroupMember', authMiddleware, RemoveGroupMember)
+router.delete('/DeleteGroup/:groupId', authMiddleware, DeleteGroup)
 router.get('/GetGroupById/:groupId', GetGroupById)
 router.get('/GetAllGroups', GetAllGroups)
 
