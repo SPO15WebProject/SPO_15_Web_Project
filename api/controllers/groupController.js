@@ -50,12 +50,14 @@ export const CreateGroup = async (req, res) => {
     }
 };
 
-// POST /AddGroupMember body: { groupId, userId }
+// POST /AddGroupMember body: { groupId }
 export const AddGroupMember = async (req, res) => {
-    const { groupId, userId } = req.body;
+    // Käyttäjä liittyy ryhmään omalla kirjautuneella tunnuksellaan.
+    const userId = req.user.userid;
+    const groupId = Number(req.body?.groupId);
 
-    if (!groupId || !userId) {
-        return res.status(400).json({ error: 'groupId and userId are required' });
+    if (!Number.isInteger(groupId) || groupId <= 0) {
+        return res.status(400).json({ error: 'groupId must be a positive integer' });
     }
 
     try {
@@ -64,6 +66,14 @@ export const AddGroupMember = async (req, res) => {
             return res.status(404).json({ error: 'Group not found' });
         }
 
+        // Suljettuun ryhmään liittyminen edellyttää pyyntöä tai kutsua ryhmään.
+        if (group.inviteonly) {
+            return res.status(403).json({
+                error: 'This group requires a join request or invitation'
+            });
+        }
+
+        // Käyttäjä lisätään oletuksena tavalliseksi jäseneksi
         const member = await insertMember(groupId, userId);
         res.status(201).json(member);
     } catch (error) {
@@ -78,12 +88,14 @@ export const AddGroupMember = async (req, res) => {
     }
 };
 
-// DELETE /RemoveGroupMember body: { groupId, userId, requesterId }
+// DELETE /RemoveGroupMember body: { groupId, userId }
 export const RemoveGroupMember = async (req, res) => {
-    const { groupId, userId, requesterId } = req.body;
+    // Pyynnön tekijä tunnistetaan kirjautumistiedosta
+    const requesterId = req.user.userid;
+    const { groupId, userId } = req.body ?? {};
 
-    if (!groupId || !userId || !requesterId) {
-        return res.status(400).json({ error: 'groupId, userId and requesterId are required' });
+    if (!groupId || !userId) {
+        return res.status(400).json({ error: 'groupId and userId are required' });
     }
 
     try {
@@ -122,14 +134,12 @@ export const RemoveGroupMember = async (req, res) => {
     }
 };
 
-// DELETE /DeleteGroup/:groupId   body: { requesterId }
+// DELETE /DeleteGroup/:groupId
 export const DeleteGroup = async (req, res) => {
     const { groupId } = req.params;
-    const { requesterId } = req.body;
 
-    if (!requesterId) {
-        return res.status(400).json({ error: 'requesterId is required' });
-    }
+    // Ryhmän ylläpitäjyys tarkistetaan kirjautuneelta käyttäjältä
+    const requesterId = req.user.userid;
 
     try {
         const group = await findGroupById(groupId);

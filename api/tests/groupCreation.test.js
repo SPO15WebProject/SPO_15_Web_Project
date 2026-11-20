@@ -2,7 +2,7 @@ import { expect, test, vi } from 'vitest'
 import { CreateGroup } from '../controllers/groupController.js'
 import { insertGroup } from '../models/groupModel.js'
 
-// Mockataan ryhmän tallennus jotta se ei mene tietokantaan
+// mkockataan ryhmän tallennus jotta se ei mene tietokantaan
 
 vi.mock('../models/groupModel.js', () => ({
     insertGroup: vi.fn()
@@ -10,7 +10,7 @@ vi.mock('../models/groupModel.js', () => ({
 
 test('käyttää kirjautuneen käyttäjän ID:tä ryhmän perustajana', async () => {
     const req = {
-        // Middleware asettaa tunnisteen kirjautumisevästeestä.
+        // middleware asettaa tunnisteen kirjautumisevästeestä
         user: { userid: 7 },
         body: {
             groupName: 'Test group',
