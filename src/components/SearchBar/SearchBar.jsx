@@ -13,9 +13,9 @@ function SearchBar() {
   // Hakutapa: movie = elokuva, actor = näyttelijä, genre = genre.
   const [searchType, setSearchType] = useState('movie')
 
-  // TMDB:stä haetut genret ja käyttäjän valitsema genre.
+  // TMDB:stä haetut genret ja käyttäjän valitsemat genret.
   const [genres, setGenres] = useState([])
-  const [selectedGenre, setSelectedGenre] = useState('')
+  const [selectedGenres, setSelectedGenres] = useState([])
 
   // Elokuvahaun automaattiset ehdotukset.
   const [suggestions, setSuggestions] = useState([])
@@ -135,7 +135,7 @@ function SearchBar() {
   const handleSearchTypeChange = (event) => {
     setSearchType(event.target.value)
     setSearchText('')
-    setSelectedGenre('')
+    setSelectedGenres([])
     setSuggestions([])
   }
 
@@ -146,19 +146,16 @@ function SearchBar() {
     const params = new URLSearchParams()
 
     if (searchType === 'genre') {
-      if (!selectedGenre) return
+      if (selectedGenres.length === 0) return
 
       params.set('type', 'genre')
-      params.set('genre', selectedGenre)
+      params.set('genre', selectedGenres.join(','))
 
-      // Genren nimi hakutulossivun otsikkoa varten.
-      const genre = genres.find(
-        genre => String(genre.id) === selectedGenre
-      )
+      const names = selectedGenres
+        .map(id => genres.find(genre => String(genre.id) === id)?.name)
+        .filter(Boolean)
 
-      if (genre) {
-        params.set('query', genre.name)
-      }
+      params.set('query', names.join(' + '))
     } else {
       const query = searchText.trim()
 
@@ -186,13 +183,27 @@ function SearchBar() {
     })
   }
 
-  // Tiivistetyn kentän teksti: näyttää viimeisimmän hakusanan, jos sellainen on.
-  const triggerLabel = searchText.trim() || 'Hae...'
+  // Tiivistetyn kentän teksti: näyttää valitut genret tai hakusanan.
+  const selectedGenreNames = selectedGenres
+    .map(id => genres.find(genre => String(genre.id) === id)?.name)
+    .filter(Boolean)
+
+  const toggleGenre = (id) => {
+    const value = String(id)
+
+    setSelectedGenres(previous => previous.includes(value)
+      ? previous.filter(selected => selected !== value)
+      : [...previous, value])
+  }
+
+  const triggerLabel = searchType === 'genre' && selectedGenreNames.length > 0
+    ? selectedGenreNames.join(', ')
+    : searchText.trim() || 'Hae...'
 
   return (
     <div ref={searchRef} className="search-bar">
 
-      {/* Suljettu tila: pieni hakukenttä, joka avaa popupin. */}
+      {/* Suljettu tila: hakukenttä, joka avaa popupin. */}
       <button
         type="button"
         className="search-trigger"
@@ -237,23 +248,13 @@ function SearchBar() {
               <option value="genre">Genre</option>
             </select>
 
-            {/* Genrehaussa genrevalikko, muuten hakutekstikenttä. */}
+            {/* Genrehaussa valittujen genrejen yhteenveto. */}
             {searchType === 'genre' ? (
-              <select
-                value={selectedGenre}
-                onChange={(event) => setSelectedGenre(event.target.value)}
-                aria-label="Valitse genre"
-                className="genre-select"
-                required
-              >
-                <option value="">Valitse genre</option>
-
-                {genres.map((genre) => (
-                  <option key={genre.id} value={genre.id}>
-                    {genre.name}
-                  </option>
-                ))}
-              </select>
+              <div className="genre-selection-summary" aria-live="polite">
+                {selectedGenreNames.length > 0
+                  ? selectedGenreNames.join(', ')
+                  : 'Valitse genret alta'}
+              </div>
             ) : (
               <input
                 ref={inputRef}
@@ -278,6 +279,53 @@ function SearchBar() {
               Hae
             </button>
           </form>
+
+          {/* IMDb-tyyliset monivalintapainikkeet genrehaulle. */}
+          {searchType === 'genre' && (
+            <div className="genre-picker" aria-label="Valitse genret">
+              <div className="genre-picker-heading">
+                <strong>Genret</strong>
+
+                {selectedGenres.length > 0 && (
+                  <button
+                    type="button"
+                    className="genre-picker-clear"
+                    onClick={() => setSelectedGenres([])}
+                  >
+                    Tyhjennä
+                  </button>
+                )}
+              </div>
+
+              <div className="genre-chips">
+                {genres.map(genre => {
+                  const selected = selectedGenres.includes(String(genre.id))
+
+                  return (
+                    <button
+                      key={genre.id}
+                      type="button"
+                      className={`genre-chip${selected ? ' is-selected' : ''}`}
+                      aria-pressed={selected}
+                      onClick={() => toggleGenre(genre.id)}
+                    >
+                      <span>{genre.name}</span>
+
+                      {selected && (
+                        <span className="genre-chip-remove" aria-hidden="true">
+                          ×
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="genre-picker-count">
+                Valittu {selectedGenres.length} genreä
+              </div>
+            </div>
+          )}
 
           {/* Elokuvahaun automaattiset ehdotukset julisteineen. */}
           {searchType === 'movie' && suggestions.length > 0 && (

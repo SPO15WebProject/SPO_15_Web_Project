@@ -156,3 +156,97 @@
     font-size: 16px;
   }
 }
+
+/* Monigenrevalinta: alkuperäiset hakukentän tyylit säilyvät. */
+.genre-selection-summary {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  background-color: var(--sidebar-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.genre-picker {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.genre-picker-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: var(--text-color);
+}
+
+.genre-picker-clear {
+  padding: 4px 6px;
+  background: transparent;
+  border: 0;
+  color: var(--text-secondary-color);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.genre-picker-clear:hover {
+  color: var(--text-color);
+}
+
+.genre-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.genre-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--sidebar-color);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  color: var(--text-color);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.genre-chip:hover {
+  background-color: var(--surface-hover-color);
+}
+
+.genre-chip.is-selected {
+  background-color: var(--surface-hover-color);
+  border-color: var(--text-secondary-color);
+  color: var(--text-color);
+}
+
+.genre-chip-remove {
+  font-size: 20px;
+  line-height: 12px;
+}
+
+.genre-chip:focus-visible,
+.genre-picker-clear:focus-visible {
+  outline: 2px solid var(--text-secondary-color);
+  outline-offset: 2px;
+}
+
+.genre-picker-count {
+  margin-top: 12px;
+  color: var(--text-secondary-color);
+  font-size: 13px;
+}
