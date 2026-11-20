@@ -1,23 +1,112 @@
-
 .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 480px) 1fr;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+  padding: 8px 16px;
+  background-color: var(--sidebar-color);
+  border-bottom: 1px solid var(--border-color);
+  box-sizing: border-box;
+}
+
+.navbar-brand {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-color);
+  white-space: nowrap;
+  justify-self: start;
+}
+
+.navbar-brand:hover {
+  color: var(--text-color);
+}
+
+.navbar-search {
+  min-width: 0;
+}
+
+.navbar-actions {
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.navbar-user span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar-logout {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 1.5rem;
-  padding-bottom: 1.5rem;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  color: var(--text-secondary-color);
 }
 
-.navbar a.active {
-  text-decoration: underline;
+.navbar-login,
+.navbar-register {
+  font-size: 14px;
+  white-space: nowrap;
 }
 
-/* Navigoinnin asettelu puhelimella */
-@media (max-width: 37.5rem) {
+.navbar-login {
+  color: var(--text-secondary-color);
+}
+
+.navbar-register {
+  padding: 6px 12px;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.navbar-register:hover {
+  background-color: var(--surface-hover-color);
+  color: var(--text-color);
+}
+
+/* Tabletit */
+@media (max-width: 900px) {
   .navbar {
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    column-gap: 1rem;
-    row-gap: 0.75rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
   }
 
+  .navbar-user span {
+    display: none;
+  }
+}
+
+/* Puhelimet */
+@media (max-width: 600px) {
+  .navbar {
+    grid-template-columns: auto 1fr;
+    padding: 12px;
+  }
+
+  .navbar-search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
 }

@@ -1,80 +1,67 @@
-/* Hakukomponentin juuri: popup kiinnittyy tähän. */
 .search-bar {
   position: relative;
-  display: inline-block;
+  width: 100%;
 }
 
-/* Suljettu tila: tiivis hakukenttä. */
 .search-trigger {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  width: 11rem;
-  padding: 0.4rem 0.75rem;
-  border: 1px solid rgba(128, 128, 128, 0.45);
-  border-radius: 999px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
+  gap: 12px;
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary-color);
   text-align: left;
   cursor: text;
 }
 
 .search-trigger span {
-  flex: 1;
-  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  opacity: 0.7;
+}
+
+.search-trigger svg {
+  flex-shrink: 0;
 }
 
 .search-trigger:hover,
 .search-trigger[aria-expanded='true'] {
-  border-color: currentColor;
+  border-color: var(--text-secondary-color);
 }
 
-/* Avoin tila: popup hakukentän alla. */
+/* Avautuva hakupaneeli */
 .search-popup {
   position: absolute;
-  top: calc(100% + 0.5rem);
-  left: 0;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 100;
-  box-sizing: border-box;
-  width: min(26rem, 92vw);
-  padding: 0.75rem;
-  border: 1px solid rgba(128, 128, 128, 0.4);
+  width: min(480px, calc(100vw - 24px));
+  padding: 12px;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: var(--background-color);
-  color: #f2f2f2;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-  animation: search-popup-in 120ms ease-out;
-}
-
-@keyframes search-popup-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  box-sizing: border-box;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .search-form {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .search-form input,
 .search-form select,
 .search-form button {
-  padding: 0.5rem 0.65rem;
-  border: 1px solid rgba(128, 128, 128, 0.5);
+  padding: 8px;
+  background-color: var(--sidebar-color);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #121217;
-  color: inherit;
+  color: var(--text-color);
   font: inherit;
 }
 
@@ -84,17 +71,22 @@
   min-width: 0;
 }
 
-.search-form .search-submit {
+.search-form select {
   cursor: pointer;
-  background: #e8e8ee;
-  color: #121217;
-  border-color: transparent;
-  font-weight: 600;
 }
 
-/* Ehdotukset julisteineen. */
+.search-form .search-submit {
+  background-color: var(--text-color);
+  color: var(--sidebar-color);
+}
+
+.search-form .search-submit:hover {
+  background-color: var(--text-secondary-color);
+}
+
+/* Automaattiset hakuehdotukset */
 .search-suggestions {
-  margin: 0.75rem 0 0;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -102,28 +94,24 @@
 .search-suggestion {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 12px;
   width: 100%;
-  padding: 0.4rem;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
+  padding: 8px;
+  background-color: transparent;
+  border: none;
   text-align: left;
-  cursor: pointer;
 }
 
 .search-suggestion:hover,
 .search-suggestion:focus-visible {
-  background: rgba(255, 255, 255, 0.08);
+  background-color: var(--surface-hover-color);
 }
 
 .search-suggestion img,
 .search-suggestion-placeholder {
-  flex: none;
+  flex-shrink: 0;
   width: 46px;
-  height: 69px; /* 2:3 elokuvajulisteen suhde */
+  height: 69px;
   border-radius: 4px;
   object-fit: cover;
 }
@@ -131,49 +119,28 @@
 .search-suggestion-placeholder {
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  opacity: 0.6;
+  background-color: var(--sidebar-color);
 }
 
 .search-suggestion-text {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
   min-width: 0;
-}
-
-.search-suggestion-text strong {
-  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .search-suggestion-text small {
-  opacity: 0.7;
+  color: var(--text-secondary-color);
 }
 
-/* Puhelin: popup ankkuroidaan koko navigaation leveyteen,
-   jotta se ei voi valua näytön reunan yli. */
-@media (max-width: 37.5rem) {
-  .navbar {
-    position: relative;
-  }
-
-  .search-bar {
-    position: static;
-    flex: 1 1 100%;
-  }
-
-  .search-trigger {
-    display: flex;
-    width: 100%;
-    max-width: 20rem;
-    margin: 0 auto;
-  }
-
+/* Mobiilinäkymä */
+@media (max-width: 600px) {
   .search-popup {
     left: 0;
-    right: 0;
-    width: auto;
-    top: calc(100% - 0.5rem);
+    width: 100%;
+    transform: none;
+    max-height: 65dvh;
+    overflow-y: auto;
   }
 
   .search-form {
@@ -184,26 +151,8 @@
     flex: 1 1 100%;
   }
 
-  /* 16 px estää iOS:n automaattisen zoomauksen kenttään kirjoitettaessa. */
   .search-form input,
   .search-form select {
     font-size: 16px;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .search-popup {
-    animation: none;
-  }
-}
-
-
-.search-type-select,
-.genre-select {
-  padding: 0.5rem;
-  border: 1px solid #555;
-  border-radius: 6px;
-  background-color: #242424;
-  color: white;
-  cursor: pointer;
 }
