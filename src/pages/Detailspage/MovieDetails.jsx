@@ -8,6 +8,7 @@ function MovieDetails() {
   // Luetaan elokuvan ID sivun osoitteesta
   const { id } = useParams();
   const location = useLocation();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const [stars, setStars] = useState("");
   const [reviewText, setReviewText] = useState("");
@@ -182,6 +183,7 @@ function MovieDetails() {
         <div className="review-section">
           <h2>Kirjoita arvostelu</h2>
 
+        {user ? (
           <form onSubmit={handleReviewSubmit}>
             <label>Arvosana (0-10)</label>
 
@@ -205,6 +207,13 @@ function MovieDetails() {
 
             {message && <p>{message}</p>}
           </form>
+        ) : (
+          <p>
+            <Link to="/Login">
+            Kirjaudu sisään jättääksesi arvostelun.
+            </Link>
+            </p>
+        )}
         </div>
       
 

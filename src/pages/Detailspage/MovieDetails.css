@@ -94,7 +94,7 @@
 .review-section textarea {
   padding: 0.75rem;
   border-radius: 8px;
-  border: 1px solid #444;
+  border: 1px solid #cdc4c4;
   background: #2e2d2d;
   color: rgb(243, 243, 243);
 }
@@ -120,12 +120,14 @@
 }
 
 .review-card {
-  background: #fdfdfd;
+  background: #323030;
   border: 1px solid #000000;
+  border: 1px solid #cdc4c4;
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1rem;
 }
+
 
 .review-card h3 {
   color: gold;
