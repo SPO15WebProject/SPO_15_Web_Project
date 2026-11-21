@@ -3,8 +3,28 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import './SearchBar.css'
 
+// Hakukuvake, jota käytetään sekä suljetussa että avoimessa tilassa.
+function SearchIcon({ className }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </svg>
+  )
+}
+
 function SearchBar() {
-  // Onko hakupopup auki.
+  // Onko hakukenttä laajennettu.
   const [isOpen, setIsOpen] = useState(false)
 
   // Käyttäjän kirjoittama hakuteksti.
@@ -23,11 +43,11 @@ function SearchBar() {
   const navigate = useNavigate()
 
   // Viittaukset: koko hakukomponentti (ulkopuolisten klikkausten tunnistus)
-  // ja tekstikenttä (fokus popupin avautuessa).
+  // ja tekstikenttä (fokus laajennuksen yhteydessä).
   const searchRef = useRef(null)
   const inputRef = useRef(null)
 
-  // Siirretään fokus kenttään, kun popup aukeaa.
+  // Siirretään fokus kenttään, kun haku laajenee.
   useEffect(() => {
     if (!isOpen) return
 
@@ -63,7 +83,7 @@ function SearchBar() {
     return () => controller.abort()
   }, [searchType])
 
-  // Suljetaan popup, kun klikataan sen ulkopuolelle tai painetaan Escape.
+  // Suljetaan haku, kun klikataan sen ulkopuolelle tai painetaan Escape.
   useEffect(() => {
     if (!isOpen) return
 
@@ -183,7 +203,7 @@ function SearchBar() {
     })
   }
 
-  // Tiivistetyn kentän teksti: näyttää valitut genret tai hakusanan.
+  // Valitut genret nimillä (yhteenvetokenttää varten).
   const selectedGenreNames = selectedGenres
     .map(id => genres.find(genre => String(genre.id) === id)?.name)
     .filter(Boolean)
@@ -196,46 +216,34 @@ function SearchBar() {
       : [...previous, value])
   }
 
-  const triggerLabel = searchType === 'genre' && selectedGenreNames.length > 0
-    ? selectedGenreNames.join(', ')
-    : searchText.trim() || 'Hae...'
+  // Näytetäänkö laajennuksen alla pudotuspaneeli.
+  const showGenrePicker = searchType === 'genre'
+  const showSuggestions = searchType === 'movie' && suggestions.length > 0
 
   return (
-    <div ref={searchRef} className="search-bar">
+    <div
+      ref={searchRef}
+      className={`search-bar${isOpen ? ' is-open' : ''}`}
+    >
+      <div className="search-shell">
 
-      {/* Suljettu tila: hakukenttä, joka avaa popupin. */}
-      <button
-        type="button"
-        className="search-trigger"
-        onClick={() => setIsOpen(true)}
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
-        aria-label="Avaa haku"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          aria-hidden="true"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <path d="M20 20l-3.5-3.5" />
-        </svg>
-        <span>{triggerLabel}</span>
-      </button>
+        {/* Suljettu tila: pelkkä kuvake ja "Hae"-teksti. */}
+        {!isOpen && (
+          <button
+            type="button"
+            className="search-trigger"
+            onClick={() => setIsOpen(true)}
+            aria-label="Avaa haku"
+          >
+            <SearchIcon />
+            <span>Hae</span>
+          </button>
+        )}
 
-      {/* Avoin tila: hakutavan valinta, kenttä, painike ja ehdotukset. */}
-      {isOpen && (
-        <div
-          className="search-popup"
-          role="dialog"
-          aria-label="Haku"
-        >
-          <form onSubmit={handleSearch} className="search-form">
+        {/* Laajennettu tila: hakutapa, kenttä ja Hae-painike samassa rivissä. */}
+        {isOpen && (
+          <form onSubmit={handleSearch} className="search-form" role="search">
+            <SearchIcon className="search-form-icon" />
 
             <select
               value={searchType}
@@ -279,9 +287,15 @@ function SearchBar() {
               Hae
             </button>
           </form>
+        )}
+      </div>
+
+      {/* Pudotuspaneeli kiinnitettynä laajennetun kentän alle. */}
+      {isOpen && (showGenrePicker || showSuggestions) && (
+        <div className="search-dropdown">
 
           {/* IMDb-tyyliset monivalintapainikkeet genrehaulle. */}
-          {searchType === 'genre' && (
+          {showGenrePicker && (
             <div className="genre-picker" aria-label="Valitse genret">
               <div className="genre-picker-heading">
                 <strong>Genret</strong>
@@ -328,7 +342,7 @@ function SearchBar() {
           )}
 
           {/* Elokuvahaun automaattiset ehdotukset julisteineen. */}
-          {searchType === 'movie' && suggestions.length > 0 && (
+          {showSuggestions && (
             <ul className="search-suggestions">
               {suggestions.map((movie) => (
                 <li key={movie.id}>
