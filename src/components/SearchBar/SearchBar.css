@@ -1,47 +1,154 @@
+/* Hakukomponentti: suljettuna pieni, avattuna täyttää navbarin hakusarakkeen. */
 .search-bar {
   position: relative;
+  width: 112px;
+  margin-inline: auto;
+  transition: width 0.2s ease;
+}
+
+.search-bar.is-open {
   width: 100%;
 }
 
-.search-trigger {
+/* Yksi yhteinen kehys sekä suljetulle että avoimelle tilalle. */
+.search-shell {
   display: flex;
   align-items: center;
-  gap: 12px;
-  width: 100%;
   height: 38px;
-  padding: 8px 12px;
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: var(--text-secondary-color);
-  text-align: left;
-  cursor: text;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.search-trigger span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.search-shell:hover {
+  border-color: var(--text-secondary-color);
+}
+
+.search-bar.is-open .search-shell:focus-within {
+  border-color: var(--text-color);
+}
+
+/* Suljettu tila */
+.search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  padding: 0 12px;
+  background: transparent;
+  border: 0;
+  color: var(--text-secondary-color);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .search-trigger svg {
   flex-shrink: 0;
 }
 
-.search-trigger:hover,
-.search-trigger[aria-expanded='true'] {
-  border-color: var(--text-secondary-color);
+.search-trigger:focus-visible {
+  outline: 2px solid var(--text-secondary-color);
+  outline-offset: -4px;
+  border-radius: 8px;
 }
 
-/* Avautuva hakupaneeli */
-.search-popup {
+/* Laajennettu tila: hakutapa, kenttä ja painike yhdellä rivillä. */
+.search-form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.search-form-icon {
+  flex-shrink: 0;
+  margin-left: 12px;
+  color: var(--text-secondary-color);
+}
+
+.search-form select,
+.search-form input {
+  height: 100%;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-color);
+  font: inherit;
+}
+
+.search-form select {
+  flex-shrink: 0;
+  margin-left: 4px;
+  padding: 0 8px;
+  border-right: 1px solid var(--border-color);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.search-form select option {
+  background-color: var(--sidebar-color);
+  color: var(--text-color);
+}
+
+.search-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 0 10px;
+}
+
+/* Kehys näyttää fokuksen, joten kentän oma outline poistetaan. */
+.search-form input:focus,
+.search-form select:focus {
+  outline: none;
+}
+
+.search-form select:focus-visible {
+  background-color: var(--surface-hover-color);
+}
+
+.search-form .search-submit {
+  flex-shrink: 0;
+  height: calc(100% - 8px);
+  margin-right: 4px;
+  padding: 0 14px;
+  background-color: var(--text-color);
+  border: 0;
+  border-radius: 6px;
+  color: var(--sidebar-color);
+  font: inherit;
+  cursor: pointer;
+}
+
+.search-form .search-submit:hover {
+  background-color: var(--text-secondary-color);
+}
+
+/* Genrehaussa valittujen genrejen yhteenveto kentän paikalla. */
+.genre-selection-summary {
+  flex: 1;
+  min-width: 0;
+  padding: 0 10px;
+  color: var(--text-secondary-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Laajennetun kentän alle kiinnittyvä paneeli */
+.search-dropdown {
   position: absolute;
-  top: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
   z-index: 100;
-  width: min(480px, calc(100vw - 24px));
+  max-height: min(70dvh, 480px);
   padding: 12px;
+  overflow-y: auto;
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -49,44 +156,9 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-.search-form {
-  display: flex;
-  gap: 8px;
-}
-
-.search-form input,
-.search-form select,
-.search-form button {
-  padding: 8px;
-  background-color: var(--sidebar-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-color);
-  font: inherit;
-}
-
-.search-form input,
-.search-form .genre-select {
-  flex: 1;
-  min-width: 0;
-}
-
-.search-form select {
-  cursor: pointer;
-}
-
-.search-form .search-submit {
-  background-color: var(--text-color);
-  color: var(--sidebar-color);
-}
-
-.search-form .search-submit:hover {
-  background-color: var(--text-secondary-color);
-}
-
 /* Automaattiset hakuehdotukset */
 .search-suggestions {
-  margin: 12px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -99,7 +171,11 @@
   padding: 8px;
   background-color: transparent;
   border: none;
+  border-radius: 8px;
+  color: inherit;
+  font: inherit;
   text-align: left;
+  cursor: pointer;
 }
 
 .search-suggestion:hover,
@@ -133,50 +209,7 @@
   color: var(--text-secondary-color);
 }
 
-/* Mobiilinäkymä */
-@media (max-width: 600px) {
-  .search-popup {
-    left: 0;
-    width: 100%;
-    transform: none;
-    max-height: 65dvh;
-    overflow-y: auto;
-  }
-
-  .search-form {
-    flex-wrap: wrap;
-  }
-
-  .search-form .search-type-select {
-    flex: 1 1 100%;
-  }
-
-  .search-form input,
-  .search-form select {
-    font-size: 16px;
-  }
-}
-
-/* Monigenrevalinta: alkuperäiset hakukentän tyylit säilyvät. */
-.genre-selection-summary {
-  flex: 1;
-  min-width: 0;
-  padding: 8px 10px;
-  background-color: var(--sidebar-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-secondary-color);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.genre-picker {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-color);
-}
-
+/* Monigenrevalinta */
 .genre-picker-heading {
   display: flex;
   align-items: center;
@@ -204,8 +237,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  max-height: 240px;
-  overflow-y: auto;
 }
 
 .genre-chip {
@@ -221,7 +252,7 @@
   font-size: 14px;
   line-height: 1.2;
   cursor: pointer;
-  transition: background-color .15s ease, border-color .15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .genre-chip:hover {
@@ -231,7 +262,6 @@
 .genre-chip.is-selected {
   background-color: var(--surface-hover-color);
   border-color: var(--text-secondary-color);
-  color: var(--text-color);
 }
 
 .genre-chip-remove {
@@ -249,4 +279,42 @@
   margin-top: 12px;
   color: var(--text-secondary-color);
   font-size: 13px;
+}
+
+/* Puhelimet */
+@media (max-width: 600px) {
+  .search-bar {
+    width: 76px;
+  }
+
+  .search-trigger {
+    gap: 6px;
+    padding: 0 10px;
+  }
+
+  .search-bar.is-open {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    right: 12px;
+    z-index: 1;
+    width: auto;
+    margin: 0;
+    transform: translateY(-50%);
+  }
+
+  .search-form input,
+  .search-form select {
+    font-size: 16px;
+  }
+
+  .search-form select {
+    padding: 0 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-bar {
+    transition: none;
+  }
 }

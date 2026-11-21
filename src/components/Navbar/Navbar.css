@@ -101,12 +101,25 @@
 /* Puhelimet */
 @media (max-width: 600px) {
   .navbar {
-    grid-template-columns: auto 1fr;
-    padding: 12px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px 12px;
   }
 
-  .navbar-search {
-    grid-column: 1 / -1;
-    grid-row: 2;
+  .navbar-brand {
+    font-size: 20px;
+  }
+
+  .navbar-actions {
+    gap: 8px;
+  }
+
+  .navbar-login,
+  .navbar-register {
+    font-size: 13px;
+  }
+
+  .navbar-register {
+    padding: 6px 10px;
   }
 }
