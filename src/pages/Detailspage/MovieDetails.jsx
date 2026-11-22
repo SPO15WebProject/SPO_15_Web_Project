@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import useMovies from "../../hooks/Usemovies";
+import { useAuth } from "../../context/AuthContext";
 import "./MovieDetails.css";
 
 
@@ -8,7 +9,7 @@ function MovieDetails() {
   // Luetaan elokuvan ID sivun osoitteesta
   const { id } = useParams();
   const location = useLocation();
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, clearUser } = useAuth();
 
   const [stars, setStars] = useState("");
   const [reviewText, setReviewText] = useState("");
@@ -58,6 +59,8 @@ function MovieDetails() {
       const data = await response.json();
 
       if (!response.ok) {
+        // Eväste on vanhentunut -> päivitetään käyttöliittymä uloskirjautuneeksi
+        if (response.status === 401) clearUser();
         setMessage(data.error || "Arvostelun lähetys epäonnistui.");
         return;
       }

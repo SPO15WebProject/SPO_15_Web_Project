@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import './LoginPage.css'
 
 
 function LoginPage() {
-    
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [message, setMessage] = useState('')
 
     const navigate = useNavigate()
+    const { login } = useAuth()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -27,17 +29,10 @@ function LoginPage() {
                 }
             )
 
+            // Tallennetaan käyttäjä contextiin (ei enää localStorageen)
+            login(response.data)
 
-            localStorage.setItem(
-                'user',
-                JSON.stringify(response.data)
-            )
-
-            window.location.href = '/'
             navigate('/')
-
-            setMessage('Kirjautuminen onnistui!')
-            console.log(response.data)
         } catch (error) {
             console.log(error)
 
@@ -47,7 +42,7 @@ function LoginPage() {
             )
         }
     }
-     
+
    return (
   <div className="auth-page">
     <div className="auth-card">
