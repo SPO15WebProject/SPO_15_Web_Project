@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import "./MyReviewsPage.css";
 
-// Muotoillaan päivämäärä suomalaiseen muotoon
+//Päivämäärä
 function formatDate(dateValue) {
   if (!dateValue) return "";
   const date = new Date(dateValue);
@@ -12,7 +12,7 @@ function formatDate(dateValue) {
 }
 
 function MyReviewsPage() {
-  // Haetaan kirjautunut käyttäjä (user.userid) ja auth-lataustila AuthContextista
+  //Haetaan kirjautunut käyttäjä (user.userid) ja auth-lataustila
   const { user, loading: authLoading } = useAuth();
   const userId = user?.userid ?? null;
 
@@ -20,15 +20,14 @@ function MyReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Haetaan käyttäjän arvostelut
+  //Haetaan käyttäjän arvostelut
   useEffect(() => {
     const fetchMyReviews = async () => {
-      // Odotetaan, että AuthContext on tarkistanut kirjautumistilan
       if (authLoading) {
         return;
       }
 
-      // Jos käyttäjä ei ole kirjautunut, tyhjennetään lista eikä tehdä pyyntöä
+      //Jos käyttäjä ei ole kirjautunut, tyhjennetään lista eikä tehdä pyyntöä
       if (!userId) {
         setReviews([]);
         setError("");
@@ -39,7 +38,7 @@ function MyReviewsPage() {
       setLoading(true);
       setError("");
 
-      // credentials: "include" lähettää JWT-evästeen mukana backendille
+      //credentials: include lähettää JWT-evästeen mukana backendille
       try {
         const response = await fetch(`/api/db/GetReviewsByUser/${userId}`, {
           credentials: "include",
@@ -50,7 +49,7 @@ function MyReviewsPage() {
           throw new Error(data.error || "Arvostelujen haku epäonnistui.");
         }
 
-        // Tallennetaan haetut arvostelut tilaan
+        
         setReviews(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message || "Virhe arvostelujen haussa.");
@@ -69,10 +68,10 @@ function MyReviewsPage() {
       <div className="my-reviews-card">
         <h2>Omat arvostelut</h2>
 
-        {/* Näytetään virheviesti, jos sellainen on */}
+       
         {error && <p className="my-reviews-error">{error}</p>}
 
-        {/* Näytetään eri tilat selkeästi: lataus -> kirjautumaton -> tyhjä -> arvostelut */}
+        
         {isPageLoading ? (
           <p>Ladataan arvosteluja...</p>
         ) : !user ? (
@@ -84,7 +83,7 @@ function MyReviewsPage() {
         ) : (
           <div className="my-reviews-list">
             {reviews.map((review) => {
-              // Tuetut kenttänimet sekä camelCase- että lowercase-muodossa
+              
               const movieId = review.movieId ?? review.movieid;
               const created = review.createdAt ?? review.createdat;
               const dateText = formatDate(created);

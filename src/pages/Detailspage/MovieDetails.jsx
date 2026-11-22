@@ -39,7 +39,7 @@ function MovieDetails() {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
 
-    try {
+    try {  //Lähetetään arvostelu ja istuntoeväste backendille
       const response = await fetch(
         `/api/db/CreateReview`,
         {
@@ -65,6 +65,7 @@ function MovieDetails() {
         return;
       }
 
+        //Tyjennetään lomake ja päivitetään arvostelulista
       setMessage("Arvostelu lisätty onnistuneesti!");
       setStars("");
       setReviewText("");
@@ -78,6 +79,7 @@ function MovieDetails() {
        );
     }
   };
+  //Haetaan arvostelut tietokannasta
   const fetchReviews = async () => {
     try {
       const response = await fetch(
@@ -94,6 +96,7 @@ function MovieDetails() {
     }
   };
 
+  //Haetaan arvostelut aina kun elova vaihtuu/latautuu
   useEffect(() => {
     if (displayedMovie?.id) {
       fetchReviews();

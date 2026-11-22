@@ -1,4 +1,4 @@
-/* Sivun asettelu profiilinäkymän tapaan */
+
 .my-reviews-page {
   min-height: calc(100vh - 60px);
   padding: 2rem 1.5rem;
@@ -7,7 +7,7 @@
   align-items: flex-start;
 }
 
-/* Tumma kortti, joka sopii profiilikortin rinnalle */
+
 .my-reviews-card {
   width: 100%;
   max-width: 780px;
@@ -33,14 +33,14 @@
   margin-bottom: 1rem;
 }
 
-/* Arvostelulistaus */
+
 .my-reviews-list {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
 }
 
-/* Yksittäinen arvostelurivi/kortti */
+
 .my-review-item {
   padding: 1rem 1.25rem;
   border-radius: 8px;
@@ -48,7 +48,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Ylärivi: elokuva + päivämäärä vasemmalla, tähtiarvosana oikealla */
+
 .my-review-header {
   display: flex;
   justify-content: space-between;
@@ -71,7 +71,7 @@
   text-decoration: underline;
 }
 
-/* Päivämäärä otsikon alla */
+
 .my-review-date {
   display: block;
   margin-top: 0.25rem;
@@ -79,7 +79,7 @@
   color: #a1a1aa;
 }
 
-/* Arvosanamerkki */
+
 .my-review-stars {
   padding: 0.3rem 0.7rem;
   border-radius: 6px;
@@ -90,7 +90,7 @@
   white-space: nowrap;
 }
 
-/* Arvostelun teksti */
+
 .my-review-text {
   margin: 0.75rem 0 0;
   line-height: 1.5;
