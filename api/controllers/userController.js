@@ -120,7 +120,8 @@ export const LoginUser = async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'lax',
-            secure: false
+            secure: false, // Aseta true tuotannossa
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 pv
         });
 
         res.status(200).json({
@@ -148,6 +149,29 @@ export const LogoutUser = async (req, res) => {
         message: 'Uloskirjautuminen onnistui.'
     });
 }
+
+// GET /Me (auth) palauttaa kirjautuneen käyttäjän tiedot
+export const GetMe = async (req, res) => {
+    try {
+        const user = await findUserById(req.user.userid);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.status(200).json({
+            success: true,
+            user: {
+                userid: user.userid,
+                nickname: user.nickname,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching current user:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 const authenticateUser = async (userId, password, res) => {
     if (!password) {

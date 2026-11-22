@@ -5,6 +5,7 @@ import {
     GetUserByEmail,
     LoginUser,
     LogoutUser,
+    GetMe,
     DeleteUser,
     UpdateEmail,
     UpdateNickname,
@@ -82,12 +83,7 @@ router.delete('/RemoveMovieFromList/:listId/:movieId', authMiddleware, RemoveMov
 router.post('/AddListToGroup', authMiddleware, AddListToGroup)
 router.delete('/RemoveListFromGroup/:listId/:groupId', authMiddleware, RemoveListFromGroup)
 
-//Testireitti JWT-autentikoinnin toiminnan tarkistamiseen.
-router.get('/Me', authMiddleware, (req, res) => {
-    res.status(200).json({
-        success: true,
-        user: req.user
-    })
-})
+//Palauttaa kirjautuneen käyttäjän evästeen jos on eväste
+router.get('/Me', authMiddleware, GetMe)
 
 export default router;

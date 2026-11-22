@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import axios from "axios";
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext';
 import "./AccountPage.css";
 
 function AccountPage() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user, loading, updateUser, logout } = useAuth()
+  const navigate = useNavigate()
 
   const [nickname, setNickname] = useState("")
   const [message, setMessage] = useState("")
@@ -21,15 +24,7 @@ function AccountPage() {
         }
       );
 
-      const updatedUser = {
-        ...user,
-        nickname: response.data.nickname
-      };
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(updatedUser)
-      );
+      updateUser({ nickname: response.data.nickname });
 
       setMessage("Nimimerkki päivitetty!");
 
@@ -51,15 +46,7 @@ function AccountPage() {
         }
       );
 
-      const updatedUser = {
-        ...user,
-        email: response.data.email
-      };
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(updatedUser)
-      );
+      updateUser({ email: response.data.email });
 
       setMessage("Sähköposti päivitetty!");
 
@@ -117,17 +104,9 @@ function AccountPage() {
         }
       )
 
-      await axios.post(
-        "/api/db/Logout",
-        {},
-        {
-          withCredentials: true
-        }
-      )
-      
-      localStorage.removeItem("user")
+      await logout()
 
-      window.location.href = "/"
+      navigate("/")
 
     } catch (error) {
       setMessage(
@@ -135,6 +114,20 @@ function AccountPage() {
         "Tilin poistaminen epäonnistui."
       )
     }
+  }
+
+  if (loading) return null
+
+  if (!user) {
+    return (
+      <div className="account-page">
+        <div className="account-card">
+          <p>
+            <Link to="/login">Kirjaudu sisään</Link> nähdäksesi tilisi tiedot.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -145,11 +138,11 @@ function AccountPage() {
 
         <div className="user-info">
           <p>
-            <strong>Nimimerkki:</strong> {user?.nickname}
+            <strong>Nimimerkki:</strong> {user.nickname}
           </p>
 
           <p>
-            <strong>Sähköposti:</strong> {user?.email}
+            <strong>Sähköposti:</strong> {user.email}
           </p>
         </div>
 
