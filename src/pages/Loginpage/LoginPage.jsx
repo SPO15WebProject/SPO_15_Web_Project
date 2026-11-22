@@ -25,7 +25,7 @@ function LoginPage() {
                     password
                 },
                 {
-                    withCredentials:true //Sallitaan backendin asettaa JWT-cookie kirjautumisen yhteydessä.
+                    withCredentials:true //Sallitaan backendin asettaa JWT-cookie kirjautumisen yhetydessä.
                 }
             )
 

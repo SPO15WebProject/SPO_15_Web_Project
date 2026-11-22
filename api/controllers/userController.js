@@ -120,8 +120,8 @@ export const LoginUser = async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'lax',
-            secure: false, // Aseta true tuotannossa (HTTPS)
-            maxAge: 7 * 24 * 60 * 60 * 1000 // Sama kuin JWT:n voimassaolo (7 pv)
+            secure: false, // Aseta true tuotannossa
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 pv
         });
 
         res.status(200).json({
@@ -150,7 +150,7 @@ export const LogoutUser = async (req, res) => {
     });
 }
 
-// GET /Me (vaatii authMiddlewaren) - palauttaa kirjautuneen käyttäjän tiedot
+// GET /Me (auth) palauttaa kirjautuneen käyttäjän tiedot
 export const GetMe = async (req, res) => {
     try {
         const user = await findUserById(req.user.userid);

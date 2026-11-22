@@ -104,7 +104,6 @@ function AccountPage() {
         }
       )
 
-      // Poistaa evästeen ja tyhjentää käyttäjän contextista
       await logout()
 
       navigate("/")

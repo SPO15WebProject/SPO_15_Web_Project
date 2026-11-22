@@ -83,7 +83,7 @@ router.delete('/RemoveMovieFromList/:listId/:movieId', authMiddleware, RemoveMov
 router.post('/AddListToGroup', authMiddleware, AddListToGroup)
 router.delete('/RemoveListFromGroup/:listId/:groupId', authMiddleware, RemoveListFromGroup)
 
-//Palauttaa kirjautuneen käyttäjän tiedot evästeen perusteella.
+//Palauttaa kirjautuneen käyttäjän evästeen jos on eväste
 router.get('/Me', authMiddleware, GetMe)
 
 export default router;

@@ -24,7 +24,6 @@ function Navbar() {
       </div>
 
       <div className="navbar-actions">
-        {/* Ei näytetä mitään ennen kuin palvelin on kertonut kirjautumistilan */}
         {!loading && (
           user ? (
             <>

@@ -5,34 +5,32 @@ const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
-  // true kunnes palvelin on vastannut, ettei navbar vilku "Kirjaudu"-tilassa
   const [loading, setLoading] = useState(true)
 
-  // Kysytään palvelimelta kuka on kirjautunut (httpOnly-eväste lähtee automaattisesti)
   useEffect(() => {
     let cancelled = false
 
     axios.get('/api/db/Me', { withCredentials: true })
       .then((res) => { if (!cancelled) setUser(res.data.user) })
-      .catch(() => { if (!cancelled) setUser(null) }) // 401 = ei voimassa olevaa evästettä
+      .catch(() => { if (!cancelled) setUser(null) })
       .finally(() => { if (!cancelled) setLoading(false) })
 
     return () => { cancelled = true }
   }, [])
 
-  // Jos jokin axios-pyyntö saa 401:n, tarkistetaan /Me:llä onko sessio oikeasti vanhentunut.
-  // (401 voi tulla myös väärästä salasanasta, jolloin käyttäjää ei kuulu kirjata ulos.)
+  // Jos pyynto antaa 401 tarkistetaan onko sessio vanhentunut
+  // esim väärä salasana voi antaa 401
   useEffect(() => {
     const id = axios.interceptors.response.use(
       (response) => response,
       (error) => {
         const url = error.config?.url ?? ''
-        if (
-          error.response?.status === 401 &&
-          !url.endsWith('/Me') &&
-          !url.endsWith('/Login')
+        if ( // lähetä /Me pyyntö jos
+          error.response?.status === 401 && // 401
+          !url.endsWith('/Me') && // ei ole /Me pyyntö (rekursio)
+          !url.endsWith('/Login') // ei ole login sivu (väärä salasana etc)
         ) {
-          axios.get('/api/db/Me', { withCredentials: true }).catch(() => setUser(null))
+          axios.get('/api/db/Me', { withCredentials: true }).catch(() => setUser(null)) //tarkistetaan eväste, jos error laitetaan käyttäjä null
         }
         return Promise.reject(error)
       }
@@ -59,7 +57,7 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  // Päivittää osan käyttäjän tiedoista (esim. nimimerkki tilisivulla)
+  // päivittä sivun tiedot esim nimen muuton jälkeen
   const updateUser = useCallback((changes) => {
     setUser((prev) => (prev ? { ...prev, ...changes } : prev))
   }, [])
@@ -74,7 +72,6 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
