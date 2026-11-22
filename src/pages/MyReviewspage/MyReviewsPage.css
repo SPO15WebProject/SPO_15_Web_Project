@@ -1,0 +1,99 @@
+
+.my-reviews-page {
+  min-height: calc(100vh - 60px);
+  padding: 2rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+
+.my-reviews-card {
+  width: 100%;
+  max-width: 780px;
+  padding: 2rem;
+  border-radius: 10px;
+  background-color: #1c1c1c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f3f4f6;
+}
+
+.my-reviews-card h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* Virheilmoitus */
+.my-reviews-error {
+  color: #f87171;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+
+.my-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+
+.my-review-item {
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  background-color: #262626;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.my-review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.my-review-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.my-review-header h3 a {
+  color: #f3f4f6;
+  text-decoration: none;
+}
+
+.my-review-header h3 a:hover {
+  text-decoration: underline;
+}
+
+
+.my-review-date {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+}
+
+
+.my-review-stars {
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  background-color: #323232;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+
+.my-review-text {
+  margin: 0.75rem 0 0;
+  line-height: 1.5;
+  color: #e4e4e7;
+  white-space: pre-line;
+}

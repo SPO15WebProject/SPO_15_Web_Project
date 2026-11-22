@@ -24,6 +24,13 @@ function Sidebar() {
           <Icon name="group" />
         </NavLink>
 
+        <NavLink to="/profile"
+        className="sidebar-link"
+        title="Profiili"
+        >
+          <Icon name="user" />
+        </NavLink>
+
         <NavLink to="/account" className="sidebar-link" title="Oma tili" aria-label="Oma tili">
           <Icon name="user" />
         </NavLink>

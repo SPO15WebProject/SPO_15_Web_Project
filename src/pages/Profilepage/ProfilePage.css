@@ -1,0 +1,60 @@
+.profile-page {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 1000px;
+  background-color: #1f1f1f;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.profile-card h2 {
+  margin-bottom: 2rem;
+}
+
+.profile-section {
+  margin-bottom: 2rem;
+}
+
+.profile-section h3 {
+  margin-bottom: 1rem;
+}
+
+.profile-info p {
+  margin-bottom: 0.75rem;
+}
+
+.profile-status {
+  margin-bottom: 1rem;
+}
+
+.profile-status a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.profile-action-btn {
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  background-color: #2a2a2a;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.profile-action-btn:hover {
+  background-color: #3a3a3a;
+}
