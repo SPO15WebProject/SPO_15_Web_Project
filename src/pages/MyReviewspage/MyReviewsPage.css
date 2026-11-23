@@ -97,3 +97,31 @@
   color: #e4e4e7;
   white-space: pre-line;
 }
+
+.delete-review-btn {
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #323232;
+  color: #f3f4f6;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.delete-review-btn:hover {
+  background-color: #c62828;
+  border-color: #c62828;
+}
+
+.delete-review-btn:active {
+  transform: scale(0.98);
+}
+
+.delete-review-btn {
+  display: block;
+  margin-top: 1rem;
+  margin-left: auto;
+}

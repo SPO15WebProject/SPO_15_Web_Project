@@ -96,6 +96,36 @@ function MovieDetails() {
     }
   };
 
+  //Arvostelun poistaminen
+  const handleDeleteReview = async (reviewId) => {
+    const confirmed = window.confirm(
+      "Haluatko varmasti poistaa tämän arvostelun?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(
+        `/api/db/DeleteReview/${reviewId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      if(!response.ok) {
+        throw new Error("Arvostelun poistaminen epäonnistui.");
+      }
+
+      setReviews((prevReviews) =>
+      prevReviews.filter((review) => review.id !==reviewId)
+    );
+    }catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
+
   //Haetaan arvostelut aina kun elova vaihtuu/latautuu
   useEffect(() => {
     if (displayedMovie?.id) {
@@ -236,6 +266,15 @@ function MovieDetails() {
               <p>{review.text}</p>
 
               <small>{review.nickname}</small>
+
+              {user && review.userid === user.userid && (
+                <button
+                className="delete-review-btn"
+                onClick={() => handleDeleteReview(review.id)}
+                >
+                  Poista arvostelu
+                </button>
+              )}
             </div>
           ))
         )}

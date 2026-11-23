@@ -61,6 +61,37 @@ function MyReviewsPage() {
     fetchMyReviews();
   }, [userId, authLoading]);
 
+  //Arvostelun poistaminen
+  const handleDelete = async (reviewId) => {
+    const confirmed = window.confirm(
+        "Haluatko varmasti poistaa tämän arvostelun?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(
+            `/api/db/DeleteReview/${reviewId}`,
+            {
+                method: "DELETE",
+                credentials: "include",
+            }
+        );
+
+
+        if (!response.ok) {
+            throw new Error("Arvostelun poistaminen epäonnistui.");
+        }
+
+        setReviews((prevReviews) => 
+        prevReviews.filter((review) => review.id !== reviewId)
+    );
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+  };
+
   const isPageLoading = authLoading || loading;
 
   return (
@@ -103,6 +134,13 @@ function MyReviewsPage() {
                   <p className="my-review-text">
                     {review.text || "Ei arvostelutekstiä."}
                   </p>
+
+                  <button
+                  className="delete-review-btn"
+                  onClick={() => handleDelete(review.id)}
+                  >
+                    Poista arvostelu
+                  </button>
                 </div>
               );
             })}
