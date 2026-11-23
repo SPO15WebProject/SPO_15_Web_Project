@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import useMovies from '../../hooks/Usemovies'
+import './GroupPage.css'
 
 function GroupPage() {
     const { groupId } = useParams()
