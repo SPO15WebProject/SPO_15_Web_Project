@@ -186,3 +186,28 @@ export const GetGroupById = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+// GET /GetMyGroups
+export const GetMyGroups = async (req, res) => {
+    try {
+        const groups = await findAllGroups();
+        const myGroups = [];
+
+        // palauttaa vain kirjautuneen käyttäjän ryhmät
+        for (const group of groups) {
+            const membership = await findMember(
+                group.groupid,
+                req.user.userid
+            );
+
+            if (membership) {
+                myGroups.push(group);
+            }
+        }
+
+        res.status(200).json(myGroups);
+    } catch (error) {
+        console.error('Error fetching user groups:', error);
+        res.status(500).json({ error: 'Internal server error'});
+    }
+};

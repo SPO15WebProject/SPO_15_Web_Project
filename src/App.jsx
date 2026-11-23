@@ -16,6 +16,8 @@ import AccountPage from './pages/Accountpage/AccountPage'
 import ProfilePage from './pages/Profilepage/ProfilePage'
 import MyReviewsPage from './pages/MyReviewspage/MyReviewsPage'
 import CreateGroupPage from './pages/GroupPage/CreateGroupPage'
+import GroupPage from './pages/GroupPage/GroupPage'
+import MyGroupsPage from './pages/GroupPage/MyGroupPage'
 
 function App() {
   return (
@@ -39,6 +41,8 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/profile/reviews" element={<MyReviewsPage />} />
               <Route path="/groups/new" element={<CreateGroupPage />} />
+              <Route path="/groups/:groupId" element={<GroupPage />} />
+              <Route path="/profile/groups" element={<MyGroupsPage />} />
               <Route path="*" element={<p>Sivua ei löytynyt.</p>} />
             </Routes>
           </main>

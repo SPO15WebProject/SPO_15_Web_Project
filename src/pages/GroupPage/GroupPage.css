@@ -1,0 +1,93 @@
+.group-page {
+    width: 100%;
+    max-width: 1000px;
+    margin: 1rem auto;
+    text-align: left;
+}
+
+/* samat värit ja kortit kun muualla */
+.group-panel {
+    padding: clamp(1rem, 3vw, 2rem);
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-large);
+    overflow-wrap: anywhere;
+}
+
+.group-panel h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.6rem, 3vw, 2rem);
+}
+
+.group-panel h2 {
+    margin: 1.75rem 0 0.75rem;
+    font-size: 1.2rem;
+}
+
+.group-panel p {
+    color: var(--text-secondary-color);
+    line-height: 1.6;
+}
+
+/* mobiililaittelle sopiva */
+.group-page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.group-page-header h1 {
+    margin: 0;
+}
+
+.group-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.2rem;
+    background-color: var(--surface-hover-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    color: var(--text-color);
+}
+
+.group-action:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.group-members,
+.group-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.group-members li,
+.group-list-link {
+    padding: 1rem;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    overflow-wrap: anywhere;
+}
+
+.group-list-link {
+    display: block;
+    color: var(--text-color);
+    transition:
+        background-color var(--transition-speed),
+        border-color var(--transition-speed);
+}
+
+.group-list-link:hover,
+.group-list-link:focus-visible {
+    background-color: var(--surface-hover-color);
+    border-color: var(--accent-color);
+}
