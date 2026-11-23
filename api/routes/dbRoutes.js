@@ -17,7 +17,8 @@ import {
     RemoveGroupMember,
     DeleteGroup,
     GetGroupById,
-    GetAllGroups
+    GetAllGroups,
+    GetMyGroups
 } from "../controllers/groupController.js";
 import {
     CreateReview,
@@ -62,6 +63,7 @@ router.delete('/RemoveGroupMember', authMiddleware, RemoveGroupMember)
 router.delete('/DeleteGroup/:groupId', authMiddleware, DeleteGroup)
 router.get('/GetGroupById/:groupId', GetGroupById)
 router.get('/GetAllGroups', GetAllGroups)
+router.get('/GetMyGroups', authMiddleware, GetMyGroups)
 
 router.post('/CreateReview', authMiddleware, CreateReview)
 router.get('/GetAllReviews', GetAllReviews)
