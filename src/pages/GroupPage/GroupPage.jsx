@@ -1,9 +1,14 @@
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import useMovies from '../../hooks/Usemovies'
+import GroupHeader from './GroupHeader'
+import GroupContent from './GroupContent'
+import GroupSidebar from './GroupSidebar'
 import './GroupPage.css'
 
 function GroupPage() {
     const { groupId } = useParams()
+    const { user, loading: authLoading } = useAuth()
 
     //useMovies hook hakee datan
     //tehdään palautetusta arvosta ryhmä
@@ -17,38 +22,38 @@ function GroupPage() {
         : null
 
     if (error) {
-        return (
-            <p role="alert">
-                Ryhmän tietoja ei löytynyt
-            </p>
-        )
+        return <p role="alert">Ryhmän tietoja ei löytynyt</p>
     }
 
     if (loading || !currentGroup) {
         return <p role="status">Ladataan ryhmän tietoja...</p>
     }
 
+    // tarkistetaan löytyykö kirjautunut käyttäjä ryhmän jäsenlistasta
+    const isMember = currentGroup.members.some(
+        (member) => String(member.userid) === String(user?.userid)
+    )
+
     return (
         <section className="group-page">
-            <Link to="/">Takaisin etusivulle</Link>
+            <nav className="group-navigation" aria-label="Ryhmäsivun navigointi">
+                <Link to="/profile/groups" className="group-action">Takaisin ryhmiin</Link>
+                <Link to="/" className="group-action">Takaisin etusivulle</Link>
+            </nav>
 
-            <article className="group-panel">
-                <h1>{currentGroup.groupname}</h1>
-                <p>{currentGroup.groupdescription || 'Ryhmällä ei ole kuvausta.'}</p>
-                <p>{currentGroup.inviteonly ? 'Suljettu ryhmä' : 'Avoin ryhmä'}</p>
+            <GroupHeader group={currentGroup} isMember={isMember} />
+            
+            <div className="group-layout">
+                {/* nollaa osion ryhmän vaihtuessa */}
+                <GroupContent
+                    key={currentGroup.groupid}
+                    groupId={currentGroup.groupid}
+                    isMember={isMember}
+                    authLoading={authLoading}
+                />
 
-                {/* jäsenien määrä haetaan palvelimen avulla */ }
-                <h2>Jäsenet ({currentGroup.members.length})</h2>
-
-                <ul className="group-members">
-                    {currentGroup.members.map((member) => (
-                        <li key={member.userid}>
-                            {member.nickname}
-                            {member.isadmin && ' - Ylläpitäjä'}
-                        </li>
-                    ))}
-                </ul>
-            </article>
+                <GroupSidebar group={currentGroup} />
+            </div>
         </section>
     )
 }
