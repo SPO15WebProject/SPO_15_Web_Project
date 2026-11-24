@@ -1,93 +1,197 @@
-.group-page {
-    width: 100%;
-    max-width: 1000px;
-    margin: 1rem auto;
-    text-align: left;
+/* sivun koko ja tekstien rivitys */
+.group-page,
+.group-page * {
+    box-sizing: border-box;
 }
 
-/* samat värit ja kortit kun muualla */
-.group-panel {
-    padding: clamp(1rem, 3vw, 2rem);
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-large);
+.group-page {
+    width: 100%;
+    max-width: 1200px;
+    margin: 1rem auto;
+    text-align: left;
     overflow-wrap: anywhere;
 }
 
-.group-panel h1 {
-    margin: 0 0 1rem;
-    font-size: clamp(1.6rem, 3vw, 2rem);
+.group-page h1 {
+    margin: 0;
+    font-size: 2rem;
 }
 
-.group-panel h2 {
-    margin: 1.75rem 0 0.75rem;
-    font-size: 1.2rem;
+.group-page h2, .group-page h3 {
+    margin: 0;
+    font-size: 1.1rem;
 }
 
-.group-panel p {
+.group-page p {
+    margin: 0.5rem 0;
     color: var(--text-secondary-color);
-    line-height: 1.6;
 }
 
-/* mobiililaittelle sopiva */
-.group-page-header {
+/* otsikot, linkit ja sisältövalinnat */
+.group-page-header,
+.group-details-header,
+.group-navigation,
+.group-sections,
+.group-identity,
+.group-card-meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: 1rem;
+}
+
+.group-page-header,
+.group-details-header {
+    justify-content: space-between;
     margin-bottom: 1.5rem;
 }
 
-.group-page-header h1 {
-    margin: 0;
+.group-details-header {
+    padding-top: 1rem;
+}
+
+.group-navigation,
+.group-sections {
+    margin-bottom: 1rem;
 }
 
 .group-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     padding: 0.6rem 1.2rem;
-    background-color: var(--surface-hover-color);
+    background-color: var(--surface-color);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-medium);
-    color: var(--text-color);
 }
 
-.group-action:hover {
+.group-section-button[aria-pressed='true'] {
     border-color: var(--accent-color);
-    color: var(--accent-color);
 }
 
-.group-members,
-.group-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+/* listojen perusasetukset */
+.group-list, .group-members, .group-movie-lists {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.group-members li,
-.group-list-link {
-    padding: 1rem;
-    background-color: var(--background-color);
+.group-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+    gap: 1rem;
+}
+
+/* kortit ja peneelit */
+.group-card, .group-panel {
+    min-width: 0;
+    background-color: var(--surface-color);
     border: 1px solid var(--border-color);
+    border-radius: var(--radius-large);
+}
+
+.group-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.group-card-body, .group-panel {
+    padding: 1rem;
+}
+
+.group-card-body, .group-sidebar, .group-members, .group-movie-lists {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.group-card-body, .group-identity {
+    flex: 1;
+}
+
+.group-card-meta {
+    justify-content: space-between;
+    margin-top: auto;
+}
+
+.group-card-cover {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 5rem;
+    padding: 1rem;
+    background: var(--surface-hover-color);
+}
+
+.group-cover {
+    border-radius: var(--radius-large);
+}
+
+.group-card-cover svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--text-secondary-color);
+}
+
+/* samankokoiset tunnukset ryhmille ja jäsenille */
+.group-avatar,
+.group-member-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: var(--radius-medium);
-    overflow-wrap: anywhere;
-}
-
-.group-list-link {
-    display: block;
-    color: var(--text-color);
-    transition:
-        background-color var(--transition-speed),
-        border-color var(--transition-speed);
-}
-
-.group-list-link:hover,
-.group-list-link:focus-visible {
     background-color: var(--surface-hover-color);
-    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+/* sisältö ja sivupaneeli */
+.group-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.group-main,
+.group-identity,
+.group-identity > div,
+.group-list > li,
+.group-members li > div,
+.group-movie-list > div {
+    min-width: 0;
+}
+
+.group-members li,
+.group-movie-list {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.group-movie-list > svg {
+    flex-shrink: 0;
+}
+
+.group-members small {
+    display: block;
+}
+
+.group-card-meta,
+.group-members small,
+.group-membership,
+.group-list-meta {
+    color: var(--text-secondary-color);
+    font-size: 0.85rem;
+}
+
+.group-description {
+    white-space: pre-wrap;
+}
+
+/* mobiilissa sivupaneeli sisällön alle */
+@media (max-width: 800px) {
+    .group-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
