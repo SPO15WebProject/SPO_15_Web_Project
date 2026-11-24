@@ -35,7 +35,7 @@ const getOwnedList = async (listId, userId, res) => {
 };
 
 // POST /CreateList (auth) body: { listName, listDescription? }
-export const CreateList = async (req, res) => {
+export const createList = async (req, res) => {
     const userId = req.user.userid;
     const { listName: rawName, listDescription: rawDescription } = req.body ?? {};
 
@@ -64,7 +64,7 @@ export const CreateList = async (req, res) => {
 };
 
 // GET /GetAllLists
-export const GetAllLists = async (req, res) => {
+export const getAllLists = async (req, res) => {
     try {
         const lists = await findAllLists();
         res.status(200).json(lists);
@@ -75,7 +75,7 @@ export const GetAllLists = async (req, res) => {
 };
 
 // GET /GetListById/:listId 
-export const GetListById = async (req, res) => {
+export const getListById = async (req, res) => {
     const listId = toId(req.params.listId);
     if (!listId) {
         return res.status(400).json({ error: 'Invalid list id' });
@@ -98,7 +98,7 @@ export const GetListById = async (req, res) => {
 };
 
 // GET /GetListsByUser/:userId
-export const GetListsByUser = async (req, res) => {
+export const getListsByUser = async (req, res) => {
     const userId = toId(req.params.userId);
     if (!userId) {
         return res.status(400).json({ error: 'Invalid user id' });
@@ -114,7 +114,7 @@ export const GetListsByUser = async (req, res) => {
 };
 
 // GET /GetListsByGroup/:groupId
-export const GetListsByGroup = async (req, res) => {
+export const getListsByGroup = async (req, res) => {
     const groupId = toId(req.params.groupId);
     if (!groupId) {
         return res.status(400).json({ error: 'Invalid group id' });
@@ -130,7 +130,7 @@ export const GetListsByGroup = async (req, res) => {
 };
 
 // PUT /UpdateList/:listId (auth) body: { listName?, listDescription? }
-export const UpdateList = async (req, res) => {
+export const updateList = async (req, res) => {
     const listId = toId(req.params.listId);
     const { listName: rawName, listDescription: rawDescription } = req.body ?? {};
 
@@ -170,7 +170,7 @@ export const UpdateList = async (req, res) => {
 };
 
 // DELETE /DeleteList/:listId (auth)
-export const DeleteList = async (req, res) => {
+export const deleteList = async (req, res) => {
     const listId = toId(req.params.listId);
 
     if (!listId) {
@@ -190,7 +190,7 @@ export const DeleteList = async (req, res) => {
 };
 
 // POST /AddMovieToList (auth) body: { listId, movieId }
-export const AddMovieToList = async (req, res) => {
+export const addMovieToList = async (req, res) => {
     const listId = toId(req.body?.listId);
     const movieId = toId(req.body?.movieId);
 
@@ -214,7 +214,7 @@ export const AddMovieToList = async (req, res) => {
 };
 
 // DELETE /RemoveMovieFromList/:listId/:movieId (auth)
-export const RemoveMovieFromList = async (req, res) => {
+export const removeMovieFromList = async (req, res) => {
     const listId = toId(req.params.listId);
     const movieId = toId(req.params.movieId);
 
@@ -238,7 +238,7 @@ export const RemoveMovieFromList = async (req, res) => {
 };
 
 // POST /AddListToGroup (auth) body: { listId, groupId }
-export const AddListToGroup = async (req, res) => {
+export const addListToGroup = async (req, res) => {
     const userId = req.user.userid;
     const listId = toId(req.body?.listId);
     const groupId = toId(req.body?.groupId);
@@ -273,7 +273,7 @@ export const AddListToGroup = async (req, res) => {
 };
 
 // DELETE /RemoveListFromGroup/:listId/:groupId (auth)
-export const RemoveListFromGroup = async (req, res) => {
+export const removeListFromGroup = async (req, res) => {
     const userId = req.user.userid;
     const listId = toId(req.params.listId);
     const groupId = toId(req.params.groupId);

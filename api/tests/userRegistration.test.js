@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from "vitest"
 import bcrypt from 'bcryptjs'
-import { CreateUser } from '../controllers/userController.js'
+import { createUser } from '../controllers/userController.js'
 import { insertUser } from '../models/userModel.js'
 
 // mockatattu tietokantaan tallentaminen
@@ -33,7 +33,7 @@ describe('Käyttäjän rekisteröinti', () => {
 
         insertUser.mockResolvedValueOnce(savedUser)
 
-        await CreateUser({ body }, res)
+        await createUser({ body }, res)
 
         // luetaan tietokantafunktioon annetut argumentit
         expect(insertUser).toHaveBeenCalledOnce()
@@ -54,7 +54,7 @@ describe('Käyttäjän rekisteröinti', () => {
             password: 'Testi12'
         }
 
-        await CreateUser({ body }, res)
+        await createUser({ body }, res)
 
         expect(res.status).toHaveBeenCalledWith(400)
         expect(res.json).toHaveBeenCalledWith({
