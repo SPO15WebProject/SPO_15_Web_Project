@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest'
-import { CreateGroup } from '../controllers/groupController.js'
+import { createGroup } from '../controllers/groupController.js'
 import { insertGroup } from '../models/groupModel.js'
 
 // mkockataan ryhmän tallennus jotta se ei mene tietokantaan
@@ -27,7 +27,7 @@ test('käyttää kirjautuneen käyttäjän ID:tä ryhmän perustajana', async ()
 
     insertGroup.mockResolvedValueOnce({ groupid: 10 })
 
-    await CreateGroup(req, res)
+    await createGroup(req, res)
 
     expect(insertGroup).toHaveBeenCalledWith(
         'Test group',
