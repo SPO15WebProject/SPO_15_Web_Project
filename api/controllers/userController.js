@@ -12,7 +12,7 @@ import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken'
 
 // GET /GetAllUsers 
-export const GetAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
     try {
         const users = await findAllUsers();
         res.status(200).json(users);
@@ -22,7 +22,7 @@ export const GetAllUsers = async (req, res) => {
     }
 };
 // POST /CreateUser body: { nickname, email, password }
-export const CreateUser = async (req, res) => {
+export const createUser = async (req, res) => {
     const { nickname, email, password } = req.body;
 
     if (!nickname || !email || !password) {
@@ -54,7 +54,7 @@ export const CreateUser = async (req, res) => {
     }
 };
 // GET /GetUserByEmail body: { email }
-export const GetUserByEmail = async (req, res) => {
+export const getUserByEmail = async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
@@ -74,7 +74,7 @@ export const GetUserByEmail = async (req, res) => {
     }
 };
 // POST /LoginUser body: { email, password }
-export const LoginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -141,7 +141,7 @@ export const LoginUser = async (req, res) => {
 };
 
 //Poistetaan JWT-cookie uloskirjautumisen yhteydessä.
-export const LogoutUser = async (req, res) => {
+export const logoutUser = async (req, res) => {
     res.clearCookie('token');
 
     res.status(200).json({
@@ -151,7 +151,7 @@ export const LogoutUser = async (req, res) => {
 }
 
 // GET /Me (auth) palauttaa kirjautuneen käyttäjän tiedot
-export const GetMe = async (req, res) => {
+export const getMe = async (req, res) => {
     try {
         const user = await findUserById(req.user.userid);
 
@@ -173,6 +173,15 @@ export const GetMe = async (req, res) => {
     }
 };
 
+// Varmistetaan, että kirjautunut käyttäjä muokkaa vain omia tietojaan.
+const ensureSelf = (req, res) => {
+    if (String(req.user.userid) !== String(req.params.userId)) {
+        res.status(403).json({ error: 'You can only modify your own account' });
+        return false;
+    }
+    return true;
+};
+
 const authenticateUser = async (userId, password, res) => {
     if (!password) {
         res.status(400).json({ error: 'Password is required' });
@@ -192,7 +201,8 @@ const authenticateUser = async (userId, password, res) => {
 };
 
 // DELETE /DeleteUser/:userId   body: { password }
-export const DeleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
+    if (!ensureSelf(req, res)) return;
     const { userId } = req.params;
     const { password } = req.body;
 
@@ -209,7 +219,8 @@ export const DeleteUser = async (req, res) => {
 };
 
 // PUT /UpdateEmail/:userId   body: { email, password }
-export const UpdateEmail = async (req, res) => {
+export const updateEmail = async (req, res) => {
+    if (!ensureSelf(req, res)) return;
     const { userId } = req.params;
     const { email, password } = req.body;
 
@@ -233,7 +244,8 @@ export const UpdateEmail = async (req, res) => {
 };
 
 // PUT /UpdateNickname/:userId   body: { nickname }
-export const UpdateNickname = async (req, res) => {
+export const updateNickname = async (req, res) => {
+    if (!ensureSelf(req, res)) return;
     const { userId } = req.params;
     const { nickname } = req.body;
 
@@ -257,7 +269,8 @@ export const UpdateNickname = async (req, res) => {
 };
 
 // PUT /UpdatePassword/:userId   body: { password, newPassword }
-export const UpdatePassword = async (req, res) => {
+export const updatePassword = async (req, res) => {
+    if (!ensureSelf(req, res)) return;
     const { userId } = req.params;
     const { password, newPassword } = req.body;
 

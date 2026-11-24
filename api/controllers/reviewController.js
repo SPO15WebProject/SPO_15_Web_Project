@@ -16,9 +16,8 @@ const toId = (value) => {
 
 const isValidStars = (stars) => Number.isInteger(stars) && stars >= 0 && stars <= 10;
 
-// POST /CreateReview body: { userId, movieId, stars, text }
-// vois muutta userId auth checkiks
-export const CreateReview = async (req, res) => {
+// POST /CreateReview body: { movieId, stars, text }
+export const createReview = async (req, res) => {
     const userId = req.user.userid;
     const { movieId, stars, text } = req.body ?? {};
  
@@ -46,7 +45,7 @@ export const CreateReview = async (req, res) => {
 };
 
 // GET /GetAllReviews
-export const GetAllReviews = async (req, res) => {
+export const getAllReviews = async (req, res) => {
     try {
         const reviews = await findAllReviews();
         res.status(200).json(reviews);
@@ -57,7 +56,7 @@ export const GetAllReviews = async (req, res) => {
 };
 
 // GET /GetReviewById/:reviewId
-export const GetReviewById = async (req, res) => {
+export const getReviewById = async (req, res) => {
     const id = toId(req.params.reviewId);
     if (!id) {
         return res.status(400).json({ error: 'Invalid review id' });
@@ -76,7 +75,7 @@ export const GetReviewById = async (req, res) => {
 };
 
 // GET /GetReviewsByMovie/:movieId
-export const GetReviewsByMovie = async (req, res) => {
+export const getReviewsByMovie = async (req, res) => {
     const movieId = toId(req.params.movieId);
     if (!movieId) {
         return res.status(400).json({ error: 'Invalid movie id' });
@@ -95,7 +94,7 @@ export const GetReviewsByMovie = async (req, res) => {
 };
 
 // GET /GetReviewsByUser/:userId
-export const GetReviewsByUser = async (req, res) => {
+export const getReviewsByUser = async (req, res) => {
     const userId = toId(req.params.userId);
     if (!userId) {
         return res.status(400).json({ error: 'Invalid user id' });
@@ -111,7 +110,7 @@ export const GetReviewsByUser = async (req, res) => {
 };
 
 // PUT /UpdateReview/:reviewId body: { stars, text }
-export const UpdateReview = async (req, res) => {
+export const updateReview = async (req, res) => {
     const id = toId(req.params.reviewId);
     const requesterId = req.user.userid;
     const { stars, text } = req.body;
@@ -151,7 +150,7 @@ export const UpdateReview = async (req, res) => {
 };
 
 // DELETE /DeleteReview/:reviewId
-export const DeleteReview = async (req, res) => {
+export const deleteReview = async (req, res) => {
     const id = toId(req.params.reviewId);
     const requesterId = req.user.userid;
 
