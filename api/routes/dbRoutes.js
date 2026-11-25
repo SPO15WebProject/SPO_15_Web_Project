@@ -1,91 +1,91 @@
 import { Router } from "express";
 import {
-    GetAllUsers,
-    CreateUser,
-    GetUserByEmail,
-    LoginUser,
-    LogoutUser,
-    GetMe,
-    DeleteUser,
-    UpdateEmail,
-    UpdateNickname,
-    UpdatePassword
+    getAllUsers,
+    createUser,
+    getUserByEmail,
+    loginUser,
+    logoutUser,
+    getMe,
+    deleteUser,
+    updateEmail,
+    updateNickname,
+    updatePassword
 } from "../controllers/userController.js";
 import {
-    CreateGroup,
-    AddGroupMember,
-    RemoveGroupMember,
-    DeleteGroup,
-    GetGroupById,
-    GetAllGroups,
-    GetMyGroups
+    createGroup,
+    addGroupMember,
+    removeGroupMember,
+    deleteGroup,
+    getGroupById,
+    getAllGroups,
+    getMyGroups
 } from "../controllers/groupController.js";
 import {
-    CreateReview,
-    GetAllReviews,
-    GetReviewById,
-    GetReviewsByMovie,
-    GetReviewsByUser,
-    DeleteReview,
-    UpdateReview
+    createReview,
+    getAllReviews,
+    getReviewById,
+    getReviewsByMovie,
+    getReviewsByUser,
+    deleteReview,
+    updateReview
 } from "../controllers/reviewController.js";
 import {
-    CreateList,
-    GetAllLists,
-    GetListById,
-    GetListsByUser,
-    GetListsByGroup,
-    UpdateList,
-    DeleteList,
-    AddMovieToList,
-    RemoveMovieFromList,
-    AddListToGroup,
-    RemoveListFromGroup
+    createList,
+    getAllLists,
+    getListById,
+    getListsByUser,
+    getListsByGroup,
+    updateList,
+    deleteList,
+    addMovieToList,
+    removeMovieFromList,
+    addListToGroup,
+    removeListFromGroup
 } from "../controllers/listController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = Router()
 
-router.get('/GetAllUsers', GetAllUsers)
-router.post('/CreateUser', CreateUser)
-router.post('/GetUserByEmail', GetUserByEmail)
-router.post('/Login', LoginUser)
-router.post('/Logout', LogoutUser)
-router.delete('/DeleteUser/:userId', DeleteUser)
-router.put('/UpdateEmail/:userId', UpdateEmail)
-router.put('/UpdateNickname/:userId', UpdateNickname)
-router.put('/UpdatePassword/:userId', UpdatePassword)
+router.get('/GetAllUsers', getAllUsers)
+router.post('/CreateUser', createUser)
+router.post('/GetUserByEmail', getUserByEmail)
+router.post('/Login', loginUser)
+router.post('/Logout', logoutUser)
+router.delete('/DeleteUser/:userId', authMiddleware, deleteUser)
+router.put('/UpdateEmail/:userId', authMiddleware, updateEmail)
+router.put('/UpdateNickname/:userId', authMiddleware, updateNickname)
+router.put('/UpdatePassword/:userId', authMiddleware, updatePassword)
 
-router.post('/CreateGroup', authMiddleware, CreateGroup)
-router.post('/AddGroupMember', authMiddleware, AddGroupMember)
-router.delete('/RemoveGroupMember', authMiddleware, RemoveGroupMember)
-router.delete('/DeleteGroup/:groupId', authMiddleware, DeleteGroup)
-router.get('/GetGroupById/:groupId', GetGroupById)
-router.get('/GetAllGroups', GetAllGroups)
-router.get('/GetMyGroups', authMiddleware, GetMyGroups)
+router.post('/CreateGroup', authMiddleware, createGroup)
+router.post('/AddGroupMember', authMiddleware, addGroupMember)
+router.delete('/RemoveGroupMember', authMiddleware, removeGroupMember)
+router.delete('/DeleteGroup/:groupId', authMiddleware, deleteGroup)
+router.get('/GetGroupById/:groupId', getGroupById)
+router.get('/GetAllGroups', getAllGroups)
+router.get('/GetMyGroups', authMiddleware, getMyGroups)
 
-router.post('/CreateReview', authMiddleware, CreateReview)
-router.get('/GetAllReviews', GetAllReviews)
-router.get('/GetReviewById/:reviewId', GetReviewById)
-router.get('/GetReviewsByMovie/:movieId', GetReviewsByMovie)
-router.get('/GetReviewsByUser/:userId', GetReviewsByUser)
-router.delete('/DeleteReview/:reviewId', authMiddleware, DeleteReview)
-router.put('/UpdateReview/:reviewId', authMiddleware, UpdateReview)
+router.post('/CreateReview', authMiddleware, createReview)
+router.get('/GetAllReviews', getAllReviews)
+router.get('/GetReviewById/:reviewId', getReviewById)
+router.get('/GetReviewsByMovie/:movieId', getReviewsByMovie)
+router.get('/GetReviewsByUser/:userId', getReviewsByUser)
+router.delete('/DeleteReview/:reviewId', authMiddleware, deleteReview)
+router.put('/UpdateReview/:reviewId', authMiddleware, updateReview)
 
-router.post('/CreateList', authMiddleware, CreateList)
-router.get('/GetAllLists', GetAllLists)
-router.get('/GetListById/:listId', GetListById)
-router.get('/GetListsByUser/:userId', GetListsByUser)
-router.get('/GetListsByGroup/:groupId', GetListsByGroup)
-router.put('/UpdateList/:listId', authMiddleware, UpdateList)
-router.delete('/DeleteList/:listId', authMiddleware, DeleteList)
-router.post('/AddMovieToList', authMiddleware, AddMovieToList)
-router.delete('/RemoveMovieFromList/:listId/:movieId', authMiddleware, RemoveMovieFromList)
-router.post('/AddListToGroup', authMiddleware, AddListToGroup)
-router.delete('/RemoveListFromGroup/:listId/:groupId', authMiddleware, RemoveListFromGroup)
+router.post('/CreateList', authMiddleware, createList)
+router.get('/GetAllLists', getAllLists)
+router.get('/GetListById/:listId', getListById)
+router.get('/GetListsByUser/:userId', getListsByUser)
+router.get('/GetListsByGroup/:groupId', getListsByGroup)
+router.put('/UpdateList/:listId', authMiddleware, updateList)
+router.delete('/DeleteList/:listId', authMiddleware, deleteList)
+router.post('/AddMovieToList', authMiddleware, addMovieToList)
+router.delete('/RemoveMovieFromList/:listId/:movieId', authMiddleware, removeMovieFromList)
+router.post('/AddListToGroup', authMiddleware, addListToGroup)
+router.delete('/RemoveListFromGroup/:listId/:groupId', authMiddleware, removeListFromGroup)
 
 //Palauttaa kirjautuneen käyttäjän evästeen jos on eväste
-router.get('/Me', authMiddleware, GetMe)
+router.get('/Me', authMiddleware, getMe)
 
 export default router;

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { AddGroupMember, RemoveGroupMember, DeleteGroup } from "../controllers/groupController.js";
+import { addGroupMember, removeGroupMember, deleteGroup } from "../controllers/groupController.js";
 import { findGroupById, insertMember, findMember, deleteMember, deleteGroupById, countAdmins, countMembers } from "../models/groupModel.js";
 
 // Tietokantatoiminnot mockattuna jotta testit eivät muuta tietokannan tietoja.
@@ -48,7 +48,7 @@ describe('Ryhmien käyttöoikeudet', () => {
         })
         insertMember.mockResolvedValueOnce(savedMember)
 
-        await AddGroupMember(req, res)
+        await addGroupMember(req, res)
 
         // Tallennuksessa käytetään kirjautumisen tunnistetta
         expect(insertMember).toHaveBeenCalledOnce()
@@ -68,7 +68,7 @@ describe('Ryhmien käyttöoikeudet', () => {
             inviteonly: true
         })
 
-        await AddGroupMember(req, res)
+        await addGroupMember(req, res)
 
         expect(res.status).toHaveBeenCalledWith(403)
 
@@ -93,7 +93,7 @@ describe('Ryhmien käyttöoikeudet', () => {
             isadmin: userId === 99
         }))
 
-        await RemoveGroupMember(req, res)
+        await removeGroupMember(req, res)
 
         // oikeudet tarkistetaan kirjautuneelta käyttäjältä
         expect(findMember).toHaveBeenCalledWith(5, 7)
@@ -118,7 +118,7 @@ describe('Ryhmien käyttöoikeudet', () => {
             isadmin: userId === 99
         }))
 
-        await DeleteGroup(req, res)
+        await deleteGroup(req, res)
 
         expect(findMember).toHaveBeenCalledWith('5', 7)
         expect(res.status).toHaveBeenCalledWith(403)
@@ -136,7 +136,7 @@ describe('Ryhmien käyttöoikeudet', () => {
             .mockResolvedValueOnce({ userid: 7, isadmin: true })
             .mockResolvedValueOnce({ userid: 8, isadmin: false })
 
-        await RemoveGroupMember(req, res)
+        await removeGroupMember(req, res)
 
         expect(findMember).toHaveBeenCalledWith(5, 7)
         expect(findMember).toHaveBeenCalledWith(5, 8)
@@ -159,7 +159,7 @@ describe('Ryhmien käyttöoikeudet', () => {
             isadmin: false
         })
 
-        await RemoveGroupMember(req, res)
+        await removeGroupMember(req, res)
 
         expect(deleteMember).toHaveBeenCalledOnce()
         expect(deleteMember).toHaveBeenCalledWith(5, 7)
@@ -180,7 +180,7 @@ describe('Ryhmien käyttöoikeudet', () => {
             isadmin: true
         })
 
-        await DeleteGroup(req, res)
+        await deleteGroup(req, res)
 
         // admin-status tarkistetaan poistettavan ryhmän jäsenyydestä
         expect(findMember).toHaveBeenCalledWith('5', 7)
@@ -205,7 +205,7 @@ describe('Ryhmien käyttöoikeudet', () => {
         countAdmins.mockResolvedValueOnce(1)
         countMembers.mockResolvedValueOnce(2)
 
-        await RemoveGroupMember(req, res)
+        await removeGroupMember(req, res)
 
         expect(res.status).toHaveBeenCalledWith(409)
         expect(deleteMember).not.toHaveBeenCalled()
@@ -228,7 +228,7 @@ describe('Ryhmien käyttöoikeudet', () => {
         countAdmins.mockResolvedValueOnce(1)
         countMembers.mockResolvedValueOnce(1)
 
-        await RemoveGroupMember(req, res)
+        await removeGroupMember(req, res)
 
         expect(deleteGroupById).toHaveBeenCalledOnce()
         expect(deleteGroupById).toHaveBeenCalledWith(5)

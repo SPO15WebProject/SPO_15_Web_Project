@@ -12,7 +12,7 @@ import {
 } from "../models/groupModel.js";
 
 // POST /CreateGroup — lomakkeelta saadaan nimi, kuvaus ja ryhmän tyyppi.
-export const CreateGroup = async (req, res) => {
+export const createGroup = async (req, res) => {
     const creatorId = req.user.userid;
     const {
         groupName: rawName,
@@ -51,7 +51,7 @@ export const CreateGroup = async (req, res) => {
 };
 
 // POST /AddGroupMember body: { groupId }
-export const AddGroupMember = async (req, res) => {
+export const addGroupMember = async (req, res) => {
     // Käyttäjä liittyy ryhmään omalla kirjautuneella tunnuksellaan.
     const userId = req.user.userid;
     const groupId = Number(req.body?.groupId);
@@ -89,7 +89,7 @@ export const AddGroupMember = async (req, res) => {
 };
 
 // DELETE /RemoveGroupMember body: { groupId, userId }
-export const RemoveGroupMember = async (req, res) => {
+export const removeGroupMember = async (req, res) => {
     // Pyynnön tekijä tunnistetaan kirjautumistiedosta
     const requesterId = req.user.userid;
     const { groupId, userId } = req.body ?? {};
@@ -135,7 +135,7 @@ export const RemoveGroupMember = async (req, res) => {
 };
 
 // DELETE /DeleteGroup/:groupId
-export const DeleteGroup = async (req, res) => {
+export const deleteGroup = async (req, res) => {
     const { groupId } = req.params;
 
     // Ryhmän ylläpitäjyys tarkistetaan kirjautuneelta käyttäjältä
@@ -160,7 +160,7 @@ export const DeleteGroup = async (req, res) => {
     }
 };
 // GET /GetAllGroups
-export const GetAllGroups = async (req, res) => {
+export const getAllGroups = async (req, res) => {
     try {
         const groups = await findAllGroups();
         res.status(200).json(groups);
@@ -171,7 +171,7 @@ export const GetAllGroups = async (req, res) => {
 };
  
 // GET /GetGroupById/:groupId
-export const GetGroupById = async (req, res) => {
+export const getGroupById = async (req, res) => {
     const { groupId } = req.params;
  
     try {
@@ -188,7 +188,7 @@ export const GetGroupById = async (req, res) => {
 };
 
 // GET /GetMyGroups
-export const GetMyGroups = async (req, res) => {
+export const getMyGroups = async (req, res) => {
     try {
         const groups = await findAllGroups();
         const myGroups = [];
