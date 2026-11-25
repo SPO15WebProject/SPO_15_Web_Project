@@ -20,6 +20,10 @@ function MyReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editedText, setEditedText] = useState("");
+  const [editedStars, setEditedStars] = useState(0);
+
   //Haetaan käyttäjän arvostelut
   useEffect(() => {
     const fetchMyReviews = async () => {
@@ -49,7 +53,7 @@ function MyReviewsPage() {
           throw new Error(data.error || "Arvostelujen haku epäonnistui.");
         }
 
-        
+
         setReviews(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(err.message || "Virhe arvostelujen haussa.");
@@ -64,31 +68,74 @@ function MyReviewsPage() {
   //Arvostelun poistaminen
   const handleDelete = async (reviewId) => {
     const confirmed = window.confirm(
-        "Haluatko varmasti poistaa tämän arvostelun?"
+      "Haluatko varmasti poistaa tämän arvostelun?"
     );
 
     if (!confirmed) return;
 
     try {
-        const response = await fetch(
-            `/api/db/DeleteReview/${reviewId}`,
-            {
-                method: "DELETE",
-                credentials: "include",
-            }
-        );
-
-
-        if (!response.ok) {
-            throw new Error("Arvostelun poistaminen epäonnistui.");
+      const response = await fetch(
+        `/api/db/DeleteReview/${reviewId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
         }
+      );
 
-        setReviews((prevReviews) => 
+
+      if (!response.ok) {
+        throw new Error("Arvostelun poistaminen epäonnistui.");
+      }
+
+      setReviews((prevReviews) =>
         prevReviews.filter((review) => review.id !== reviewId)
-    );
+      );
     } catch (err) {
-        console.error(err);
-        alert(err.message);
+      console.error(err);
+      alert(err.message);
+    }
+  };
+
+  //Arvostelun muokkaaminen
+  const handleEdit = (review) => {
+    setEditingReviewId(review.id);
+    setEditedText(review.text || "");
+    setEditedStars(review.stars);
+  };
+
+  const handleSaveEdit = async (reviewId) => {
+    try {
+      const response = await fetch(
+        `/api/db/UpdateReview/${reviewId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            stars: editedStars,
+            text: editedText,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Muokkaus epäonnistui");
+      }
+
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
+          review.id === reviewId ? data : review
+        )
+      );
+
+      setEditingReviewId(null);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
     }
   };
 
@@ -99,10 +146,10 @@ function MyReviewsPage() {
       <div className="my-reviews-card">
         <h2>Omat arvostelut</h2>
 
-       
+
         {error && <p className="my-reviews-error">{error}</p>}
 
-        
+
         {isPageLoading ? (
           <p>Ladataan arvosteluja...</p>
         ) : !user ? (
@@ -114,7 +161,7 @@ function MyReviewsPage() {
         ) : (
           <div className="my-reviews-list">
             {reviews.map((review) => {
-              
+
               const movieId = review.movieId ?? review.movieid;
               const created = review.createdAt ?? review.createdat;
               const dateText = formatDate(created);
@@ -131,16 +178,62 @@ function MyReviewsPage() {
                     <span className="my-review-stars">{review.stars} / 10</span>
                   </div>
 
-                  <p className="my-review-text">
-                    {review.text || "Ei arvostelutekstiä."}
-                  </p>
+                  {editingReviewId === review.id ? (
+                    <>
+                      <textarea
+                        className="edit-review-textarea"
+                        value={editedText}
+                        onChange={(e) => setEditedText(e.target.value)}
+                      />
 
-                  <button
-                  className="delete-review-btn"
-                  onClick={() => handleDelete(review.id)}
-                  >
-                    Poista arvostelu
-                  </button>
+                      <input
+                        className="edit-stars-input"
+                        type="number"
+                        min="0"
+                        max="10"
+                        value={editedStars}
+                        onChange={(e) => setEditedStars(Number(e.target.value))}
+                      />
+
+                      <div className="review-action-buttons">
+                        <button
+                          className="save-review-btn"
+                          onClick={() => handleSaveEdit(review.id)}
+                        >
+                          Tallenna
+                        </button>
+
+                        <button
+                          className="cancel-review-btn"
+                          onClick={() => setEditingReviewId(null)}
+                        >
+                          Peruuta
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="my-review-text">
+                        {review.text || "Ei arvostelutekstiä."}
+                      </p>
+
+                      <div className="review-action-buttons">
+                        <button
+                          className="edit-review-btn"
+                          onClick={() => handleEdit(review)}
+                        >
+                          Muokkaa
+                        </button>
+
+                        <button
+                          className="delete-review-btn"
+                          onClick={() => handleDelete(review.id)}
+                        >
+                          Poista arvostelu
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               );
             })}

@@ -142,3 +142,27 @@
 .review-card small {
   color: #b0b0b0;
 }
+
+.review-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.edit-review-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background-color: #323232;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+}
+
+.edit-stars-input {
+  width: 80px;
+  margin-top: 0.75rem;
+  display: block;
+}

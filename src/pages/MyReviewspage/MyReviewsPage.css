@@ -120,8 +120,52 @@
   transform: scale(0.98);
 }
 
-.delete-review-btn {
-  display: block;
+
+.edit-review-btn {
   margin-top: 1rem;
-  margin-left: auto;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #323232;
+  color: #f3f4f6;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.edit-review-btn:hover {
+  background-color: #444;
+}
+
+.review-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.edit-review-textarea {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #323232;
+  color: #f3f4f6;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.edit-stars-input {
+  width: 80px;
+  margin-top: 0.75rem;
+  margin-right: auto;
+  display: block;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: #323232;
+  color: #f3f4f6;
 }
