@@ -16,6 +16,10 @@ function MovieDetails() {
   const [message, setMessage] = useState("");
   const [reviews, setReviews] = useState([]);
 
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editedText, setEditedText] = useState("");
+  const [editedStars, setEditedStars] = useState(0);
+
   // Hook hakee elokuvan ja katsoo lataus- ja virhetilan
   const { movies: movie, loading, error } = useMovies(`/movies/${id}`);
 
@@ -65,7 +69,7 @@ function MovieDetails() {
         return;
       }
 
-        //Tyjennetään lomake ja päivitetään arvostelulista
+      //Tyjennetään lomake ja päivitetään arvostelulista
       setMessage("Arvostelu lisätty onnistuneesti!");
       setStars("");
       setReviewText("");
@@ -73,10 +77,10 @@ function MovieDetails() {
       fetchReviews();
     } catch (error) {
       console.error("Review error", error);
-      
-       setMessage(
+
+      setMessage(
         `${error.code || ""} ${error.detail || error.message || "Virhe"}`
-       );
+      );
     }
   };
   //Haetaan arvostelut tietokannasta
@@ -113,14 +117,57 @@ function MovieDetails() {
         }
       );
 
-      if(!response.ok) {
+      if (!response.ok) {
         throw new Error("Arvostelun poistaminen epäonnistui.");
       }
 
       setReviews((prevReviews) =>
-      prevReviews.filter((review) => review.id !==reviewId)
-    );
-    }catch (err) {
+        prevReviews.filter((review) => review.id !== reviewId)
+      );
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
+  };
+
+  //Arvostelun muokkaaminen
+  const handleEditReview = (review) => {
+    setEditingReviewId(review.id);
+    setEditedText(review.text || "");
+    setEditedStars(review.stars);
+  };
+
+  const handleSaveReview = async (reviewId) => {
+    try {
+      const response = await fetch(
+        `/api/db/UpdateReview/${reviewId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            stars: editedStars,
+            text: editedText,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Muokkaus epäonnistui");
+      }
+
+      setReviews((prevReviews) =>
+        prevReviews.map((review) =>
+          review.id === reviewId ? data : review
+        )
+      );
+
+      setEditingReviewId(null);
+    } catch (err) {
       console.error(err);
       alert(err.message);
     }
@@ -214,73 +261,119 @@ function MovieDetails() {
       )}
 
       {displayedMovie && (
-      <div className="reviews-container">
+        <div className="reviews-container">
 
-        <div className="review-section">
-          <h2>Kirjoita arvostelu</h2>
+          <div className="review-section">
+            <h2>Kirjoita arvostelu</h2>
 
-        {user ? (
-          <form onSubmit={handleReviewSubmit}>
-            <label>Arvosana (0-10)</label>
+            {user ? (
+              <form onSubmit={handleReviewSubmit}>
+                <label>Arvosana (0-10)</label>
 
-            <input
-              type="number"
-              min="0"
-              max="10"
-              value={stars}
-              onChange={(e) => setStars(e.target.value)}
-            />
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  value={stars}
+                  onChange={(e) => setStars(e.target.value)}
+                />
 
-            <label>Arvostelu</label>
+                <label>Arvostelu</label>
 
-            <textarea
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-            />
-            <button type="submit">
-              Lähetä arvostelu
-            </button>
-
-            {message && <p>{message}</p>}
-          </form>
-        ) : (
-          <p>
-            <Link to="/Login">
-            Kirjaudu sisään jättääksesi arvostelun.
-            </Link>
-            </p>
-        )}
-        </div>
-      
-
-      <div className="reviews-list">
-        <h2>Käyttäjien arvostelut</h2>
-
-        {reviews.length === 0 ? (
-          <p>Ei arvosteluja vielä.</p>
-        ) : (
-          reviews.map((review) => (
-            <div key={review.id} className="review-card">
-              <h3>{review.stars}/10</h3>
-
-              <p>{review.text}</p>
-
-              <small>{review.nickname}</small>
-
-              {user && review.userid === user.userid && (
-                <button
-                className="delete-review-btn"
-                onClick={() => handleDeleteReview(review.id)}
-                >
-                  Poista arvostelu
+                <textarea
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                />
+                <button type="submit">
+                  Lähetä arvostelu
                 </button>
-              )}
-            </div>
-          ))
-        )}
-    </div>
 
-    </div>
+                {message && <p>{message}</p>}
+              </form>
+            ) : (
+              <p>
+                <Link to="/Login">
+                  Kirjaudu sisään jättääksesi arvostelun.
+                </Link>
+              </p>
+            )}
+          </div>
+
+
+          <div className="reviews-list">
+            <h2>Käyttäjien arvostelut</h2>
+
+            {reviews.length === 0 ? (
+              <p>Ei arvosteluja vielä.</p>
+            ) : (
+              reviews.map((review) => (
+                <div key={review.id} className="review-card">
+                  <h3>{review.stars}/10</h3>
+
+                  {editingReviewId === review.id ? (
+                    <>
+                      <textarea
+                        className="edit-review-textarea"
+                        value={editedText}
+                        onChange={(e) => setEditedText(e.target.value)}
+                      />
+
+                      <input
+                        className="edit-stars-input"
+                        type="number"
+                        min="0"
+                        max="10"
+                        value={editedStars}
+                        onChange={(e) => setEditedStars(Number(e.target.value))}
+                      />
+
+                      <div className="review-action-buttons">
+                        <button
+                          className="save-review-btn"
+                          onClick={() => handleSaveReview(review.id)}
+                        >
+                          Tallenna
+                        </button>
+
+                        <button
+                          className="cancel-review-btn"
+                          onClick={() => setEditingReviewId(null)}
+                        >
+                          Peruuta
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p>{review.text}</p>
+
+                      <small>{review.nickname}</small>
+
+                      {user && review.userid === user.userid && (
+                        <div className="review-action-buttons">
+                          <button
+                            className="edit-review-btn"
+                            onClick={() => handleEditReview(review)}
+                          >
+                            Muokkaa
+                          </button>
+
+                          <button
+                            className="delete-review-btn"
+                            onClick={() => handleDeleteReview(review.id)}
+                          >
+                            Poista arvostelu
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+
+        </div>
       )}
     </section>
   );
