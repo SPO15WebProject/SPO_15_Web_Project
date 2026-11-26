@@ -11,6 +11,7 @@ const MAX_SEARCH_PAGES = 10
 // Frontendille palautettavien elokuvien määrä sivulla.
 const PAGE_SIZE = 20
 
+
 /* Haetaan elokuvia nimen perusteella, sivu kerrallaan. */
 export const searchMovies = async (req, res) => {
   try {
@@ -54,7 +55,14 @@ export const searchMovies = async (req, res) => {
 
     const hasSorting = Boolean(filters.sort_by)
 
-    if (!hasRatingFilter && !hasSorting) {
+    // Jos erillistä suodatusta tai järjestämistä ei tarvita,
+    // haetaan suoraan käyttäjän pyytämä tulossivu.
+    if (
+      !hasRatingFilter &&
+      !hasSorting &&
+      !filters.with_origin_country &&
+      !filters.with_original_language
+    ) {
       const { data } = await tmdb().get('/search/movie', {
         params
       })
@@ -66,6 +74,7 @@ export const searchMovies = async (req, res) => {
       })
     }
 
+    // Haetaan ensimmäinen tulossivu.
     const { data: firstPage } = await tmdb().get('/search/movie', {
       params: {
         ...params,
@@ -73,6 +82,7 @@ export const searchMovies = async (req, res) => {
       }
     })
 
+    // Rajoitetaan käsiteltävien sivujen määrää.
     const pagesToFetch = Math.min(
       firstPage.total_pages,
       MAX_SEARCH_PAGES
@@ -80,6 +90,7 @@ export const searchMovies = async (req, res) => {
 
     const movies = [...firstPage.results]
 
+    // Haetaan loput käsiteltävät tulossivut.
     for (let currentPage = 2; currentPage <= pagesToFetch; currentPage++) {
       const { data } = await tmdb().get('/search/movie', {
         params: {
@@ -91,22 +102,65 @@ export const searchMovies = async (req, res) => {
       movies.push(...data.results)
     }
 
+    // Poistetaan mahdolliset samat elokuvat.
     const uniqueMovies = [
       ...new Map(
         movies.map(movie => [movie.id, movie])
       ).values()
     ]
 
+    // Nimihaku ei tue maa- ja kielisuodatusta suoraan.
+    // Suodatetaan elokuvat ensin alkuperäisen kielen mukaan.
+    let matchingMovies = uniqueMovies.filter(movie =>
+      !filters.with_original_language ||
+      movie.original_language === filters.with_original_language
+    )
+
+    // Nimihakutuloksissa ei yleensä ole alkuperämaata.
+    // Haetaan tarvittaessa elokuvien tarkemmat tiedot.
+    if (filters.with_origin_country) {
+
+      const matches = []
+
+      // Haetaan tiedot viiden elokuvan erissä,
+      // jotta samanaikaisia API-pyyntöjä ei synny liikaa.
+      for (let i = 0; i < matchingMovies.length; i += 5) {
+
+        const batch = await Promise.all(
+          matchingMovies.slice(i, i + 5).map(async movie => {
+
+            const { data } = await tmdb().get(
+              `/movie/${movie.id}`
+            )
+
+            // Palautetaan elokuva vain, jos alkuperämaa täsmää.
+            return data.origin_country?.includes(
+              filters.with_origin_country
+            ) ? movie : null
+
+          })
+        )
+
+        // Poistetaan elokuvat, joiden alkuperämaa ei täsmännyt.
+        matches.push(...batch.filter(Boolean))
+      }
+
+      matchingMovies = matches
+    }
+
+    // Suodatetaan elokuvat arvosanan perusteella.
     const filteredMovies = filterMoviesByRating(
-      uniqueMovies,
+      matchingMovies,
       filters
     )
 
+    // Järjestetään elokuvat valitulla tavalla.
     const sortedMovies = sortMovies(
       filteredMovies,
       filters
     )
 
+    // Lasketaan tulossivujen kokonaismäärä.
     const totalPages = Math.ceil(
       sortedMovies.length / PAGE_SIZE
     )
@@ -114,6 +168,7 @@ export const searchMovies = async (req, res) => {
     const startIndex = (page - 1) * PAGE_SIZE
     const endIndex = startIndex + PAGE_SIZE
 
+    // Palautetaan frontendille pyydetty tulossivu.
     res.json({
       results: sortedMovies.slice(startIndex, endIndex),
       page,
@@ -178,6 +233,7 @@ export const searchMoviesByActor = async (req, res) => {
       })
     }
 
+    // Discover tukee myös maa- ja kielisuodattimia.
     const { data: movieData } = await tmdb().get('/discover/movie', {
       params: {
         with_cast: actor.id,
@@ -280,6 +336,105 @@ export const getGenres = async (req, res) => {
   } catch (err) {
     res.status(err.response?.status || 500).json({
       message: 'Genrejen hakeminen epäonnistui'
+    })
+  }
+}
+
+
+/* Haetaan elokuvia alkuperämaan tai alkuperäisen kielen perusteella. */
+export const searchMoviesByOrigin = async (req, res) => {
+
+  // Luetaan pyydetty sivunumero.
+  const page = Number(req.query.page || 1)
+
+  // Tarkistetaan sivunumeron kelvollisuus.
+  if (!Number.isInteger(page) || page < 1 || page > 500) {
+    return res.status(400).json({
+      message: 'Virheellinen sivunumero'
+    })
+  }
+
+  let filters
+
+  try {
+
+    // Muodostetaan kaikki käyttäjän valitsemat suodattimet.
+    filters = getMovieFilters(req.query)
+
+    // Vähintään maa tai kieli pitää olla valittuna.
+    if (
+      !filters.with_origin_country &&
+      !filters.with_original_language
+    ) {
+      throw new Error('Valitse maa tai kieli')
+    }
+
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message
+    })
+  }
+
+  try {
+
+    // Maa- ja kielihaku käyttävät samaa discover-rajapintaa.
+    const { data } = await tmdb().get('/discover/movie', {
+      params: {
+        language: 'fi-FI',
+        sort_by: 'popularity.desc',
+        page,
+        ...filters
+      }
+    })
+
+    // Palautetaan hakutulokset ja sivutustiedot.
+    res.json({
+      results: data.results,
+      page: data.page,
+      total_pages: data.total_pages
+    })
+
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      message: 'Maa- tai kielihaku epäonnistui'
+    })
+  }
+}
+
+
+/* Haetaan maiden valintalista TMDB:stä. */
+export const getCountries = async (req, res) => {
+  try {
+
+    const { data } = await tmdb().get(
+      '/configuration/countries'
+    )
+
+    // Palautetaan maat frontendin valintavalikkoon.
+    res.json(data)
+
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      message: 'Maiden lataus epäonnistui'
+    })
+  }
+}
+
+
+/* Haetaan kielten valintalista TMDB:stä. */
+export const getLanguages = async (req, res) => {
+  try {
+
+    const { data } = await tmdb().get(
+      '/configuration/languages'
+    )
+
+    // Palautetaan kielet frontendin valintavalikkoon.
+    res.json(data)
+
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      message: 'Kielten lataus epäonnistui'
     })
   }
 }

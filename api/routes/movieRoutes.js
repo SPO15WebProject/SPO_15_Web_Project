@@ -11,7 +11,10 @@ import {
   searchMovies,
   searchMoviesByActor,
   searchMoviesByGenre,
-  getGenres
+  getGenres,
+  searchMoviesByOrigin,
+  getCountries,
+  getLanguages
 } from '../controllers/searchController.js'
 
 const router = Router()
@@ -25,7 +28,7 @@ router.get('/trending', getTrendingMovies)
 // Elokuvan hakeminen nimellä
 router.get('/search', searchMovies)
 
-// UUSI: Elokuvien hakeminen näyttelijän nimellä
+// Elokuvien hakeminen näyttelijän nimellä
 router.get('/search/actor', searchMoviesByActor)
 
 // Elokuvien hakeminen genren perusteella
@@ -33,6 +36,15 @@ router.get('/search/genre', searchMoviesByGenre)
 
 // Haetaan elokuvien genrelista
 router.get('/genres', getGenres)
+
+// Elokuvien hakeminen alkuperämaan tai kielen perusteella
+router.get('/search/origin', searchMoviesByOrigin)
+
+// Haetaan maiden valintalista
+router.get('/countries', getCountries)
+
+// Haetaan kielten valintalista
+router.get('/languages', getLanguages)
 
 // Yksittäisen elokuvan tiedot
 router.get('/:id', getMovie)

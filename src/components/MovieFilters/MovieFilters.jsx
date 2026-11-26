@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import './MovieFilters.css'
+import MovieOrigin from './MovieOrigin'
 
-function MovieFilters({ title, filters, setFilters }) {
+function MovieFilters({ title, filters, setFilters, baseCountry = '', baseLanguage = '' }) {
 
   // Hallitaan suodatusvalikon näkyvyyttä.
   const [isOpen, setIsOpen] = useState(false)
 
   // Luetaan suodattimien nykyiset arvot.
-  const { year, rating, sortBy } = filters
+  const { year, rating, sortBy, country, language } = filters
 
   // Päivitetään yksittäinen suodatin.
   const updateFilter = (name, value) => {
@@ -22,7 +23,7 @@ function MovieFilters({ title, filters, setFilters }) {
     setFilters({
       year: '',
       rating: '',
-      sortBy: ''
+      sortBy: '', country: baseCountry, language: baseLanguage
     })
   }
 
@@ -120,6 +121,16 @@ function MovieFilters({ title, filters, setFilters }) {
               <option value="8">Vähintään 8/10</option>
               <option value="9">Vähintään 9/10</option>
             </select>
+          </div>
+
+          {/* Maa ja kieli voidaan yhdistää muihin suodattimiin. */}
+          <div className="filter-group">
+            <label htmlFor="filter-country">Alkuperämaa</label>
+            <MovieOrigin kind="country" id="filter-country" value={country || ''} onChange={value => updateFilter('country', value || baseCountry)} emptyLabel="Kaikki maat" />
+          </div>
+          <div className="filter-group">
+            <label htmlFor="filter-language">Alkuperäinen kieli</label>
+            <MovieOrigin kind="language" id="filter-language" value={language || ''} onChange={value => updateFilter('language', value || baseLanguage)} emptyLabel="Kaikki kielet" />
           </div>
 
           {/* Elokuvien järjestys */}

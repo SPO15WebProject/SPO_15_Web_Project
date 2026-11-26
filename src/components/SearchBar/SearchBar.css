@@ -318,3 +318,5 @@
     transition: none;
   }
 }
+/* Maa- ja kielivalikko käyttää hakukentän jäljellä olevan tilan. */
+.search-form .origin-select { flex: 1; min-width: 0; width: 0; }
