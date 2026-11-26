@@ -4,7 +4,7 @@ export const getMovieFilters = (query) => {
   const filters = {}
 
   // Lukee käyttäjän valitsemat suodattimet.
-  const { year, rating, sortBy } = query
+  const { year, rating, sortBy, country, language } = query
 
   // Tarkistaa julkaisuvuoden.
   if (year) {
@@ -43,6 +43,32 @@ export const getMovieFilters = (query) => {
     }
 
     filters.sort_by = sortBy
+  }
+
+  // Tarkistetaan ISO-maakoodi.
+  // Esimerkiksi FI, SE tai US.
+  if (country) {
+    if (
+      typeof country !== 'string' ||
+      !/^[A-Z]{2}$/.test(country)
+    ) {
+      throw new Error('Virheellinen maakoodi')
+    }
+
+    filters.with_origin_country = country
+  }
+
+  // Tarkistetaan alkuperäisen kielen koodi.
+  // Esimerkiksi fi, sv tai en.
+  if (language) {
+    if (
+      typeof language !== 'string' ||
+      !/^[a-z]{2}$/.test(language)
+    ) {
+      throw new Error('Virheellinen kielikoodi')
+    }
+
+    filters.with_original_language = language
   }
 
   // Palautetaan suodatusparametrit.

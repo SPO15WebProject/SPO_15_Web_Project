@@ -19,17 +19,18 @@ function SearchResults({ query, type, genre, filters }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  const isOriginSearch = type === 'country' || type === 'language'
   const isActorSearch = type === 'actor'
   const isGenreSearch = type === 'genre'
 
   // Valitaan oikea backend-reitti.
-  const searchPath = isGenreSearch
+  const searchPath = isOriginSearch ? '/movies/search/origin' : isGenreSearch
     ? '/movies/search/genre'
     : isActorSearch
       ? '/movies/search/actor'
       : '/movies/search'
 
-  const { year, rating, sortBy } = filters
+  const { year, rating, sortBy, country, language } = filters
 
   useEffect(() => {
     const controller = new AbortController()
@@ -41,12 +42,14 @@ function SearchResults({ query, type, genre, filters }) {
       try {
         // Genrehaussa käytetään genren tunnistetta,
         // muissa hakutavoissa hakusanaa.
-        const params = isGenreSearch
+        const params = isOriginSearch ? { page } : isGenreSearch
           ? { genre, page }
           : { query, page }
 
         // Lisätään kaikki suodattimet ja järjestystapa
         // backendille kaikissa hakutavoissa.
+        if (country) params.country = country
+        if (language) params.language = language
         if (year) params.year = year
         if (rating) params.rating = rating
         if (sortBy) params.sortBy = sortBy
@@ -109,6 +112,9 @@ function SearchResults({ query, type, genre, filters }) {
     searchPath,
     genre,
     isGenreSearch,
+    isOriginSearch,
+    country,
+    language,
     year,
     rating,
     sortBy
@@ -175,13 +181,13 @@ function SearchResults({ query, type, genre, filters }) {
 }
 
 // Hallitaan suodattimia erillään hakutuloksista.
-function FilteredSearchResults({ query, type, genre }) {
+function FilteredSearchResults({ query, type, genre, country, language }) {
 
   // Suodattimien nykyiset arvot.
   const [filters, setFilters] = useState({
     year: '',
     rating: '',
-    sortBy: ''
+    sortBy: '', country, language
   })
 
   // Käytetään vain kelvollista julkaisuvuotta.
@@ -194,7 +200,9 @@ function FilteredSearchResults({ query, type, genre }) {
   }
 
   // Valitaan hakutulosten otsikko hakutavan perusteella.
-  const title = type === 'genre'
+  const title = type === 'country' || type === 'language'
+    ? `Hakutulokset: ${new Intl.DisplayNames(['fi'], { type: type === 'country' ? 'region' : 'language' }).of((type === 'country' ? activeFilters.country : activeFilters.language))}`
+    : type === 'genre'
     ? `Genre: ${query || genre}`
     : type === 'actor'
       ? `Näyttelijän ${query} elokuvat`
@@ -208,6 +216,8 @@ function FilteredSearchResults({ query, type, genre }) {
         title={title}
         filters={filters}
         setFilters={setFilters}
+        baseCountry={country}
+        baseLanguage={language}
       />
 
       {/* Suodattimen tai järjestystavan vaihtaminen
@@ -232,11 +242,12 @@ function SearchPage() {
   const query = searchParams.get('query') || ''
   const genre = searchParams.get('genre') || ''
 
-  const type = searchParams.get('type') === 'genre'
-    ? 'genre'
-    : searchParams.get('type') === 'actor'
-      ? 'actor'
-      : 'movie'
+  const requestedType = searchParams.get('type')
+  const type = ['genre', 'actor', 'country', 'language'].includes(requestedType) ? requestedType : 'movie'
+  const country = searchParams.get('country') || ''
+  const language = searchParams.get('language') || ''
+  if ((country && !/^[A-Z]{2}$/.test(country)) || (language && !/^[a-z]{2}$/.test(language)) ||
+      (type === 'country' && !country) || (type === 'language' && !language)) return <p>Valitse kelvollinen maa tai kieli.</p>
 
   // Tarkistetaan, että genrehaussa on valittu genre.
   if (type === 'genre' && !genre) {
@@ -244,7 +255,7 @@ function SearchPage() {
   }
 
   // Muissa hakutavoissa tarvitaan hakusana.
-  if (type !== 'genre' && !query.trim()) {
+  if (['movie', 'actor'].includes(type) && !query.trim()) {
     return <p>Kirjoita elokuvan tai näyttelijän nimi hakukenttään.</p>
   }
 
@@ -252,7 +263,9 @@ function SearchPage() {
   // aloittaa sivutuksen aina ensimmäiseltä sivulta.
   return (
     <FilteredSearchResults
-      key={`${type}:${query}:${genre}`}
+      key={`${type}:${query}:${genre}:${country}:${language}`}
+      country={country}
+      language={language}
       query={query}
       type={type}
       genre={genre}

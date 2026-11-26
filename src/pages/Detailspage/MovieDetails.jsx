@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import useMovies from "../../hooks/Usemovies";
 import { useAuth } from "../../context/AuthContext";
 import "./MovieDetails.css";
@@ -8,6 +8,8 @@ import "./MovieDetails.css";
 function MovieDetails() {
   // Luetaan elokuvan ID sivun osoitteesta
   const { id } = useParams();
+  // Palataan selaushistorian edelliselle sivulle.
+  const navigate = useNavigate();
   const location = useLocation();
   const { user, clearUser } = useAuth();
 
@@ -62,6 +64,11 @@ function MovieDetails() {
     const params = new URLSearchParams({ query: actor.name, type: "actor" });
     return `/search?${params.toString()}`;
   };
+
+  // Alkuperämaan ja kielen linkit käyttävät samaa hakutulossivua.
+  const originLink = (type, code) => `/search?${new URLSearchParams({ type, [type]: code })}`;
+  const countryNames = new Intl.DisplayNames(['fi'], { type: 'region' });
+  const languageNames = new Intl.DisplayNames(['fi'], { type: 'language' });
 
   // Muodostetaan julisteen osoite TMDB:n kuvapolusta.
   const posterUrl = displayedMovie?.poster_path
@@ -214,7 +221,14 @@ function MovieDetails() {
   return (
     <section className="movie-details">
       {/* Linkki takaisin etusivulle. */}
-      <Link to="/">Takaisin etusivulle</Link>
+      {/* Palataan edelliselle sivulle etusivun sijaan. */}
+      <button
+        type="button"
+        className="movie-back-button"
+        onClick={() => navigate(-1)}
+      >
+        ← Takaisin
+      </button>
 
       {/* latausviesti siltä varalta jos näytettäviä tietoja ei ole */}
       {loading && !displayedMovie && <p>Ladataan elokuvan tietoja...</p>}
@@ -253,6 +267,24 @@ function MovieDetails() {
                           {genre.name}
                         </Link>
                       )) : <span>Ei tiedossa</span>}
+                    </div>
+                  </div>
+                  {/* Alkuperämaat ja alkuperäinen kieli hakulinkkeinä. */}
+                  <div className="movie-detail-genres">
+                    <strong>Alkuperämaa</strong>
+                    <div className="movie-detail-links">
+                      {(fetchedMovie.origin_country || []).filter(code => /^[A-Z]{2}$/.test(code)).map(code => (
+                        <Link key={code} to={originLink('country', code)} className="movie-detail-search-link">{countryNames.of(code)}</Link>
+                      ))}
+                      {!fetchedMovie.origin_country?.length && <span>Ei tiedossa</span>}
+                    </div>
+                  </div>
+                  <div className="movie-detail-genres">
+                    <strong>Alkuperäinen kieli</strong>
+                    <div className="movie-detail-links">
+                      {/^[a-z]{2}$/.test(fetchedMovie.original_language || '') ? (
+                        <Link to={originLink('language', fetchedMovie.original_language)} className="movie-detail-search-link">{languageNames.of(fetchedMovie.original_language)}</Link>
+                      ) : <span>Ei tiedossa</span>}
                     </div>
                   </div>
                   <p>Kesto: {fetchedMovie.runtime > 0 ? `${fetchedMovie.runtime} min` : "Ei tiedossa"}</p>

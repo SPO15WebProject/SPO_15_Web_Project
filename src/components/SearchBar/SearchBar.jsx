@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import './SearchBar.css'
+import MovieOrigin from '../MovieFilters/MovieOrigin'
 
 // Hakukuvake, jota käytetään sekä suljetussa että avoimessa tilassa.
 function SearchIcon({ className }) {
@@ -29,9 +30,11 @@ function SearchBar() {
 
   // Käyttäjän kirjoittama hakuteksti.
   const [searchText, setSearchText] = useState('')
+  const [origin, setOrigin] = useState('')
 
   // Hakutapa: movie = elokuva, actor = näyttelijä, genre = genre.
   const [searchType, setSearchType] = useState('movie')
+  const isOriginSearch = searchType === 'country' || searchType === 'language'
 
   // TMDB:stä haetut genret ja käyttäjän valitsemat genret.
   const [genres, setGenres] = useState([])
@@ -155,6 +158,7 @@ function SearchBar() {
   const handleSearchTypeChange = (event) => {
     setSearchType(event.target.value)
     setSearchText('')
+    setOrigin('')
     setSelectedGenres([])
     setSuggestions([])
   }
@@ -165,7 +169,11 @@ function SearchBar() {
 
     const params = new URLSearchParams()
 
-    if (searchType === 'genre') {
+    if (isOriginSearch) {
+      if (!origin) return
+      params.set('type', searchType)
+      params.set(searchType, origin)
+    } else if (searchType === 'genre') {
       if (selectedGenres.length === 0) return
 
       params.set('type', 'genre')
@@ -254,10 +262,14 @@ function SearchBar() {
               <option value="movie">Elokuva</option>
               <option value="actor">Näyttelijä</option>
               <option value="genre">Genre</option>
+              <option value="country">Maa</option>
+              <option value="language">Kieli</option>
             </select>
 
             {/* Genrehaussa valittujen genrejen yhteenveto. */}
-            {searchType === 'genre' ? (
+            {isOriginSearch ? (
+              <MovieOrigin key={searchType} kind={searchType} value={origin} onChange={setOrigin} emptyLabel="Valitse" />
+            ) : searchType === 'genre' ? (
               <div className="genre-selection-summary" aria-live="polite">
                 {selectedGenreNames.length > 0
                   ? selectedGenreNames.join(', ')
