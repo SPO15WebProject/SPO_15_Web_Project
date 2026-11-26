@@ -1,4 +1,4 @@
-
+/* 1. Infosivun yleinen asettelu: koko sivun leveys ja sisennykset. */
 .movie-details {
   width: 100%;
   max-width: none;
@@ -8,6 +8,7 @@
   text-align: left;
 }
 
+/* Juliste ja perustiedot vierekkäin Flexboxilla. */
 .movie-header {
   display: flex;
   gap: 3rem;
@@ -17,6 +18,7 @@
   width: 100%;
 }
 
+/* Julisteen kiinteä leveys ja kuvasuhde 2:3. */
 .movie-details-poster {
   flex: 0 0 280px;
   width: 280px;
@@ -24,6 +26,7 @@
   overflow: hidden;
 }
 
+/* Kuva täyttää julistealueen mittasuhteet säilyttäen. */
 .movie-details-poster img {
   display: block;
   width: 100%;
@@ -32,12 +35,14 @@
   border-radius: 8px;
 }
 
+/* Perustiedot käyttävät jäljelle jäävän tilan. */
 .movie-meta {
   text-align: left;
   max-width: 700px;
   flex: 1;
 }
 
+/* Otsikoiden ja tekstin välit. */
 .movie-details h1 {
   margin-top: 0;
   margin-bottom: 1.5rem;
@@ -51,6 +56,7 @@
   line-height: 1.6;
 }
 
+/* 2. Mobiiliasettelu: tyylit enintään 768 px leveälle näkymälle. */
 @media (max-width: 768px) {
   .movie-header {
     flex-direction: column;
@@ -68,6 +74,7 @@
   }
 }
 
+/* 3. Arvostelualue: lomake ja arvostelulista vierekkäin. */
 .reviews-container {
   display: flex;
   gap: 3rem;
@@ -75,22 +82,27 @@
   align-items: flex-start;
 }
 
+/* Arvostelulomakkeen leveys. */
 .review-section {
   flex: 1;
   max-width: 400px;
 }
 
+/* Arvostelulista saa lomaketta enemmän tilaa. */
 .reviews-list {
   flex: 2;
 }
 
+/* Lomakkeen kentät allekkain. */
 .review-section form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
+/* Syöttökenttien yhteinen ulkoasu. */
 .review-section input,
+/* Tekstikenttää voi venyttää pystysuunnassa. */
 .review-section textarea {
   padding: 0.75rem;
   border-radius: 8px;
@@ -99,11 +111,13 @@
   color: rgb(243, 243, 243);
 }
 
+/* Tekstikenttää voi venyttää pystysuunnassa. */
 .review-section textarea {
   min-height: 120px;
   resize: vertical;
 }
 
+/* Arvostelun lähetyspainikkeen ulkoasu. */
 .review-section button {
   width: fit-content;
   padding: 0.75rem 1.5rem;
@@ -115,10 +129,12 @@
   cursor: pointer;
 }
 
+/* Painikkeen väri hiiren osoittimen alla. */
 .review-section button:hover {
   background: #f0f0f0;
 }
 
+/* 4. Yksittäisen arvostelun kortti. Jälkimmäinen border korvaa ensimmäisen. */
 .review-card {
   background: #323030;
   border: 1px solid #000000;
@@ -129,20 +145,24 @@
 }
 
 
+/* Arvostelukortin otsikko. */
 .review-card h3 {
   color: gold;
   margin-bottom: 0.5rem;
 }
 
+/* Arvostelutekstin riviväli ja alamarginaali. */
 .review-card p {
   margin-bottom: 0.75rem;
   line-height: 1.5;
 }
 
+/* Arvostelun pienempi lisätieto. */
 .review-card small {
   color: #b0b0b0;
 }
 
+/* Muokkaus- ja poistopainikkeet oikealle. */
 .review-action-buttons {
   display: flex;
   justify-content: flex-end;
@@ -150,6 +170,7 @@
   margin-top: 1rem;
 }
 
+/* Oman arvostelun muokkauskenttä. */
 .edit-review-textarea {
   width: 100%;
   min-height: 100px;
@@ -161,8 +182,100 @@
   box-sizing: border-box;
 }
 
+/* Arvosanan muokkauskenttä. */
 .edit-stars-input {
   width: 80px;
   margin-top: 0.75rem;
   display: block;
+}
+
+/* 5. Tumma infokortti, genret ja näyttelijät. */
+.movie-info-panel {
+  background: #202124;
+  border: 1px solid #444;
+  border-radius: 16px;
+  padding: clamp(1rem, 3vw, 2rem);
+  margin-top: 1.5rem;
+  color: #f0f0f0;
+}
+/* Infokortin sisällä käytetään tiiviimpää asettelua. */
+.movie-info-panel .movie-header {
+  margin: 0;
+  gap: 2rem;
+}
+/* Sallitaan perustietojen kutistuminen kapeassa tilassa. */
+.movie-info-panel .movie-meta {
+  min-width: 0;
+}
+/* Genreotsikko ja linkit omille riveilleen. */
+.movie-detail-genres {
+  display: grid;
+  gap: .5rem;
+  margin: 1rem 0;
+}
+/* Hakulinkit vierekkäin; tarvittaessa seuraavalle riville. */
+.movie-detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+/* Genrejen ja näyttelijöiden yhteinen linkkityyli. */
+.movie-info-panel .movie-detail-search-link {
+  display: inline-flex;
+  padding: .4rem .8rem;
+  border: 1px solid #666;
+  border-radius: 20px;
+  color: #f0f0f0;
+  background: #292929;
+  text-decoration: none;
+  font-size: .9rem;
+  overflow-wrap: anywhere;
+  transition: background-color .2s, border-color .2s;
+}
+/* Näyttelijäalue erotetaan perustiedoista viivalla. */
+.movie-detail-actors {
+  border-top: 1px solid #555;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+}
+/* Poistetaan näyttelijäotsikon ylimääräinen yläväli. */
+.movie-detail-actors h2 {
+  margin-top: 0;
+}
+/* Näyttelijälinkit ovat genrelinkkejä vähemmän pyöristettyjä. */
+.movie-detail-actors .movie-detail-search-link {
+  border-radius: 8px;
+}
+/* Näytä kaikki / Näytä vähemmän -painike koko alueen levyisenä. */
+.movie-detail-actors-toggle {
+  width: 100%;
+  margin-top: 1rem;
+  padding: .65rem 1rem;
+  border: 1px solid #666;
+  border-radius: 8px;
+  background: #292929;
+  color: #f0f0f0;
+  cursor: pointer;
+}
+/* Linkkien ja laajennuspainikkeen hover-tila. */
+.movie-info-panel .movie-detail-search-link:hover,
+.movie-detail-actors-toggle:hover {
+  background: #444;
+  border-color: #aaa;
+  color: #fff;
+}
+/* Näppäimistöllä valitun linkin tai painikkeen näkyvä reunus. */
+.movie-info-panel .movie-detail-search-link:focus-visible,
+.movie-detail-actors-toggle:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+/* 6. Infokortin mobiilikohtaiset lisätyylit. */
+@media (max-width: 768px) {
+  .movie-info-panel .movie-details-poster {
+  max-width: 100%;
+}
+  .movie-info-panel .movie-meta {
+  width: 100%;
+}
 }
