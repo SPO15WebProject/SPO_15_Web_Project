@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import GroupLists from './GroupLists'
+import GroupDiscussion from './GroupDiscussion'
 
 // välilehtien tunnukset ja nimet
 const sections = [
@@ -8,16 +9,40 @@ const sections = [
     { id: 'discussion', label: 'Keskustelu' }
 ]
 
-function GroupContent({ groupId, isMember, authLoading }) {
+function GroupContent({ groupId, isMember, isAdmin, authLoading }) {
     // valittu osio komponentin omassa tilassa
     const [activeSection, setActiveSection] = useState('lists')
 
-    // arvostelut ja keskustelut ovat vielä kesken
+    // arvostelut vielä kesken
     const memberMessage = authLoading
         ? 'Tarkistetaan...'
         : !isMember
             ? 'Ryhmän sisäiset arvostelut ja keskustelu näkyy vain jäsenille.'
             : 'work in progress'
+
+    const renderSection = () => {
+        if (activeSection === 'lists') {
+            // elokuvalistat tuodaan backendistä
+            return <GroupLists groupId={groupId} />
+        }
+
+        // keskustelu ladataan vasta kun tiedetään että käyttäjä on jäsen
+        if (activeSection === 'discussion' && isMember && !authLoading) {
+            return <GroupDiscussion groupId={groupId} isAdmin={isAdmin} />
+        }
+
+        return (
+            <section className="group-panel">
+                <h2>
+                    {activeSection === 'reviews' ? 'Ryhmän arvostelut' : 'Keskustelu'}
+                </h2>
+
+                <p role={authLoading ? 'status' : undefined}>
+                    {memberMessage}
+                </p>
+            </section>
+        )
+    }
 
     return (
         <div className="group-main">
@@ -38,20 +63,7 @@ function GroupContent({ groupId, isMember, authLoading }) {
             </nav>
 
             <div id="group-content">
-                {/* elokuvalistat tuodaan backendistä */}
-                {activeSection === 'lists' ? (
-                    <GroupLists groupId={groupId} />
-                ) : (
-                    <section className="group-panel">
-                        <h2>
-                            {activeSection === 'reviews' ? 'Ryhmän arvostelut' : 'Keskustelu'}
-                        </h2>
-
-                        <p role={authLoading ? 'status' : undefined}>
-                            {memberMessage}
-                        </p>
-                    </section>
-                )}
+                {renderSection()}
             </div>
         </div>
     )

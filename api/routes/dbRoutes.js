@@ -21,6 +21,11 @@ import {
     getMyGroups
 } from "../controllers/groupController.js";
 import {
+    createGroupMessage,
+    getGroupMessages,
+    deleteGroupMessage
+} from "../controllers/groupMessageController.js";
+import {
     createReview,
     getAllReviews,
     getReviewById,
@@ -64,6 +69,10 @@ router.delete('/DeleteGroup/:groupId', authMiddleware, deleteGroup)
 router.get('/GetGroupById/:groupId', getGroupById)
 router.get('/GetAllGroups', getAllGroups)
 router.get('/GetMyGroups', authMiddleware, getMyGroups)
+
+router.post('/CreateGroupMessage', authMiddleware, createGroupMessage)
+router.get('/GetGroupMessages/:groupId', authMiddleware, getGroupMessages)
+router.delete('/DeleteGroupMessage/:messageId', authMiddleware, deleteGroupMessage)
 
 router.post('/CreateReview', authMiddleware, createReview)
 router.get('/GetAllReviews', getAllReviews)
