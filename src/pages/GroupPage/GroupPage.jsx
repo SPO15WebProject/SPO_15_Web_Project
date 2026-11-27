@@ -30,9 +30,11 @@ function GroupPage() {
     }
 
     // tarkistetaan löytyykö kirjautunut käyttäjä ryhmän jäsenlistasta
-    const isMember = currentGroup.members.some(
+    const currentMember = currentGroup.members.find(
         (member) => String(member.userid) === String(user?.userid)
     )
+    const isMember = Boolean(currentMember)
+    const isAdmin = currentMember?.isadmin === true
 
     return (
         <section className="group-page">
@@ -49,6 +51,7 @@ function GroupPage() {
                     key={currentGroup.groupid}
                     groupId={currentGroup.groupid}
                     isMember={isMember}
+                    isAdmin={isAdmin}
                     authLoading={authLoading}
                 />
 

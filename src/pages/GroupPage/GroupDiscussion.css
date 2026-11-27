@@ -1,0 +1,120 @@
+.group-discussion {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.discussion-messages {
+    max-height: 28rem;
+    min-height: 8rem;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.discussion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* yksittäinen viesti */
+.discussion-message {
+    max-width: 85%;
+    align-self: flex-start;
+    padding: 0.6rem 0.9rem;
+    background-color: var(--surface-hover-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+}
+
+.discussion-message-own {
+    align-self: flex-end;
+    border-color: var(--accent-color);
+}
+
+.discussion-message-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+}
+
+.discussion-message-meta strong {
+    color: inherit;
+}
+
+.discussion-text {
+    margin: 0.25rem 0 0;
+    color: inherit;
+    white-space: pre-wrap;
+}
+
+.discussion-delete,
+.discussion-older {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.85rem;
+}
+
+.discussion-delete {
+    margin-left: auto;
+}
+
+.discussion-older {
+    display: block;
+    margin: 0 auto 1rem;
+}
+
+/* viestin kirjoitus */
+.discussion-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.discussion-form textarea {
+    width: 100%;
+    padding: 0.6rem;
+    font: inherit;
+    resize: vertical;
+    background-color: var(--surface-color);
+    color: inherit;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+}
+
+.discussion-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.discussion-counter {
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+}
+
+.discussion-error {
+    color: #d33;
+}
+
+/* piilotettu label, jää ruudunlukijoille */
+.discussion-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+    .discussion-message {
+        max-width: 100%;
+    }
+}
