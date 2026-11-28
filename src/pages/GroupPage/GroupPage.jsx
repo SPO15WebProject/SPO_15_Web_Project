@@ -43,7 +43,7 @@ function GroupPage() {
                 <Link to="/" className="group-action">Takaisin etusivulle</Link>
             </nav>
 
-            <GroupHeader group={currentGroup} isMember={isMember} />
+            <GroupHeader group={currentGroup} isMember={isMember} userId={user?.userid} />
             
             <div className="group-layout">
                 {/* nollaa osion ryhmän vaihtuessa */}
