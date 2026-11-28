@@ -1,142 +1,35 @@
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import axios from 'axios'
+import useMovieSearch from '../../hooks/useMovieSearch'
+import useMovieFilters from '../../hooks/useMovieFilters'
+import useMovieSearchParams, {
+  getSearchTitle
+} from '../../hooks/useMovieSearchParams'
+import { useBrowseScroll } from '../../hooks/useMovieBrowse'
+
 import MovieSection from '../../components/MovieSection/MovieSection'
 import MovieFilters from '../../components/MovieFilters/MovieFilters'
 
-// Komponentti, joka hakee tuloksia sivu kerrallaan.
+// Näytetään hakutulokset ja sivutuspainikkeet.
 function SearchResults({ query, type, genre, filters }) {
 
-  // Hakutulokset ja sivutustiedot.
-  const [movies, setMovies] = useState([])
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(0)
-
-  // Tieto hakutulosten rajoittamisesta.
-  const [truncated, setTruncated] = useState(false)
-
-  // Latauksen ja virheiden hallinta.
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const isOriginSearch = type === 'country' || type === 'language'
-  const isActorSearch = type === 'actor'
-  const isGenreSearch = type === 'genre'
-
-  // Valitaan oikea backend-reitti.
-  const searchPath = isOriginSearch ? '/movies/search/origin' : isGenreSearch
-    ? '/movies/search/genre'
-    : isActorSearch
-      ? '/movies/search/actor'
-      : '/movies/search'
-
-  const { year, rating, sortBy, country, language } = filters
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    const fetchMovies = async () => {
-      setLoading(true)
-      setError(null)
-
-      try {
-        // Genrehaussa käytetään genren tunnistetta,
-        // muissa hakutavoissa hakusanaa.
-        const params = isOriginSearch ? { page } : isGenreSearch
-          ? { genre, page }
-          : { query, page }
-
-        // Lisätään kaikki suodattimet ja järjestystapa
-        // backendille kaikissa hakutavoissa.
-        if (country) params.country = country
-        if (language) params.language = language
-        if (year) params.year = year
-        if (rating) params.rating = rating
-        if (sortBy) params.sortBy = sortBy
-
-        // Haetaan valmiiksi suodatettu ja järjestetty tulossivu.
-        const response = await axios.get(searchPath, {
-          params,
-          signal: controller.signal
-        })
-
-        if (controller.signal.aborted) return
-
-        const newMovies = response.data.results || []
-
-        setMovies(previousMovies => {
-
-          // Ensimmäinen sivu aloittaa uuden listan.
-          if (page === 1) return newMovies
-
-          // Muut sivut lisätään olemassa oleviin tuloksiin.
-          // Estetään saman elokuvan näyttäminen kahdesti.
-          const existingIds = new Set(
-            previousMovies.map(movie => movie.id)
-          )
-
-          const uniqueMovies = newMovies.filter(
-            movie => !existingIds.has(movie.id)
-          )
-
-          return [...previousMovies, ...uniqueMovies]
-        })
-
-        // Tallennetaan sivujen kokonaismäärä.
-        setTotalPages(response.data.total_pages || 0)
-
-        // Tallennetaan tieto hakutulosten rajoittamisesta.
-        setTruncated(response.data.truncated === true)
-
-      } catch (err) {
-        if (axios.isCancel(err) || controller.signal.aborted) return
-
-        console.error('Elokuvahaku epäonnistui:', err)
-        setError('Elokuvien lataaminen epäonnistui.')
-
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false)
-        }
-      }
-    }
-
-    fetchMovies()
-
-    // Perutaan vanha pyyntö tarvittaessa.
-    return () => controller.abort()
-
-  }, [
-    query,
+  // Haetaan hakutulokset yhteisen hookin avulla.
+  const {
+    movies,
     page,
-    searchPath,
-    genre,
-    isGenreSearch,
-    isOriginSearch,
-    country,
-    language,
-    year,
-    rating,
-    sortBy
-  ])
+    loadedPage,
+    loading,
+    error,
+    hasMore,
+    loadMore,
+    restartSearch
+  } = useMovieSearch({ query, type, genre, filters })
 
-  // Tarkistetaan, onko seuraavia sivuja.
-  const hasMore = page < totalPages && page < 500
+  // Palautetaan aikaisempi vierityskohta.
+  useBrowseScroll(loadedPage > 0)
 
   return (
     <div>
 
-      {/* Ilmoitetaan, jos kaikkia hakutuloksia ei käsitelty. */}
-      {truncated && !error && (
-        <p className="search-limit-notice" role="status">
-          Hakutuloksia on paljon. Suodatus ja järjestäminen
-          koskevat vain osaa hakutuloksista.
-          Tarkenna hakusanaa tai julkaisuvuotta.
-        </p>
-      )}
-
-      {/* Backend palauttaa valmiiksi suodatetut
-          ja järjestetyt elokuvat. */}
+      {/* Hakutulokset */}
       <MovieSection
         showTitle={false}
         movies={movies}
@@ -145,32 +38,23 @@ function SearchResults({ query, type, genre, filters }) {
         emptyText="Ei tuloksia"
       />
 
-      {/* Näytä lisää -painike kaikille hakutavoille */}
+      {/* Seuraavan hakutulossivun lataaminen */}
       {hasMore && (
         <button
           type="button"
           className="load-more-button"
           disabled={loading || Boolean(error)}
-          onClick={() => {
-            setPage(previousPage => previousPage + 1)
-          }}
+          onClick={loadMore}
         >
           {loading ? 'Ladataan...' : 'Näytä lisää'}
         </button>
       )}
 
-      {/* Jos lisäsivun lataus epäonnistuu,
-          käyttäjä voi yrittää uudelleen. */}
+      {/* Haun uudelleenaloitus virhetilanteessa */}
       {error && page > 1 && (
         <button
           type="button"
-          onClick={() => {
-
-            // Palataan ensimmäiseen sivuun,
-            // jotta haku voidaan aloittaa uudelleen.
-            setMovies([])
-            setPage(1)
-          }}
+          onClick={restartSearch}
         >
           Aloita haku uudelleen
         </button>
@@ -180,38 +64,27 @@ function SearchResults({ query, type, genre, filters }) {
   )
 }
 
-// Hallitaan suodattimia erillään hakutuloksista.
+// Yhdistetään hakusuodattimet ja hakutulokset.
 function FilteredSearchResults({ query, type, genre, country, language }) {
 
-  // Suodattimien nykyiset arvot.
-  const [filters, setFilters] = useState({
-    year: '',
-    rating: '',
-    sortBy: '', country, language
+  const {
+    filters,
+    setFilters,
+    activeFilters
+  } = useMovieFilters(country, language)
+
+  // Muodostetaan hakutulosten otsikko.
+  const title = getSearchTitle({
+    query,
+    type,
+    genre,
+    filters: activeFilters
   })
-
-  // Käytetään vain kelvollista julkaisuvuotta.
-  const activeFilters = {
-    ...filters,
-    year: /^\d{4}$/.test(filters.year) &&
-      Number(filters.year) >= 1900
-      ? filters.year
-      : ''
-  }
-
-  // Valitaan hakutulosten otsikko hakutavan perusteella.
-  const title = type === 'country' || type === 'language'
-    ? `Hakutulokset: ${new Intl.DisplayNames(['fi'], { type: type === 'country' ? 'region' : 'language' }).of((type === 'country' ? activeFilters.country : activeFilters.language))}`
-    : type === 'genre'
-    ? `Genre: ${query || genre}`
-    : type === 'actor'
-      ? `Näyttelijän ${query} elokuvat`
-      : `Hakutulokset: ${query}`
 
   return (
     <div>
 
-      {/* Elokuvien suodattimet ja hakutulosten otsikko */}
+      {/* Hakusuodattimet */}
       <MovieFilters
         title={title}
         filters={filters}
@@ -220,8 +93,7 @@ function FilteredSearchResults({ query, type, genre, country, language }) {
         baseLanguage={language}
       />
 
-      {/* Suodattimen tai järjestystavan vaihtaminen
-          aloittaa sivutuksen alusta. */}
+      {/* Suodatetut hakutulokset */}
       <SearchResults
         key={JSON.stringify(activeFilters)}
         query={query}
@@ -234,41 +106,33 @@ function FilteredSearchResults({ query, type, genre, country, language }) {
   )
 }
 
+// Hakutulossivun pääkomponentti.
 function SearchPage() {
 
-  // Luetaan hakusana, hakutapa ja genren tunniste osoitteesta.
-  const [searchParams] = useSearchParams()
+  const {
+    query,
+    type,
+    genre,
+    country,
+    language,
+    searchKey,
+    validationError
+  } = useMovieSearchParams()
 
-  const query = searchParams.get('query') || ''
-  const genre = searchParams.get('genre') || ''
-
-  const requestedType = searchParams.get('type')
-  const type = ['genre', 'actor', 'country', 'language'].includes(requestedType) ? requestedType : 'movie'
-  const country = searchParams.get('country') || ''
-  const language = searchParams.get('language') || ''
-  if ((country && !/^[A-Z]{2}$/.test(country)) || (language && !/^[a-z]{2}$/.test(language)) ||
-      (type === 'country' && !country) || (type === 'language' && !language)) return <p>Valitse kelvollinen maa tai kieli.</p>
-
-  // Tarkistetaan, että genrehaussa on valittu genre.
-  if (type === 'genre' && !genre) {
-    return <p>Valitse genre hakukentästä.</p>
+  // Näytetään virheilmoitus, jos hakutiedot ovat virheelliset.
+  if (validationError) {
+    return <p>{validationError}</p>
   }
 
-  // Muissa hakutavoissa tarvitaan hakusana.
-  if (['movie', 'actor'].includes(type) && !query.trim()) {
-    return <p>Kirjoita elokuvan tai näyttelijän nimi hakukenttään.</p>
-  }
-
-  // key varmistaa, että uusi hakusana, hakutapa tai genre
-  // aloittaa sivutuksen aina ensimmäiseltä sivulta.
+  // Uusi haku saa oman selaustilansa.
   return (
     <FilteredSearchResults
-      key={`${type}:${query}:${genre}:${country}:${language}`}
-      country={country}
-      language={language}
+      key={searchKey}
       query={query}
       type={type}
       genre={genre}
+      country={country}
+      language={language}
     />
   )
 }

@@ -3,26 +3,9 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import './SearchBar.css'
 import MovieOrigin from '../MovieFilters/MovieOrigin'
-
-// Hakukuvake, jota käytetään sekä suljetussa että avoimessa tilassa.
-function SearchIcon({ className }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      width="16"
-      height="16"
-      aria-hidden="true"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-    >
-      <circle cx="11" cy="11" r="7" />
-      <path d="M20 20l-3.5-3.5" />
-    </svg>
-  )
-}
+import Icon from '../Icon/Icon'
+import GenreSelect from './GenreSelect'
+import SearchSuggestions from './SearchSuggestions'
 
 function SearchBar() {
   // Onko hakukenttä laajennettu.
@@ -32,7 +15,7 @@ function SearchBar() {
   const [searchText, setSearchText] = useState('')
   const [origin, setOrigin] = useState('')
 
-  // Hakutapa: movie = elokuva, actor = näyttelijä, genre = genre.
+  // Hakutapa: elokuva, näyttelijä, genre, maa tai kieli.
   const [searchType, setSearchType] = useState('movie')
   const isOriginSearch = searchType === 'country' || searchType === 'language'
 
@@ -45,8 +28,7 @@ function SearchBar() {
 
   const navigate = useNavigate()
 
-  // Viittaukset: koko hakukomponentti (ulkopuolisten klikkausten tunnistus)
-  // ja tekstikenttä (fokus laajennuksen yhteydessä).
+  // Viittaukset hakukomponenttiin ja tekstikenttään.
   const searchRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -86,7 +68,7 @@ function SearchBar() {
     return () => controller.abort()
   }, [searchType])
 
-  // Suljetaan haku, kun klikataan sen ulkopuolelle tai painetaan Escape.
+  // Suljetaan haku ulkopuolisesta klikkauksesta tai Escapesta.
   useEffect(() => {
     if (!isOpen) return
 
@@ -154,7 +136,7 @@ function SearchBar() {
     }
   }, [searchText, searchType])
 
-  // Vaihdetaan elokuva-, näyttelijä- ja genrehaun välillä.
+  // Vaihdetaan hakutapaa ja tyhjennetään aikaisemmat valinnat.
   const handleSearchTypeChange = (event) => {
     setSearchType(event.target.value)
     setSearchText('')
@@ -162,6 +144,11 @@ function SearchBar() {
     setSelectedGenres([])
     setSuggestions([])
   }
+
+  // Valitut genret nimillä.
+  const selectedGenreNames = selectedGenres
+    .map(id => genres.find(genre => String(genre.id) === id)?.name)
+    .filter(Boolean)
 
   // Siirrytään hakutulossivulle valitulla hakutavalla.
   const handleSearch = (event) => {
@@ -171,19 +158,17 @@ function SearchBar() {
 
     if (isOriginSearch) {
       if (!origin) return
+
       params.set('type', searchType)
       params.set(searchType, origin)
+
     } else if (searchType === 'genre') {
       if (selectedGenres.length === 0) return
 
       params.set('type', 'genre')
       params.set('genre', selectedGenres.join(','))
+      params.set('query', selectedGenreNames.join(' + '))
 
-      const names = selectedGenres
-        .map(id => genres.find(genre => String(genre.id) === id)?.name)
-        .filter(Boolean)
-
-      params.set('query', names.join(' + '))
     } else {
       const query = searchText.trim()
 
@@ -211,17 +196,18 @@ function SearchBar() {
     })
   }
 
-  // Valitut genret nimillä (yhteenvetokenttää varten).
-  const selectedGenreNames = selectedGenres
-    .map(id => genres.find(genre => String(genre.id) === id)?.name)
-    .filter(Boolean)
-
+  // Lisätään tai poistetaan genre valinnoista.
   const toggleGenre = (id) => {
     const value = String(id)
 
     setSelectedGenres(previous => previous.includes(value)
       ? previous.filter(selected => selected !== value)
       : [...previous, value])
+  }
+
+  // Tyhjennetään kaikki genrevalinnat.
+  const clearGenres = () => {
+    setSelectedGenres([])
   }
 
   // Näytetäänkö laajennuksen alla pudotuspaneeli.
@@ -235,7 +221,7 @@ function SearchBar() {
     >
       <div className="search-shell">
 
-        {/* Suljettu tila: pelkkä kuvake ja "Hae"-teksti. */}
+        {/* Suljettu tila: pelkkä kuvake ja Hae-teksti. */}
         {!isOpen && (
           <button
             type="button"
@@ -243,16 +229,22 @@ function SearchBar() {
             onClick={() => setIsOpen(true)}
             aria-label="Avaa haku"
           >
-            <SearchIcon />
+            <Icon name="search" size={16} strokeWidth={2} />
             <span>Hae</span>
           </button>
         )}
 
-        {/* Laajennettu tila: hakutapa, kenttä ja Hae-painike samassa rivissä. */}
+        {/* Laajennettu tila: hakutapa, kenttä ja Hae-painike. */}
         {isOpen && (
           <form onSubmit={handleSearch} className="search-form" role="search">
-            <SearchIcon className="search-form-icon" />
+            <Icon
+              name="search"
+              size={16}
+              strokeWidth={2}
+              className="search-form-icon"
+            />
 
+            {/* Hakutavan valitseminen. */}
             <select
               value={searchType}
               onChange={handleSearchTypeChange}
@@ -266,9 +258,15 @@ function SearchBar() {
               <option value="language">Kieli</option>
             </select>
 
-            {/* Genrehaussa valittujen genrejen yhteenveto. */}
+            {/* Näytetään valitun hakutavan mukainen kenttä. */}
             {isOriginSearch ? (
-              <MovieOrigin key={searchType} kind={searchType} value={origin} onChange={setOrigin} emptyLabel="Valitse" />
+              <MovieOrigin
+                key={searchType}
+                kind={searchType}
+                value={origin}
+                onChange={setOrigin}
+                emptyLabel="Valitse"
+              />
             ) : searchType === 'genre' ? (
               <div className="genre-selection-summary" aria-live="polite">
                 {selectedGenreNames.length > 0
@@ -302,102 +300,28 @@ function SearchBar() {
         )}
       </div>
 
-      {/* Pudotuspaneeli kiinnitettynä laajennetun kentän alle. */}
+      {/* Pudotuspaneeli laajennetun hakukentän alla. */}
       {isOpen && (showGenrePicker || showSuggestions) && (
         <div className="search-dropdown">
 
-          {/* IMDb-tyyliset monivalintapainikkeet genrehaulle. */}
+          {/* Genrevalikko omana komponenttinaan. */}
           {showGenrePicker && (
-            <div className="genre-picker" aria-label="Valitse genret">
-              <div className="genre-picker-heading">
-                <strong>Genret</strong>
-
-                {selectedGenres.length > 0 && (
-                  <button
-                    type="button"
-                    className="genre-picker-clear"
-                    onClick={() => setSelectedGenres([])}
-                  >
-                    Tyhjennä
-                  </button>
-                )}
-              </div>
-
-              <div className="genre-chips">
-                {genres.map(genre => {
-                  const selected = selectedGenres.includes(String(genre.id))
-
-                  return (
-                    <button
-                      key={genre.id}
-                      type="button"
-                      className={`genre-chip${selected ? ' is-selected' : ''}`}
-                      aria-pressed={selected}
-                      onClick={() => toggleGenre(genre.id)}
-                    >
-                      <span>{genre.name}</span>
-
-                      {selected && (
-                        <span className="genre-chip-remove" aria-hidden="true">
-                          ×
-                        </span>
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
-
-              <div className="genre-picker-count">
-                Valittu {selectedGenres.length} genreä
-              </div>
-            </div>
+            <GenreSelect
+              genres={genres}
+              selectedGenres={selectedGenres}
+              toggleGenre={toggleGenre}
+              clearGenres={clearGenres}
+            />
           )}
 
-          {/* Elokuvahaun automaattiset ehdotukset julisteineen. */}
+          {/* Automaattiset hakuehdotukset omana komponenttinaan. */}
           {showSuggestions && (
-            <ul className="search-suggestions">
-              {suggestions.map((movie) => (
-                <li key={movie.id}>
-                  <button
-                    type="button"
-                    className="search-suggestion"
-                    onClick={() => handleSuggestionClick(movie)}
-                  >
-                    {/* Juliste tai samankokoinen placeholder. */}
-                    {movie.poster_path ? (
-                      <img
-                        src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
-                        srcSet={`https://image.tmdb.org/t/p/w92${movie.poster_path} 1x, https://image.tmdb.org/t/p/w185${movie.poster_path} 2x`}
-                        alt=""
-                        width="46"
-                        height="69"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span
-                        className="search-suggestion-placeholder"
-                        aria-hidden="true"
-                      >
-                        ?
-                      </span>
-                    )}
-
-                    {/* Nimi, vuosi ja arvosana. */}
-                    <span className="search-suggestion-text">
-                      <strong>{movie.title}</strong>
-
-                      <small>
-                        {movie.release_date?.slice(0, 4) || 'Ei tiedossa'}
-                        {typeof movie.vote_average === 'number' &&
-                          movie.vote_average > 0 &&
-                          ` • ★ ${movie.vote_average.toFixed(1)}`}
-                      </small>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <SearchSuggestions
+              suggestions={suggestions}
+              onSelect={handleSuggestionClick}
+            />
           )}
+
         </div>
       )}
     </div>

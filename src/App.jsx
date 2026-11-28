@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import './App.css'
 
 import Navbar from './components/Navbar/Navbar'
@@ -11,7 +11,7 @@ import TrendingPage from './pages/Trendingpage/Trendingpage'
 import MovieDetails from './pages/Detailspage/MovieDetails'
 import SearchPage from './pages/Searchpage/Searchpage'
 import LoginPage from './pages/Loginpage/LoginPage'
-import RegisterPage from './pages/RegisterPage/RegisterPage'
+import RegisterPage from './pages/Registerpage/RegisterPage'
 import AccountPage from './pages/Accountpage/AccountPage'
 import ProfilePage from './pages/Profilepage/ProfilePage'
 import MyReviewsPage from './pages/MyReviewspage/MyReviewsPage'
@@ -20,6 +20,8 @@ import GroupPage from './pages/GroupPage/GroupPage'
 import MyGroupsPage from './pages/GroupPage/MyGroupPage'
 
 function App() {
+  const { key: historyKey } = useLocation()
+
   return (
     <>
       <Navbar />
@@ -30,9 +32,9 @@ function App() {
         <div className="app-content">
           <main className="main-content">
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/popular" element={<PopularPage />} />
-              <Route path="/trending" element={<TrendingPage />} />
+              <Route path="/" element={<HomePage key={historyKey} />} />
+              <Route path="/popular" element={<PopularPage key={historyKey} />} />
+              <Route path="/trending" element={<TrendingPage key={historyKey} />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/movies/:id" element={<MovieDetails />} />
               <Route path="/login" element={<LoginPage />} />

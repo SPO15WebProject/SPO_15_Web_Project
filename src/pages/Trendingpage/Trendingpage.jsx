@@ -1,9 +1,12 @@
-import useMovies from '../../hooks/Usemovies'
+import useBrowseMovies from '../../hooks/useBrowseMovies'
+import { useBrowseScroll } from '../../hooks/useMovieBrowse'
 import MovieSection from '../../components/MovieSection/MovieSection'
 
 // Sivu, jolla näytetään kaikki viikon trendaavat elokuvat.
 function TrendingPage() {
-  const { movies, loading, error } = useMovies('/movies/trending')
+  const { movies, loading, error } = useBrowseMovies('/movies/trending')
+
+  useBrowseScroll(!loading)
 
   return (
     <MovieSection
