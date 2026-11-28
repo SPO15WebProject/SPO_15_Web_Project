@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
-import useMovies from '../../hooks/Usemovies'
+import useBrowseMovies from '../../hooks/useBrowseMovies'
+import { useBrowseScroll } from '../../hooks/useMovieBrowse'
 import MovieSection from '../../components/MovieSection/MovieSection'
 
 function HomePage() {
-  const trending = useMovies('/movies/trending')
-  const popular = useMovies('/movies/popular')
+  const trending = useBrowseMovies('/movies/trending')
+  const popular = useBrowseMovies('/movies/popular')
+
+  useBrowseScroll(!trending.loading && !popular.loading)
 
   return (
     <>
@@ -16,6 +19,7 @@ function HomePage() {
         layout="slider"
         emptyText="Trendaavia elokuvia ei löytynyt."
       />
+
       <Link to="/trending">Näytä kaikki trendaavat</Link>
 
       <MovieSection
@@ -24,6 +28,7 @@ function HomePage() {
         loading={popular.loading}
         error={popular.error}
       />
+
       <Link to="/popular">Näytä kaikki suositut</Link>
     </>
   )

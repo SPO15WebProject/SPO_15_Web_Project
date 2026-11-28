@@ -87,6 +87,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 /* Suodattimien otsikot */
@@ -100,6 +101,7 @@
 .movie-filters select {
   padding: 0.6rem;
   min-width: 150px;
+  max-width: 100%;
   background-color: #1a1a1a;
   color: white;
   border: 1px solid #555;
@@ -123,6 +125,89 @@
 
 .movie-filters button:hover {
   background-color: #444;
+}
+
+/* Genresuodatin omalla rivillään */
+.movie-filters .filter-genres {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-top: 1rem;
+  border-top: 1px solid #555;
+}
+
+/* Genrevalikon otsikko ja tyhjennyspainike */
+.filter-genres .genre-picker-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Genrevalintojen asettelu */
+.filter-genres .genre-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Genrevalintapainikkeet */
+.movie-filters .filter-genres .genre-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  padding: 8px 12px;
+  background-color: #1a1a1a;
+  border: 1px solid #555;
+  border-radius: 999px;
+  color: white;
+  font-size: 14px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+/* Genrevalintapainikkeen hover-tila */
+.movie-filters .filter-genres .genre-chip:hover {
+  background-color: #333;
+  border-color: #888;
+}
+
+/* Valittu genre */
+.movie-filters .filter-genres .genre-chip.is-selected {
+  background-color: #444;
+  border-color: #aaa;
+}
+
+/* Valitun genren poistokuvake */
+.filter-genres .genre-chip-remove {
+  font-size: 20px;
+  line-height: 12px;
+}
+
+/* Genrevalintojen tyhjennyspainike */
+.movie-filters .filter-genres .genre-picker-clear {
+  width: auto;
+  padding: 4px 6px;
+  background-color: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.movie-filters .filter-genres .genre-picker-clear:hover {
+  color: white;
+}
+
+/* Valittujen genrejen lukumäärä */
+.filter-genres .genre-picker-count {
+  margin-top: 12px;
+  color: #aaa;
+  font-size: 13px;
 }
 
 /* Mobiilinäkymä */
@@ -152,5 +237,14 @@
 
   .movie-filters button {
     width: 100%;
+  }
+
+  /* Genrevalintapainikkeet säilyvät pieninä mobiilissa */
+  .movie-filters .filter-genres .genre-chip {
+    width: auto;
+  }
+
+  .movie-filters .filter-genres .genre-picker-clear {
+    width: auto;
   }
 }

@@ -1,8 +1,11 @@
-import useMovies from '../../hooks/Usemovies'
+import useBrowseMovies from '../../hooks/useBrowseMovies'
+import { useBrowseScroll } from '../../hooks/useMovieBrowse'
 import MovieSection from '../../components/MovieSection/MovieSection'
 
 function PopularPage() {
-  const { movies, loading, error } = useMovies('/movies/popular')
+  const { movies, loading, error } = useBrowseMovies('/movies/popular')
+
+  useBrowseScroll(!loading)
 
   return (
     <MovieSection

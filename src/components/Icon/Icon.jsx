@@ -1,4 +1,4 @@
-function Icon({ name, size = 22 }) {
+function Icon({ name, size = 22, className, strokeWidth = 1.8 }) {
   const icons = {
     home: (
       <>
@@ -36,17 +36,25 @@ function Icon({ name, size = 22 }) {
         <path d="M10 17l5-5-5-5M15 12H3" />
         <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
       </>
+    ),
+    // Hakukentän suurennuslasikuvake.
+    search: (
+      <>
+        <circle cx="11" cy="11" r="7" />
+        <path d="M20 20l-3.5-3.5" />
+      </>
     )
   }
 
   return (
     <svg
+      className={className}
       width={size}
       height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"

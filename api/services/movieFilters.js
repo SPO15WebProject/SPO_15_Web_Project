@@ -4,7 +4,7 @@ export const getMovieFilters = (query) => {
   const filters = {}
 
   // Lukee käyttäjän valitsemat suodattimet.
-  const { year, rating, sortBy, country, language } = query
+  const { year, rating, sortBy, country, language, genres } = query
 
   // Tarkistaa julkaisuvuoden.
   if (year) {
@@ -71,6 +71,19 @@ export const getMovieFilters = (query) => {
     filters.with_original_language = language
   }
 
+  // Tarkistetaan käyttäjän valitsemat genret.
+  // Esimerkiksi 28,35 tarkoittaa toimintaa ja komediaa.
+  if (genres) {
+    if (
+      typeof genres !== 'string' ||
+      !genres.split(',').every(id => /^[1-9]\d*$/.test(id))
+    ) {
+      throw new Error('Virheellinen genre')
+    }
+
+    filters.with_genres = genres
+  }
+
   // Palautetaan suodatusparametrit.
   return filters
 }
@@ -90,6 +103,24 @@ export const filterMoviesByRating = (movies, filters) => {
   // Palautetaan vain vähimmäisarvosanan täyttävät elokuvat.
   return movies.filter(
     movie => movie.vote_average >= minRating
+  )
+}
+
+
+/* Suodatetaan nimihaun elokuvat genrejen perusteella. */
+export const filterMoviesByGenres = (movies, filters) => {
+
+  // Jos genrejä ei ole valittu, palautetaan kaikki elokuvat.
+  if (!filters.with_genres) {
+    return movies
+  }
+
+  // Muutetaan genrejen tunnisteet numeroiksi.
+  const genreIds = filters.with_genres.split(',').map(Number)
+
+  // Elokuvan pitää kuulua kaikkiin valittuihin genreihin.
+  return movies.filter(movie =>
+    genreIds.every(id => movie.genre_ids?.includes(id))
   )
 }
 
