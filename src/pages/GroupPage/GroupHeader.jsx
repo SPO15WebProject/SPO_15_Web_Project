@@ -1,7 +1,8 @@
 import Icon from '../../components/Icon/Icon'
+import LeaveGroupButton from './LeaveGroupButton'
 
 // group ja isMember saadaan sivulta propseina
-function GroupHeader({ group, isMember }) {
+function GroupHeader({ group, isMember, userId }) {
     const memberCount = group.members.length
 
     return (
@@ -34,9 +35,12 @@ function GroupHeader({ group, isMember }) {
                     </div>
                 </div>
 
-                {/* tämä merkintä näytetään vain jos käyttäjä kuuluu ryhmään */}
+                {/* nämä merkinnät näytetään vain jos käyttäjä kuuluu ryhmään */}
                 {isMember && (
-                    <span className="group-membership">Olet jäsen</span>
+                    <div className="group-member-actions">
+                        <span className="group-membership">Olet jäsen</span>
+                        <LeaveGroupButton group={group} userId={userId} />
+                    </div>
                 )}
             </header>
         </>
